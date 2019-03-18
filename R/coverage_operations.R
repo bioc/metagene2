@@ -124,7 +124,11 @@ bin_region_coverages = function(coverages, regions, bin_count) {
         if(is(regions, "GRangesList")) {
             results[[cov_name]] = bin_discontiguous_regions(coverages[[cov_name]], regions, bin_count)
         } else {
-            results[[cov_name]] = bin_contiguous_regions(coverages[[cov_name]], regions, bin_count)
+            if(length(regions)>0) {
+                results[[cov_name]] = bin_contiguous_regions(coverages[[cov_name]], regions, bin_count)
+            } else {
+                results[cov_name] = list(NULL)
+            }
         }        
     }
     return(results)
@@ -153,17 +157,27 @@ bin_coverages_s = function(coverages, regions, bin_count) {
                              "-"=bin_region_coverages(coverages[["-"]], strand_split[["-"]], bin_count),
                              "*"=bin_region_coverages(coverages[["*"]], strand_split[["*"]], bin_count))
         
-        recombine_regions = function(x,y,z, strand_info, bin_count) {
-            results = matrix(0, nrow=length(strand_info), ncol=bin_count)
-            results[strand_info=="+",] = x
-            results[strand_info=="-",] = y
-            results[strand_info=="*",] = z
-            
-            results
-        }
+        #recombine_regions = function(x,y,z, strand_info, bin_count) {
+        #    results = matrix(0, nrow=length(strand_info), ncol=bin_count)
+        #    results[strand_info=="+",] = x
+        #    results[strand_info=="-",] = y
+        #    results[strand_info=="*",] = z
+        #    
+        #    results
+        #}
         
         # Recombine all coverages
-        purrr::pmap(coverage_list, recombine_regions, strand_info=strand(regions), bin_count=bin_count)
+        #purrr::pmap(coverage_list, recombine_regions, strand_info=strand(regions), bin_count=bin_count)
+        results = list()
+        for(i in names(coverage_list[["+"]])) {
+            #results[[i]] = recombine_regions(coverage_list[["+"]][[i]], coverage_list[["-"]][[i]], coverage_list[["*"]][[i]], strand(regions), bin_count)
+            results[[i]] = matrix(0, nrow=length(strand(regions)), ncol=bin_count)
+            results[[i]][as.logical(strand(regions)=="+"),] = coverage_list[["+"]][[i]]
+            results[[i]][as.logical(strand(regions)=="-"),] = coverage_list[["-"]][[i]]
+            results[[i]][as.logical(strand(regions)=="*"),] = coverage_list[["*"]][[i]]
+            
+        }
+        return(results)
     }
 }
 

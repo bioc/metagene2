@@ -369,6 +369,12 @@ Bam_Handler <- R6Class("Bam_Handler",
                 # By default, passing an empty region set to 
                 # GenomicAlignments:::readGAlignments returns all alignments.
                 alignment <- GenomicAlignments::GAlignments()
+                
+                # Our empty GAlignments has no seqinfo, which will return an empty 
+                # object when calling coverage, rather than a list of all chromosome,
+                # each with a 0-valued Rle.
+                bam_object = BamFile(bam_file)
+                seqinfo(alignment) = seqinfo(bam_object)
             }            
                 
             return(alignment)
