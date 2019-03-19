@@ -89,8 +89,9 @@ get_demo_metagene <- function() {
 #' mg <- get_demo_design()
 get_demo_design <- function() {
     return(data.frame(Samples = get_demo_bam_files(),
-                      align1 = c(1,1,0,0,2),
-                      align2 = c(0,0,1,1,2)))
+                      align1 = c(1L,1L,0L,0L,2L),
+                      align2 = c(0L,0L,1L,1L,2L),
+                      stringsAsFactors=FALSE))
 }
 
 get_not_indexed_bam_file <- function() {

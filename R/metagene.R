@@ -243,7 +243,7 @@
 #' @export
 #' @format A metagene experiment manager
 
-metagene2 <- R6Class("metagene",
+metagene2 <- R6Class("metagene2",
     public = list(
     # Methods
         initialize = function(regions, bam_files, padding_size = 0,

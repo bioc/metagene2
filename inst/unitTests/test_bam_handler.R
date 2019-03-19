@@ -4,7 +4,7 @@
 
 if(FALSE) {
     library( "RUnit" )
-    library( "metagene" )
+    library( "metagene2" )
     library( "rtracklayer" )
     library( "DBChIP" )
     library( "stringr" )
@@ -15,13 +15,13 @@ if(FALSE) {
 bam_files <- get_demo_bam_files()
 named_bam_files <- bam_files
 names(named_bam_files) <- paste("file", seq(1, length(bam_files)), sep = "_")
-not_indexed_bam_file <- metagene:::get_not_indexed_bam_file()
+not_indexed_bam_file <- metagene2:::get_not_indexed_bam_file()
 different_seqnames <- c(bam_files[1],
-                        metagene:::get_different_seqnames_bam_file())
-regions <- lapply(metagene:::get_demo_regions(), rtracklayer::import)
+                        metagene2:::get_different_seqnames_bam_file())
+regions <- metagene2:::get_demo_regions()
 
-demo_bh <- metagene:::Bam_Handler$new(bam_files)
-demo_bh_one <- metagene:::Bam_Handler$new(bam_files[1])
+demo_bh <- metagene2:::Bam_Handler$new(bam_files)
+demo_bh_one <- metagene2:::Bam_Handler$new(bam_files[1])
 
 numerically_identical_coverage <- function(coverage_1, coverage_2) {
     return(all(all(coverage_1==coverage_2)))
@@ -50,14 +50,14 @@ test.bam_handler_different_seqnames_bam_file_warning <- function() {
     exp <- paste0(exp, "This could also be caused by ")
     exp <- paste0(exp, "discrepancies in the seqlevels style")
 	exp <- paste0(exp, " (i.e.: UCSC:chr1 versus NCBI:1)\n\n")
-    obs <- tryCatch(metagene:::Bam_Handler$new(different_seqnames),
+    obs <- tryCatch(metagene2:::Bam_Handler$new(different_seqnames),
                     warning = conditionMessage)
     checkIdentical(obs, warning(exp))
 }
 
 ## Invalid bam file - not indexed
 test.bam_handler_not_indexed_single_bam_file <- function() {
-    obs <- tryCatch(metagene:::Bam_Handler$new(not_indexed_bam_file),
+    obs <- tryCatch(metagene2:::Bam_Handler$new(not_indexed_bam_file),
                     error = conditionMessage)
     exp <- "All BAM files must be indexed"
     checkIdentical(obs, exp)
@@ -66,7 +66,7 @@ test.bam_handler_not_indexed_single_bam_file <- function() {
 ## Multiple bam files, one not indexed
 test.bam_handler_multiple_bam_file_one_not_indexed <- function() {
     one_bam_file_not_indexed <- c(bam_files, not_indexed_bam_file)
-    obs <- tryCatch(metagene:::Bam_Handler$new(one_bam_file_not_indexed),
+    obs <- tryCatch(metagene2:::Bam_Handler$new(one_bam_file_not_indexed),
                     error = conditionMessage)
     exp <- "All BAM files must be indexed"
     checkIdentical(obs, exp)
@@ -74,7 +74,7 @@ test.bam_handler_multiple_bam_file_one_not_indexed <- function() {
 
 ## Unnamed bam files
 test.bam_handler_unamed_bam_files <- function() {
-    bam_handler <- metagene:::Bam_Handler$new(bam_files = bam_files)
+    bam_handler <- metagene2:::Bam_Handler$new(bam_files = bam_files)
     obs <- rownames(bam_handler$get_bam_files())
     exp <- tools::file_path_sans_ext(basename(bam_files))
     checkIdentical(obs, exp)
@@ -82,7 +82,7 @@ test.bam_handler_unamed_bam_files <- function() {
 
 ## Named bam files
 test.bam_handler_named_bam_files <- function() {
-    bam_handler <- metagene:::Bam_Handler$new(bam_files = named_bam_files)
+    bam_handler <- metagene2:::Bam_Handler$new(bam_files = named_bam_files)
     obs <- rownames(bam_handler$get_bam_files())
     exp <- paste("file", seq(1, length(bam_files)), sep = "_")
     checkIdentical(obs, exp)
@@ -90,21 +90,21 @@ test.bam_handler_named_bam_files <- function() {
 
 ## Valid bam files, numeric cores
 test.bam_handler_valid_files_numeric_cores <- function() {
-    bam_handler <- metagene:::demo_bh_multicore$clone()
+    bam_handler <- metagene2:::demo_bh_multicore$clone()
     checkTrue(all(class(bam_handler) == c("Bam_Handler", "R6")))
 }
 
 ## Valid bam files, bpparam cores
 test.bam_handler_valid_files_bpparam_cores <- function() {
     cores <- BiocParallel::SnowParam(workers = 2)
-    bam_handler <- metagene:::Bam_Handler$new(bam_files = bam_files[1],
+    bam_handler <- metagene2:::Bam_Handler$new(bam_files = bam_files[1],
                                               cores = cores)
     checkTrue(all(class(bam_handler) == c("Bam_Handler", "R6")))
 }
 
 ## Zero core should not be accepted as an argument
 test.bam_handler_initialize_zero_core_number<- function() {
-    obs <- tryCatch(metagene:::Bam_Handler$new(bam_files = bam_files,
+    obs <- tryCatch(metagene2:::Bam_Handler$new(bam_files = bam_files,
                                                cores = 0),
                     error=conditionMessage)
     exp <- "cores must be a positive numeric or BiocParallelParam instance"
@@ -113,7 +113,7 @@ test.bam_handler_initialize_zero_core_number<- function() {
 
 ## Negative integer core should not be accepted as an argument
 test.bam_handler_initialize_negative_core_number<- function() {
-    obs <- tryCatch(metagene:::Bam_Handler$new(bam_files = bam_files,
+    obs <- tryCatch(metagene2:::Bam_Handler$new(bam_files = bam_files,
                                                cores = -1),
                     error=conditionMessage)
     exp <- "cores must be a positive numeric or BiocParallelParam instance"
@@ -123,7 +123,7 @@ test.bam_handler_initialize_negative_core_number<- function() {
 ## Something other than an integer number should not be accepted
 ## as an core number argument
 test.bam_handler_initialize_not_integer_core_number<- function() {
-    obs <- tryCatch(metagene:::Bam_Handler$new(bam_files = bam_files,
+    obs <- tryCatch(metagene2:::Bam_Handler$new(bam_files = bam_files,
                                                cores = 2.22),
                     error=conditionMessage)
     exp <- "cores must be a positive numeric or BiocParallelParam instance"
@@ -133,7 +133,7 @@ test.bam_handler_initialize_not_integer_core_number<- function() {
 ## Something other than an integer number should not be accepted as
 ## an core number argument
 test.bam_handler_initialize_string_core_number<- function() {
-    obs <- tryCatch(metagene:::Bam_Handler$new(bam_files = bam_files,
+    obs <- tryCatch(metagene2:::Bam_Handler$new(bam_files = bam_files,
                                                cores ="NotAInteger"),
                     error=conditionMessage)
     exp <- "cores must be a positive numeric or BiocParallelParam instance"
@@ -142,7 +142,7 @@ test.bam_handler_initialize_string_core_number<- function() {
 
 ## All BAM files must be in string format
 test.bam_handler_initialize_file_name_not_in_string_format<- function() {
-    obs <- tryCatch(metagene:::Bam_Handler$new(bam_files = c(1,2)),
+    obs <- tryCatch(metagene2:::Bam_Handler$new(bam_files = c(1,2)),
                     error = conditionMessage)
     exp <- "bam_files must be a vector of BAM filenames"
     checkEquals(obs, exp)
@@ -151,7 +151,7 @@ test.bam_handler_initialize_file_name_not_in_string_format<- function() {
 ## All bam files must exist
 test.bam_handler_initialize_with_not_existing_files<- function() {
     bam_files <- c("NotExistingFile", "NotExistingFile2")
-    obs <- tryCatch(metagene:::Bam_Handler$new(bam_files = bam_files),
+    obs <- tryCatch(metagene2:::Bam_Handler$new(bam_files = bam_files),
                     error = conditionMessage)
     exp <- "At least one BAM file does not exist"
     checkEquals(obs, exp)
@@ -177,7 +177,7 @@ test.bam_handler_get_aligned_count_valid_case_multicore <- function() {
     # Note, count were obtained with "samtools view -c -F0x4 ${file}"
     exp <- list(4635, 1896, 956, 1999, 6025)
     names(exp) <- bam_files
-    bam_handler <- metagene:::demo_bh_multicore$clone()
+    bam_handler <- metagene2:::demo_bh_multicore$clone()
     obs <- lapply(bam_files, bam_handler$get_aligned_count)
     names(obs) <- bam_files
     checkTrue(all(mapply("==", obs, exp)))
@@ -215,7 +215,7 @@ test.bam_handler_get_rpm_coefficient_valid_case_multicore <- function() {
     exp <- list(4635/1000000, 1896/1000000, 956/1000000, 1999/1000000,
                 6025/1000000)
     names(exp) <- bam_files
-    bam_handler <- metagene:::demo_bh_multicore$clone()
+    bam_handler <- metagene2:::demo_bh_multicore$clone()
     obs <- lapply(bam_files, bam_handler$get_rpm_coefficient)
     names(obs) <- bam_files
     checkTrue(all(mapply("==", obs, exp)))
@@ -251,20 +251,20 @@ test.bam_handler_get_coverage_valid_use <- function() {
 test.bam_handler_get_coverage_multicore <- function() {
     bam_file <- bam_files[1]
     region <- regions[[1]]
-    bam_handler <- metagene:::demo_bh_multicore$clone()
+    bam_handler <- metagene2:::demo_bh_multicore$clone()
     coverages <- bam_handler$get_coverage(bam_file, region)
     checkEquals(length(coverages), 22)
 }
 
 ## Multiple chromosomes
 test.bam_handler_get_coverage_multiple_chromosomes <- function() {
-    bam_file <- metagene:::get_coverage_bam_file()
-    region <- rtracklayer::import(metagene:::get_coverage_region())
+    bam_file <- metagene2:::get_coverage_bam_file()
+    region <- rtracklayer::import(metagene2:::get_coverage_region())
     param <- Rsamtools::ScanBamParam(which = GenomicRanges::reduce(region))
     exp <- GenomicAlignments::readGAlignments(bam_file, param = param)
     count <- Rsamtools::countBam(bam_file)$records
     exp <- GenomicAlignments::coverage(exp)
-    bam_handler <- metagene:::Bam_Handler$new(bam_file)
+    bam_handler <- metagene2:::Bam_Handler$new(bam_file)
     obs <- bam_handler$get_coverage(bam_file, region)
     checkTrue(all(sum(exp - obs) == 0))
     checkTrue(identical(names(exp), names(obs)))
@@ -427,21 +427,21 @@ test.bam_handler_get_normalized_coverage_valid_use <- function() {
 test.bam_handler_get_normalized_coverage_multicore <- function() {
     bam_file <- bam_files[1]
     region <- regions[[1]]
-    bam_handler <- metagene:::demo_bh_multicore$clone()
+    bam_handler <- metagene2:::demo_bh_multicore$clone()
     coverages <- bam_handler$get_normalized_coverage(bam_file, region)
     checkEquals(length(coverages), 22)
 }
 
 ## Multiple chromosomes
 test.bam_handler_get_normalized_coverage_multiple_chromosomes <- function() {
-    bam_file <- metagene:::get_coverage_bam_file()
-    region <- rtracklayer::import(metagene:::get_coverage_region())
+    bam_file <- metagene2:::get_coverage_bam_file()
+    region <- rtracklayer::import(metagene2:::get_coverage_region())
     param <- Rsamtools::ScanBamParam(which = GenomicRanges::reduce(region))
     exp <- GenomicAlignments::readGAlignments(bam_file, param = param)
     count <- Rsamtools::countBam(bam_file)$records
     weight <- weight <- 1 / (count / 1000000)
     exp <- GenomicAlignments::coverage(exp) * weight
-    bam_handler <- metagene:::Bam_Handler$new(bam_file)
+    bam_handler <- metagene2:::Bam_Handler$new(bam_file)
     obs <- bam_handler$get_normalized_coverage(bam_file, region)
     checkTrue(all(sum(exp - obs) == 0))
     checkTrue(identical(names(exp), names(obs)))
@@ -617,11 +617,11 @@ test.bam_handler_get_normalized_coverage_no_matching_seqnames_force <-
 ## Test the bam_handler$get_noise_ratio()
 ###################################################
 
-chip.bed <- system.file("extdata/align1_rep1.bed", package="metagene")
-input.bed <- system.file("extdata/ctrl.bed", package="metagene")
-chip.bam <- system.file("extdata/align1_rep1.bam", package="metagene")
+chip.bed <- system.file("extdata/align1_rep1.bed", package="metagene2")
+input.bed <- system.file("extdata/ctrl.bed", package="metagene2")
+chip.bam <- system.file("extdata/align1_rep1.bam", package="metagene2")
 chip.bam <- basename(tools::file_path_sans_ext(chip.bam))
-input.bam <- system.file("extdata/ctrl.bam", package="metagene")
+input.bam <- system.file("extdata/ctrl.bam", package="metagene2")
 input.bam <- basename(tools::file_path_sans_ext(input.bam))
 
 ## Valid use

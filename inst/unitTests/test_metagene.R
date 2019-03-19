@@ -63,8 +63,8 @@ test_invalid_param_value <- function(param_name, param_value, step_function, err
 #demo_mg_min <- metagene2$new(regions = region, bam_files = bam_file)
 
 # Load fake SAMs for value tests.
-fake_bam_files = system.file(c("fake_align1.bam", "fake_align2.bam", "fake_align3.bam"),
-                             package="metagene2")
+fake_bam_files = file.path(system.file("extdata", package = "metagene2"),
+                           c("fake_align1.bam", "fake_align2.bam", "fake_align3.bam"))
 # Define a design that will test various combinations of bam files.
 fake_bam_design = data.frame(BAM=fake_bam_files,
                              fake_align1=c(1, 0, 0),
@@ -152,15 +152,15 @@ test_invalid_region <- function(invalid_region, error, ...) {
     checkIdentical(obs, error)
 }
 
-test_valid_region <- function(valid_region, ...) {
+util_test_valid_region <- function(valid_region, ...) {
     obs <- do.call(metagene2$new, c(list(...), 
                                     list(bam_files=get_demo_bam_files(),
                                          region = valid_region)))
-    test_valid_metagene(obs)
+    util_test_valid_metagene(obs)
 }
 
-test_valid_metagene <- function(mg) {
-    checkIdentical(class(mg), c("metagene", "R6"))
+util_test_valid_metagene <- function(mg) {
+    checkIdentical(class(mg), c("metagene2", "R6"))
 }
 
 # regions is the wrong class
@@ -178,7 +178,7 @@ test.metagene_regions_seqlevels <- function() {
                                                               "extra_seqlevels")
     
     test_invalid_region(region_with_extra_seq_level, "Some seqlevels of regions are absent in bam_file")
-    test_valid_region(region_with_extra_seq_level, force_seqlevels = TRUE)
+    util_test_valid_region(region_with_extra_seq_level, force_seqlevels = TRUE)
 
     # Extra seqnames means we must drop certain regions. We only do so
     # if force_seqlevels=TRUE, otherwise we throw an error.
@@ -186,7 +186,7 @@ test.metagene_regions_seqlevels <- function() {
     seqnames(region_with_extra_seq)[1] = "extra_seqlevels"
 
     test_invalid_region(region_with_extra_seq, "Some seqlevels of regions are absent in bam_file")
-    test_valid_region(region_with_extra_seq, force_seqlevels = TRUE)
+    util_test_valid_region(region_with_extra_seq, force_seqlevels = TRUE)
 
     # Sometimes there can be no seqnames left after removing
     # those with unknown levels. This happens often in chromosome names
