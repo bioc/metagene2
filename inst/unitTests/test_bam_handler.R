@@ -90,7 +90,8 @@ test.bam_handler_named_bam_files <- function() {
 
 ## Valid bam files, numeric cores
 test.bam_handler_valid_files_numeric_cores <- function() {
-    bam_handler <- metagene2:::demo_bh_multicore$clone()
+    bam_handler <- metagene2:::Bam_Handler$new(bam_files = bam_files[1],
+                                              cores = 2)
     checkTrue(all(class(bam_handler) == c("Bam_Handler", "R6")))
 }
 
@@ -177,7 +178,7 @@ test.bam_handler_get_aligned_count_valid_case_multicore <- function() {
     # Note, count were obtained with "samtools view -c -F0x4 ${file}"
     exp <- list(4635, 1896, 956, 1999, 6025)
     names(exp) <- bam_files
-    bam_handler <- metagene2:::demo_bh_multicore$clone()
+    bam_handler <- metagene2:::Bam_Handler$new(bam_files = bam_files, cores=2)
     obs <- lapply(bam_files, bam_handler$get_aligned_count)
     names(obs) <- bam_files
     checkTrue(all(mapply("==", obs, exp)))
@@ -215,7 +216,7 @@ test.bam_handler_get_rpm_coefficient_valid_case_multicore <- function() {
     exp <- list(4635/1000000, 1896/1000000, 956/1000000, 1999/1000000,
                 6025/1000000)
     names(exp) <- bam_files
-    bam_handler <- metagene2:::demo_bh_multicore$clone()
+    bam_handler <- metagene2:::Bam_Handler$new(bam_files = bam_files, cores=2)
     obs <- lapply(bam_files, bam_handler$get_rpm_coefficient)
     names(obs) <- bam_files
     checkTrue(all(mapply("==", obs, exp)))
@@ -251,7 +252,7 @@ test.bam_handler_get_coverage_valid_use <- function() {
 test.bam_handler_get_coverage_multicore <- function() {
     bam_file <- bam_files[1]
     region <- regions[[1]]
-    bam_handler <- metagene2:::demo_bh_multicore$clone()
+    bam_handler <- metagene2:::Bam_Handler$new(bam_files = bam_files, cores=2)
     coverages <- bam_handler$get_coverage(bam_file, region)
     checkEquals(length(coverages), 22)
 }
@@ -427,7 +428,7 @@ test.bam_handler_get_normalized_coverage_valid_use <- function() {
 test.bam_handler_get_normalized_coverage_multicore <- function() {
     bam_file <- bam_files[1]
     region <- regions[[1]]
-    bam_handler <- metagene2:::demo_bh_multicore$clone()
+    bam_handler <- metagene2:::Bam_Handler$new(bam_files = bam_files, cores=2)
     coverages <- bam_handler$get_normalized_coverage(bam_file, region)
     checkEquals(length(coverages), 22)
 }
@@ -620,9 +621,8 @@ test.bam_handler_get_normalized_coverage_no_matching_seqnames_force <-
 chip.bed <- system.file("extdata/align1_rep1.bed", package="metagene2")
 input.bed <- system.file("extdata/ctrl.bed", package="metagene2")
 chip.bam <- system.file("extdata/align1_rep1.bam", package="metagene2")
-chip.bam <- basename(tools::file_path_sans_ext(chip.bam))
 input.bam <- system.file("extdata/ctrl.bam", package="metagene2")
-input.bam <- basename(tools::file_path_sans_ext(input.bam))
+
 
 ## Valid use
 test.bam_handler_get_noise_ratio_valid_use <- function() {
