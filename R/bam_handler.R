@@ -84,7 +84,8 @@ Bam_Handler <- R6Class("Bam_Handler",
         parameters = list(),
         initialize = function(bam_files, cores = SerialParam(), 
                               paired_end = FALSE, strand_specific=FALSE,
-                              paired_end_strand_mode=2, extend_reads=0) {
+                              paired_end_strand_mode=2, extend_reads=0,
+                              invert_strand=FALSE) {
             # Check prerequisites
             # bam_files must be a vector of BAM filenames
             if (!is.vector(bam_files, "character")) {
@@ -134,6 +135,7 @@ Bam_Handler <- R6Class("Bam_Handler",
             self$parameters[["strand_specific"]] <- strand_specific
             self$parameters[["paired_end_strand_mode"]] <- paired_end_strand_mode
             self$parameters[["extend_reads"]] <- extend_reads
+            self$parameters[["invert_strand"]] <- invert_strand
             
             private$bam_files <- data.frame(bam = bam_files,
                                             stringsAsFactors = FALSE)
@@ -382,7 +384,8 @@ Bam_Handler <- R6Class("Bam_Handler",
         extract_coverage_by_regions = function(regions, bam_file, count=NULL, 
                                                paired_end = FALSE,
                                                strand_specific=FALSE,
-                                               paired_end_strand_mode=2, extend=0){
+                                               paired_end_strand_mode=2, extend=0,
+                                               invert_strand=FALSE) {
             if(extend > 0) {
                 start(regions) = pmax(start(regions)-extend, 1)
                 end(regions) = end(regions)+extend
@@ -393,16 +396,25 @@ Bam_Handler <- R6Class("Bam_Handler",
                                  '*'=private$read_alignments(regions, bam_file, paired_end=paired_end,
                                                              paired_end_strand_mode=paired_end_strand_mode))
             } else {
+                plus_strand = "+"
+                minus_strand = "-"
+                if(invert_strand) {
+                    regions = invertStrand(regions)
+                    plus_strand = "-"
+                    minus_strand = "+"
+                }
+                
                 # Read regions on each strand separately.
-                alignment = list('+'=private$read_alignments(regions, bam_file, '+',
-                                                             paired_end=paired_end,
-                                                             paired_end_strand_mode=paired_end_strand_mode),
-                                 '-'=private$read_alignments(regions, bam_file, '-',
-                                                             paired_end=paired_end,
-                                                             paired_end_strand_mode=paired_end_strand_mode),
-                                 '*'=private$read_alignments(regions, bam_file, '*',
-                                                             paired_end=paired_end,
-                                                             paired_end_strand_mode=paired_end_strand_mode))
+                alignment = list()
+                alignment[[plus_strand]]=private$read_alignments(regions, bam_file, "+",
+                                                                 paired_end=paired_end,
+                                                                 paired_end_strand_mode=paired_end_strand_mode)
+                alignment[[minus_strand]]=private$read_alignments(regions, bam_file, "-",
+                                                                  paired_end=paired_end,
+                                                                  paired_end_strand_mode=paired_end_strand_mode)
+                alignment[['*']]=private$read_alignments(regions, bam_file, '*',
+                                                         paired_end=paired_end,
+                                                         paired_end_strand_mode=paired_end_strand_mode)
             }
                 
             if (!is.null(count)) {
@@ -432,7 +444,8 @@ Bam_Handler <- R6Class("Bam_Handler",
                                 paired_end = self$parameters[['paired_end']],
                                 strand_specific = self$parameters[['strand_specific']],
                                 paired_end_strand_mode = self$parameters[['paired_end_strand_mode']],
-                                extend=self$parameters[['extend_reads']])
+                                extend=self$parameters[['extend_reads']],
+                                invert_strand=self$parameters[['invert_strand']])
                                 
             if(simplify && !self$parameters[["strand_specific"]]) {
                 return(coverages[["*"]])

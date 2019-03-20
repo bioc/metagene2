@@ -81,6 +81,10 @@
 #'                                  or Illumina stranded TruSeq PE).
 #'                                  Ignored if either paired_end or strand_specific is FALSE.
 #'                                  Default: \code{'2'}}
+#'    \item{invert_strand}{If \code{TRUE}, coverages for the given regions will be inferred 
+#'                         from the coverage on the strand opposite theirs. Useful
+#'                         for single-end stranded experiments which use cDNA.
+#'                         This parameter is ignored if strand-specific is \code{FALSE}.}
 #'    \item{...}{Additional parameters for the metagene analysis. See \code{produce_metagene}
 #'               for a list of possible parameters.}
 #' }
@@ -252,7 +256,7 @@ metagene2 <- R6Class("metagene2",
                                 assay = 'chipseq', strand_specific=FALSE,
                                 paired_end_strand_mode=2,
                                 region_mode="auto", region_metadata=NULL, 
-                                extend_reads=0, ...) {
+                                extend_reads=0, invert_strand=FALSE, ...) {
 
             # Validate the format of bam_files, since it is used to preprocess certain
             # parameters before initialization.
@@ -294,7 +298,8 @@ metagene2 <- R6Class("metagene2",
                     group_by=NULL,
                     title=NULL,
                     x_label=NULL,
-                    extend_reads=extend_reads),
+                    extend_reads=extend_reads,
+                    invert_strand=invert_strand),
                 param_validations=list(
                     design=private$validate_design,
                     bam_files=validate_bam_files,
@@ -326,7 +331,8 @@ metagene2 <- R6Class("metagene2",
                                         paired_end = paired_end,
                                         strand_specific=strand_specific,
                                         paired_end_strand_mode=paired_end_strand_mode,
-                                        extend_reads=private$ph$get("extend_reads"))
+                                        extend_reads=private$ph$get("extend_reads"),
+                                        invert_strand=private$ph$get("invert_strand"))
             private$stop_bm(bm)
 
             # Prepare regions
