@@ -394,18 +394,18 @@ metagene2 <- R6Class("metagene2",
         get_plot = function() {
             private$graph
         },
-        get_raw_coverages = function(filenames = NULL) {
+        get_raw_coverages = function() {
             if(!private$ph$get('strand_specific')) {
-                return(private$get_raw_coverages_internal(filenames)[['*']])
+                return(private$get_raw_coverages_internal()[['*']])
             } else {
-                return(private$get_raw_coverages_internal(filenames))
+                return(private$get_raw_coverages_internal())
             }        
         },
-        get_normalized_coverages = function(filenames = NULL) {
+        get_normalized_coverages = function() {
             if(!private$ph$get('strand_specific')) {
-                return(private$get_normalized_coverages_internal(filenames)[['*']])
+                return(private$get_normalized_coverages_internal()[['*']])
             } else {
-                return(private$get_normalized_coverages_internal(filenames))
+                return(private$get_normalized_coverages_internal())
             }
         },
         set_cores = function(cores) {
@@ -421,7 +421,7 @@ metagene2 <- R6Class("metagene2",
             self$add_metadata()
             invisible(self)
         },
-        group_coverages = function(design=NA, normalization=NA, design_filter=NA) {
+        group_coverages = function(design=NA, normalization=NA, design_filter=NA, simplify=TRUE) {
             # Clean up the design so it'll have the expected format.
             design = private$clean_design(design, private$ph$get("bam_files"))
 
@@ -460,8 +460,11 @@ metagene2 <- R6Class("metagene2",
                 private$stop_bm(bm)                                                   
             }
 
-            
-            invisible(private$grouped_coverages)
+            if(!private$ph$get("strand_specific") && simplify) {
+                invisible(private$grouped_coverages[["*"]])
+            } else {
+                invisible(private$grouped_coverages)
+            }
         },
         bin_coverages = function(bin_count=NA, region_filter=NA) {
             # Make sure the previous step has been performed.
@@ -887,17 +890,10 @@ metagene2 <- R6Class("metagene2",
                 return(names(coverages[['*']]))
             }
         },
-        get_raw_coverages_internal = function(filenames = NULL) {
-            if (is.null(filenames)) {
-                private$coverages
-            } else {
-                stopifnot(is.character(filenames))
-                stopifnot(length(filenames) > 0)
-                stopifnot(all(filenames %in% names(private$coverages)))
-                return(private$coverages[filenames])
-            }
+        get_raw_coverages_internal = function() {
+            private$coverages
         },
-        get_normalized_coverages_internal = function(filenames = NULL) {
+        get_normalized_coverages_internal = function() {
             # Define a function which will normalize coverage for a single
             # BAM file.
             normalize_coverage <- function(work_item) {
@@ -908,7 +904,7 @@ metagene2 <- R6Class("metagene2",
             }
             
             # Get the raw coverages.
-            coverages <- private$get_raw_coverages_internal(filenames)
+            coverages <- private$get_raw_coverages_internal()
             
             # Serialize the workload
             work_items = list()
