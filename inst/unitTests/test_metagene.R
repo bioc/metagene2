@@ -28,7 +28,7 @@ demo_mg <- metagene2$new(regions = get_demo_regions(),
 full_mg = demo_mg$clone(deep=TRUE)
 full_mg$produce_metagene()
 
-test_invalid_param_constructor_value <- function(param_name, param_value, error_value) {
+util_test_invalid_param_constructor_value <- function(param_name, param_value, error_value) {
     arg_list_new = list(bam_files=get_demo_bam_files(), 
                         regions=get_demo_regions())
     arg_list_new[[param_name]] = param_value
@@ -38,7 +38,7 @@ test_invalid_param_constructor_value <- function(param_name, param_value, error_
     checkIdentical(obs, error_value)
 }
 
-test_invalid_param_value <- function(param_name, param_value, step_function, error_value) {
+util_test_invalid_param_value <- function(param_name, param_value, step_function, error_value) {
     arg_list_new = list(bam_files=get_demo_bam_files(), 
                         regions=get_demo_regions())
     arg_list_new[[param_name]] = param_value
@@ -104,33 +104,33 @@ for(i in fake_bam_design$BAM) {
 
 ## Invalid verbose value
 test.metagene_invalid_verbose <- function() {
-    test_invalid_param_constructor_value("verbose", "ZOMBIES", "verbose must be a logicial value (TRUE or FALSE)")
+    util_test_invalid_param_constructor_value("verbose", "ZOMBIES", "verbose must be a logicial value (TRUE or FALSE)")
 }
 
 ## Invalid force_seqlevels value
 test.metagene_invalid_force_seqlevels <- function() {
-    test_invalid_param_constructor_value("force_seqlevels", "ZOMBIES", "force_seqlevels must be a logicial value (TRUE or FALSE)")
+    util_test_invalid_param_constructor_value("force_seqlevels", "ZOMBIES", "force_seqlevels must be a logicial value (TRUE or FALSE)")
 }
 
 ## Negative padding_size value
 test.metagene_invalid_padding <- function() {
-    test_invalid_param_constructor_value("padding_size", "ZOMBIES", "padding_size must be a non-negative integer")
-    test_invalid_param_constructor_value("padding_size", -1, "padding_size must be a non-negative integer")
-    test_invalid_param_constructor_value("padding_size", 1.2, "padding_size must be a non-negative integer")
+    util_test_invalid_param_constructor_value("padding_size", "ZOMBIES", "padding_size must be a non-negative integer")
+    util_test_invalid_param_constructor_value("padding_size", -1, "padding_size must be a non-negative integer")
+    util_test_invalid_param_constructor_value("padding_size", 1.2, "padding_size must be a non-negative integer")
 }
 
 
 ## Negative core value
 test.metagene_invalid_core <- function() {
-    test_invalid_param_constructor_value("cores", "ZOMBIES", "cores must be a positive integer or a BiocParallelParam instance.")
-    test_invalid_param_constructor_value("cores", -1, "cores must be a positive integer or a BiocParallelParam instance.")
-    test_invalid_param_constructor_value("cores", 1.2, "cores must be a positive integer or a BiocParallelParam instance.")
-    test_invalid_param_constructor_value("cores", 0, "cores must be a positive integer or a BiocParallelParam instance.")    
+    util_test_invalid_param_constructor_value("cores", "ZOMBIES", "cores must be a positive integer or a BiocParallelParam instance.")
+    util_test_invalid_param_constructor_value("cores", -1, "cores must be a positive integer or a BiocParallelParam instance.")
+    util_test_invalid_param_constructor_value("cores", 1.2, "cores must be a positive integer or a BiocParallelParam instance.")
+    util_test_invalid_param_constructor_value("cores", 0, "cores must be a positive integer or a BiocParallelParam instance.")    
 }
 
 
 ## Non-character vector bam_files value
-test_invalid_bam_file <- function(value, error_value) {
+util_test_invalid_bam_file <- function(value, error_value) {
     obs <- tryCatch(metagene2:::metagene2$new(regions = get_demo_regions(),
                                             bam_files = value),
                     error = conditionMessage)
@@ -138,16 +138,16 @@ test_invalid_bam_file <- function(value, error_value) {
 }
 
 test.metagene_invalid_bam_files <- function() {
-    test_invalid_bam_file(c(2,4,3), "bam_files must be a vector of BAM filenames.")
-    test_invalid_bam_file(list(a = "a.txt", b = "b.txt"), "bam_files must be a vector of BAM filenames.")
-    test_invalid_bam_file(not_indexed_bam_file, "All BAM files must be indexed")
-    test_invalid_bam_file(c(bam_files, not_indexed_bam_file), "All BAM files must be indexed")
+    util_test_invalid_bam_file(c(2,4,3), "bam_files must be a vector of BAM filenames.")
+    util_test_invalid_bam_file(list(a = "a.txt", b = "b.txt"), "bam_files must be a vector of BAM filenames.")
+    util_test_invalid_bam_file(not_indexed_bam_file, "All BAM files must be indexed")
+    util_test_invalid_bam_file(c(bam_files, not_indexed_bam_file), "All BAM files must be indexed")
 }
 
-test_invalid_region <- function(invalid_region, error, ...) {
+util_test_invalid_region <- function(invalid_region, error, ...) {
     obs <- tryCatch(do.call(metagene2$new, c(list(...), 
                                              list(bam_files=get_demo_bam_files(),
-                                                  region = invalid_region))),
+                                                  regions = invalid_region))),
                     error = conditionMessage)
     checkIdentical(obs, error)
 }
@@ -155,7 +155,7 @@ test_invalid_region <- function(invalid_region, error, ...) {
 util_test_valid_region <- function(valid_region, ...) {
     obs <- do.call(metagene2$new, c(list(...), 
                                     list(bam_files=get_demo_bam_files(),
-                                         region = valid_region)))
+                                         regions = valid_region)))
     util_test_valid_metagene(obs)
 }
 
@@ -166,7 +166,7 @@ util_test_valid_metagene <- function(mg) {
 # regions is the wrong class
 test.metagene_initialize_invalid_region_value <- function() {
     region <- array(data = NA, dim = c(2,2,2))
-    test_invalid_region(region, paste0("regions must be either a vector of BED filenames, a ",
+    util_test_invalid_region(region, paste0("regions must be either a vector of BED filenames, a ",
                                        "GRanges object or a GrangesList object"))
 }
 
@@ -177,7 +177,7 @@ test.metagene_regions_seqlevels <- function() {
     GenomeInfoDb::seqlevels(region_with_extra_seq_level) <- c(GenomeInfoDb::seqlevels(region_with_extra_seq_level),
                                                               "extra_seqlevels")
     
-    test_invalid_region(region_with_extra_seq_level, "Some seqlevels of regions are absent in bam_file")
+    util_test_invalid_region(region_with_extra_seq_level, "Some seqlevels of regions are absent in bam_file")
     util_test_valid_region(region_with_extra_seq_level, force_seqlevels = TRUE)
 
     # Extra seqnames means we must drop certain regions. We only do so
@@ -185,16 +185,16 @@ test.metagene_regions_seqlevels <- function() {
     region_with_extra_seq = region_with_extra_seq_level
     seqnames(region_with_extra_seq)[1] = "extra_seqlevels"
 
-    test_invalid_region(region_with_extra_seq, "Some seqlevels of regions are absent in bam_file")
+    util_test_invalid_region(region_with_extra_seq, "Some seqlevels of regions are absent in bam_file")
     util_test_valid_region(region_with_extra_seq, force_seqlevels = TRUE)
 
     # Sometimes there can be no seqnames left after removing
     # those with unknown levels. This happens often in chromosome names
     # are mismatched ("chr1" vs "1")
     region_no_common_seq = region_with_extra_seq_level
-    seqnames(region_no_common_seq) = "extra_seqlevels"
+    seqnames(region_no_common_seq) = factor(rep("extra_seqlevels", 50), levels=c("chr1", "extra_seqlevels"))
     
-    test_invalid_region(region_with_extra_seq, "No seqlevels matching between regions and bam file", force_seqlevels=TRUE)
+    util_test_invalid_region(region_no_common_seq, "No seqlevels matching between regions and bam file", force_seqlevels=TRUE)
 }
 
 
@@ -202,10 +202,11 @@ test.metagene_regions_seqlevels <- function() {
 test.metagene_initialize_valid_narrowpeak <- function() {
     region <- metagene2:::get_narrowpeak_file()
     mg <- metagene2$new(regions = region, bam_files = bam_files[1])
-    obs <- mg$get_regions()$list1
+    obs <- mg$get_regions()
     extraCols <- c(signalValue = "numeric", pValue = "numeric",
                    qValue = "numeric", peak = "integer")
     exp <- rtracklayer::import(region, format = "BED", extraCols = extraCols)
+    exp$region_name="list1"
     checkIdentical(obs, exp)
 }
 
@@ -213,10 +214,11 @@ test.metagene_initialize_valid_narrowpeak <- function() {
 test.metagene_initialize_valid_broadpeak <- function() {
     region <- metagene2:::get_broadpeak_file()
     mg <- metagene2$new(regions = region, bam_files = bam_files[1])
-    obs <- mg$get_regions()$list1
+    obs <- mg$get_regions()
     extraCols <- c(signalValue = "numeric", pValue = "numeric",
                    qValue = "numeric")
     exp <- rtracklayer::import(region, format = "BED", extraCols = extraCols)
+    exp$region_name="list1"
     checkIdentical(obs, exp)
 }
 
@@ -227,12 +229,12 @@ test.metagene_initialize_valid_bam_files <- function() {
     # Make sure all bam_files were kept.
     obs <- mg$get_params()[["bam_files"]]
     exp <- get_demo_bam_files()
-    checkIdentical(obs, exp)
+    checkTrue(all(obs == exp))
     
     # Make sure we have coverage for all bam files.
     obs <- names(mg$get_raw_coverages())
     exp <- get_demo_bam_files()
-    checkIdentical(obs, exp)
+    checkTrue(all(obs == exp))
     
     # NAmed bam files should have no impact (Historically, they changed the coverage names.)
     named_bam_files = get_demo_bam_files()
@@ -269,7 +271,7 @@ test.metagene_get_design_valid_usage <- function() {
     mg$group_coverages(design=get_demo_design())
     design <- mg$get_design()
     checkIdentical(mg$get_design()[,-1], get_demo_design()[,-1])
-    checkIdentical(mg$get_design()[,1], mg$get_params()[["bam_files"]])
+    checkTrue(all(mg$get_design()[,1] == mg$get_params()[["bam_files"]]))
 }
 
 ##################################################
@@ -280,9 +282,7 @@ test.metagene_get_design_valid_usage <- function() {
 test.metagene_get_regions_valid_usage_default <- function() {
     mg <- demo_mg$clone(deep=TRUE)
     regions <- mg$get_regions()
-    exp <- get_demo_regions()
-    exp <- tools::file_path_sans_ext(basename(exp))
-    checkIdentical(length(regions), length(unlist(get_demo_regions)))
+    checkIdentical(length(regions), length(unlist(get_demo_regions())))
     region_1_in_regions = length(get_demo_regions()[[1]])
     region_1_in_metagene = sum(regions$region_name==names(get_demo_regions())[1])
     checkIdentical(region_1_in_regions, region_1_in_metagene)
@@ -301,7 +301,7 @@ test.metagene_group_coverages_valid_usage_default = function(){
     mg <- demo_mg$clone(deep=TRUE)
     grouped_coverages = mg$group_coverages(design=get_demo_design())
 
-    checkIdentical(length(grouped_coverages), ncol(get_demo_design()) - 1)
+    checkIdentical(length(grouped_coverages), ncol(get_demo_design()) - 1L)
 }
 
 # Make sure bam_files order does not change results.
@@ -320,11 +320,11 @@ test.metagene_bin_coverages_valid_usage_default_design = function(){
     binned_coverages = mg$bin_coverages()
 
     design = mg$get_design()
-    checkIdentical(length(binned_coverages), ncol(design) - 1)
+    checkIdentical(length(binned_coverages), ncol(design) - 1L)
     checkIdentical(names(binned_coverages), colnames(design)[-1])
     for(i in 1:length(binned_coverages)) {
-        checkIdentical(nrow(binned_coverages[[i]]) == length(mg$get_regions()))
-        checkIdentical(ncol(binned_coverages[[i]]) == mg$get_params()[["bin_count"]])
+        checkIdentical(nrow(binned_coverages[[i]]), length(mg$get_regions()))
+        checkTrue(ncol(binned_coverages[[i]]) == mg$get_params()[["bin_count"]])
     }
 }
 
@@ -333,30 +333,61 @@ test.metagene_bin_coverages_valid_usage_custom_design = function(){
     mg$group_coverages(design=get_demo_design())
     binned_coverages = mg$bin_coverages()
 
-    checkIdentical(length(binned_coverages), ncol(get_demo_design()) - 1)
+    checkIdentical(length(binned_coverages), ncol(get_demo_design()) - 1L)
     checkIdentical(names(binned_coverages), colnames(get_demo_design())[-1])
     for(i in 1:length(binned_coverages)) {
-        checkIdentical(nrow(binned_coverages[[i]]) == length(mg$get_regions()))
-        checkIdentical(ncol(binned_coverages[[i]]) == mg$get_params()[["bin_count"]])
+        checkIdentical(nrow(binned_coverages[[i]]), length(mg$get_regions()))
+        checkTrue(ncol(binned_coverages[[i]]) == mg$get_params()[["bin_count"]])
     }
 }
 
 test.metagene_split_coverages_valid_usage_default = function(){
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$group_coverages(design=get_demo_design())
-    mg$split_coverages()
+    # We'll populate a list with split_coverages results which should all be identical,
+    # then run validations against those list elements.
+    split_coverages_list = list()
+    
+    # Case 1: Use default split_by, which will default to region_name.
+    #         So we'll pass a GRangesList upon initialization to get 3 region groups.
+    split_regions_default = GRangesList(
+        Just4=GRanges(data.frame(seqnames="chr1", start=c(1000001, 1000101), end=c(1000100, 1000200))),
+        Just8=GRanges(data.frame(seqnames="chr1", start=c(1002501, 1002601), end=c(1002600, 1002700))),
+        Mixed=GRanges(data.frame(seqnames="chr1", start=c(1000001, 1002501), end=c(1000100, 1002600))))
 
-    checkIdentical(length(binned_coverages), ncol(get_demo_design()) - 1)
-    checkIdentical(names(binned_coverages), colnames(get_demo_design())[-1])
-    for(i in 1:length(binned_coverages)) {
-        checkIdentical(nrow(binned_coverages[[i]]) == length(mg$get_regions()))
-        checkIdentical(ncol(binned_coverages[[i]]) == mg$get_params()[["bin_count"]])
+    mg_default <- metagene2$new(bam_files=fake_bam_design$BAM, regions=split_regions_default)
+    split_coverages_list[["default"]] =  mg_default$split_coverages_by_regions()
+        
+    # Case 2: Use custom split_by. So we'll pass a GRanges where the regions have a "Custom" attribute,
+    # which we'll split on.
+    split_regions_custom = unlist(split_regions_default)
+    split_regions_custom$Custom = c("Just4", "Just4", "Just8", "Just8", "Mixed", "Mixed")
+    
+    mg_custom <- metagene2$new(bam_files=fake_bam_design$BAM, regions=split_regions_custom, split_by="Custom")
+    split_coverages_list[["custom"]] =  mg_custom$split_coverages_by_regions()
+    
+    # Finally, validate both split_coverages_by_regions results are good.
+    for(split_coverages in split_coverages_list) {
+        # Make sure that we've got matrix list per bam file/design group.
+        checkTrue(length(split_coverages) == length(fake_bam_design$BAM))
+        
+        # Make sure each matrix list has has many matrices as there are region groups.
+        for(i in 1:length(split_coverages)) {
+            for(j in 1:length(split_regions_default)) {
+                checkTrue(nrow(split_coverages[[i]][[j]]) == length(split_regions_default[[j]]))
+            }
+        }
+        
+        # Make sure numeric values within the matrices are as expected.
+        checkTrue(all(split_coverages[["fake_align_3"]]$Just4 == 4))
+        checkTrue(all(split_coverages[["fake_align_3"]]$Just8 == 8))
+        checkTrue(all(split_coverages[["fake_align_3"]]$Mixed[,1] == 4))
+        checkTrue(all(split_coverages[["fake_align_3"]]$Mixed[,2] == 8))
     }
 }
 
+
 test.metagene_raw_coverage_values_unique_region = function(){
     # Create the metagene object.
-    mg <- metagene2$new(bam_files=fake_bam_design$BAM, regions=test_region_unique)
+    mg <- metagene2$new(bam_files=fake_bam_design$BAM, regions=fake_bam_region_1_test_region_unique)
     
     # Test genome-wide raw and normalized coverages for
     # strand_mode=FALSE
@@ -375,44 +406,48 @@ test.metagene_raw_coverage_values_unique_region = function(){
 
 test.metagene_group_coverage_values_unique_region = function(){
     # Create the metagene object.
-    mg <- metagene2$new(bam_files=fake_bam_design$BAM, regions=test_region_unique)
+    mg <- metagene2$new(bam_files=fake_bam_design$BAM, regions=fake_bam_region_1_test_region_unique)
      
     # Test group coverages.
-    group_coverages = mg$group_coverages(design=fake_bam_design)
+    group_coverages = mg$group_coverages(design=fake_bam_design, simplify=FALSE)
     
     # Grouped coverages for unit designs should be the same as the plain ones.
+    expected_names = file.path(system.file("extdata", package = "metagene2"), 
+                               paste0(c("fake_align1", "fake_align2", "fake_align3"), ".bam"))
+    names(expected_names) = c("fake_align1", "fake_align2", "fake_align3")
+    
     for(i in c("fake_align1", "fake_align2", "fake_align3")) {
         obs = group_coverages[["*"]][[i]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
-        exp = fake_bam_expected_coverages[[paste0(i, ".bam")]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
+        exp = fake_bam_expected_coverages[[expected_names[i]]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
         checkIdentical(obs, exp)
     }
 
     # Test combined group coverages.
     obs = group_coverages[["*"]][["fake_align12"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
-    exp = fake_bam_expected_coverages[["fake_align1.bam"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range] +
-          fake_bam_expected_coverages[["fake_align2.bam"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
+    exp = fake_bam_expected_coverages[[expected_names["fake_align1"]]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range] +
+          fake_bam_expected_coverages[[expected_names["fake_align2"]]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
     checkIdentical(obs, exp)
     
     obs = group_coverages[["*"]][["fake_align23"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
-    exp = fake_bam_expected_coverages[["fake_align2.bam"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range] +
-          fake_bam_expected_coverages[["fake_align3.bam"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
+    exp = fake_bam_expected_coverages[[expected_names["fake_align2"]]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range] +
+          fake_bam_expected_coverages[[expected_names["fake_align3"]]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
     checkIdentical(obs, exp)
     
     obs = group_coverages[["*"]][["fake_align13"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
-    exp = fake_bam_expected_coverages[["fake_align1.bam"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range] +
-          fake_bam_expected_coverages[["fake_align3.bam"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
+    exp = fake_bam_expected_coverages[[expected_names["fake_align1"]]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range] +
+          fake_bam_expected_coverages[[expected_names["fake_align3"]]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
     checkIdentical(obs, exp)
 
     obs = group_coverages[["*"]][["fake_align123"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
-    exp = fake_bam_expected_coverages[["fake_align1.bam"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range] +
-          fake_bam_expected_coverages[["fake_align2.bam"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range] +
-          fake_bam_expected_coverages[["fake_align3.bam"]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
+    exp = fake_bam_expected_coverages[[expected_names["fake_align1"]]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range] +
+          fake_bam_expected_coverages[[expected_names["fake_align2"]]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range] +
+          fake_bam_expected_coverages[[expected_names["fake_align3"]]][[fake_bam_region_1_chr]][fake_bam_region_1_pos_range]
     checkIdentical(obs, exp)
 }
 
 test.metagene_bin_coverage_values_unique_region = function(){
     # Create the metagene object.
-    mg <- metagene2$new(bam_files=fake_bam_design$BAM, regions=test_region_unique, design=fake_bam_design)
+    mg <- metagene2$new(bam_files=fake_bam_design$BAM, regions=fake_bam_region_1_test_region_unique, design=fake_bam_design)
     
     # Test binned coverages for bins 
     # where all values are the same.
@@ -437,7 +472,7 @@ test.metagene_bin_coverage_values_unique_region = function(){
 
 test.metagene_calculate_ci_values_unique_region = function(){
     # Create the metagene object.
-    mg <- metagene2$new(bam_files=fake_bam_design$BAM, regions=test_region_unique, design=fake_bam_design)
+    mg <- metagene2$new(bam_files=fake_bam_design$BAM, regions=fake_bam_region_1_test_region_unique, design=fake_bam_design, bin_count=5)
  
     full_df = mg$add_metadata()
 
@@ -469,7 +504,7 @@ test.metagene_get_data_frame_valid_usage_default <- function() {
  bam_files <- get_demo_bam_files()
  checkTrue(is.data.frame(df))
  checkTrue(ncol(df) == 8)
- checkTrue(nrow(df) == length(regions) * length(bam_files) * mg$get_params()$bin_count)
+ checkTrue(nrow(df) == length(regions) * length(bam_files) * full_mg$get_params()$bin_count)
 }
 
 ### Valid usage subset
@@ -532,64 +567,11 @@ exp_raw <- GenomicAlignments::readGAlignments(bam_files[1])
 exp_raw <- GenomicAlignments::coverage(exp_raw)
 
 ## Default filenames
-test.metagene_get_raw_coverages_default_filenames <- function() {
+test.metagene_get_raw_coverages <- function() {
     obs <- full_mg$get_raw_coverages()[[1]]
     checkTrue(all(vapply(1:length(obs),
                         function(i) all(obs[[i]]==exp_raw[[i]]),
                         logical(1))))
-}
-
-## One filename
-test.metagene_get_raw_coverages_one_filename <- function() {
-    obs <- full_mg$get_raw_coverages(filenames = bam_files[1])[[1]]
-    checkTrue(all(vapply(1:length(obs),
-                        function(i) all(obs[[i]]==exp_raw[[i]]),
-                        logical(1))))
-}
-
-## All filenames
-test.metagene_get_raw_coverages_all_filename <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- mg$get_raw_coverages(filenames = bam_files)[[1]]
-    checkTrue(all(vapply(1:length(obs),
-                        function(i) all(obs[[i]]==exp_raw[[i]]),
-                        logical(1))))
-}
-
-## Invalid filenames class
-test.metagene_get_raw_coverages_invalid_filenames_class <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- tryCatch(mg$get_raw_coverages(filenames = 1),
-                    error = conditionMessage)
-    exp <- "is.character(filenames) is not TRUE"
-    checkIdentical(obs, exp)
-}
-
-## Invalid empty filename
-test.metagene_get_raw_coverages_invalid_empty_filename <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- tryCatch(mg$get_raw_coverages(filenames = ""),
-                    error = conditionMessage)
-    exp <- "private$check_bam_files(filenames) is not TRUE"
-    checkIdentical(obs, exp)
-}
-
-## Invalid filename alone
-test.metagene_get_raw_coverages_invalid_filename_alone <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- tryCatch(mg$get_raw_coverages(filenames = "asdf"),
-                    error = conditionMessage)
-    exp <- "private$check_bam_files(filenames) is not TRUE"
-    checkIdentical(obs, exp)
-}
-
-## Invalid filename among valid
-test.metagene_get_raw_coverages_invalid_filename_among_valid <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- tryCatch(mg$get_raw_coverages(filenames = c("asdf", bam_files)),
-                    error = conditionMessage)
-    exp <- "private$check_bam_files(filenames) is not TRUE"
-    checkIdentical(obs, exp)
 }
 
 ##################################################
@@ -601,643 +583,40 @@ weight <- 1 / (count / 1000000)
 exp_norm <- exp_raw * weight
 
 ## Default filenames
-test.metagene_get_normalized_coverages_default_filenames <- function() {
+test.metagene_get_normalized_coverages <- function() {
     mg <- demo_mg$clone(deep=TRUE)
     obs <- mg$get_normalized_coverages()[[1]]
     checkTrue(all(vapply(1:length(obs),
-                        function(i) all(obs[[i]]==exp_raw[[i]]),
+                        function(i) all(obs[[i]]==exp_norm[[i]]),
                         logical(1))))
-}
-
-## One filename
-test.metagene_get_normalized_coverages_one_filename <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- mg$get_normalized_coverages(filenames = bam_files[1])[[1]]
-    checkTrue(all(vapply(1:length(obs),
-                        function(i) all(obs[[i]]==exp_raw[[i]]),
-                        logical(1))))
-}
-
-## All filenames
-test.metagene_get_normalized_coverages_all_filename <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- mg$get_normalized_coverages(filenames = bam_files)[[1]]
-    checkTrue(all(vapply(1:length(obs),
-                        function(i) all(obs[[i]]==exp_raw[[i]]),
-                        logical(1))))
-}
-
-## Invalid filenames class
-test.metagene_get_normalized_coverages_invalid_filenames_class <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- tryCatch(mg$get_normalized_coverages(filenames = 1),
-                    error = conditionMessage)
-    exp <- "is.character(filenames) is not TRUE"
-    checkIdentical(obs, exp)
-}
-
-## Invalid empty filename
-test.metagene_get_normalized_coverages_invalid_empty_filename <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- tryCatch(mg$get_normalized_coverages(filenames = ""),
-                    error = conditionMessage)
-    exp <- "private$check_bam_files(filenames) is not TRUE"
-    checkIdentical(obs, exp)
-}
-
-## Invalid filename alone
-test.metagene_get_normalized_coverages_invalid_filename_alone <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- tryCatch(mg$get_normalized_coverages(filenames = "asdf"),
-                    error = conditionMessage)
-    exp <- "private$check_bam_files(filenames) is not TRUE"
-    checkIdentical(obs, exp)
-}
-
-## Invalid filename among valid
-test.metagene_get_normalized_coverages_invalid_filename_among_valid <- 
-    function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    filenames <- c("asdf", bam_files)
-    obs <- tryCatch(mg$get_normalized_coverages(filenames = filenames),
-                    error = conditionMessage)
-    exp <- "private$check_bam_files(filenames) is not TRUE"
-    checkIdentical(obs, exp)
-}
-
-##################################################
-# Test the metagene2$add_design() function
-##################################################
-
-## Valid design data frame
-test.metagene_add_design_valid_design_data_frame <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$add_design(get_demo_design())
-    checkIdentical(mg$get_design()[,-1], get_demo_design()[,-1])
-    checkIdentical(mg$get_design()[,1], names(mg$get_params()[["bam_files"]]))
-}
-
-## Valid design NULL
-test.metagene_add_design_valid_design_null <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$add_design(design = NULL)
-    checkIdentical(colnames(mg$get_design())[-1],
-                names(mg$get_params()[["bam_files"]]))
-    checkTrue(all(apply(mg$get_design()[,-1], 2, sum) == 1))
-}
-
-## Valid design NA, NA first
-test.metagene_add_design_valid_design_na_na_first <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$add_design(design = NA)
-    checkIdentical(colnames(mg$get_design())[-1],
-                names(mg$get_params()[["bam_files"]]))
-    checkTrue(all(apply(mg$get_design()[,-1], 2, sum) == 1))
-}
-
-## Valid design NA, NULL first
-test.metagene_add_design_valid_design_na_null_first <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$add_design(design = NULL)
-    mg$add_design(design = NA)
-    checkIdentical(colnames(mg$get_design())[-1],
-                names(mg$get_params()[["bam_files"]]))
-    checkTrue(all(apply(mg$get_design()[,-1], 2, sum) == 1))
-}
-
-## Valid design NA, design first
-test.metagene_add_design_valid_design_na_design_first <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$add_design(design = get_demo_design())
-    checkIdentical(mg$get_design()[,-1], get_demo_design()[,-1])
-    checkIdentical(mg$get_design()[,1], names(mg$get_params()[["bam_files"]]))
-}
-
-## Valid design, factor sample names
-test.metagene_add_design_valid_design_factor_sample_names <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    design <- get_demo_design()
-    design[,1] <- factor(design[,1])
-    mg$add_design(design)
-    checkTrue(is.factor(design[,1]))
-    checkTrue(is.character(mg$get_design()[,1]))
-    checkIdentical(design[,-1], mg$get_design()[,-1])
-    checkIdentical(names(mg$get_params()[["bam_files"]]), mg$get_design()[,1])
-}
-
-## Valid check_bam_files TRUE NA design
-test.metagene_add_design_valid_check_bam_files_true_na_design <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$add_design(design = NA, check_bam_files = TRUE)
-    checkIdentical(colnames(mg$get_design())[-1],
-                names(mg$get_params()[["bam_files"]]))
-    checkTrue(all(apply(mg$get_design()[,-1], 2, sum) == 1))
-}
-
-## Valid check_bam_files TRUE NULL design
-test.metagene_add_design_valid_check_bam_files_true_null_design <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$add_design(design = NA, check_bam_files = TRUE)
-    checkIdentical(colnames(mg$get_design())[-1],
-                names(mg$get_params()[["bam_files"]]))
-    checkTrue(all(apply(mg$get_design()[,-1], 2, sum) == 1))
-}
-
-## Valid check_bam_files TRUE design design
-test.metagene_add_design_valid_check_bam_files_true_design_design <- function()
-{
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$add_design(design = get_demo_design(), check_bam_files = TRUE)
-    checkIdentical(mg$get_design()[,-1], get_demo_design()[,-1])
-    checkIdentical(mg$get_design()[,1], names(mg$get_params()[["bam_files"]]))
-}
-
-## Invalid design class
-test.metagene_add_design_invalid_design_class <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    obs <- tryCatch(mg$add_design(design = 1), error = conditionMessage)
-    exp <- "design must be a data.frame object, NULL or NA"
-    checkIdentical(obs, exp)
-}
-
-## Invalid design column
-test.metagene_add_design_invalid_design_column <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    design <- get_demo_design()
-    design <- design[, 1, drop = FALSE]
-    obs <- tryCatch(mg$add_design(design = design), error = conditionMessage)
-    exp <- "design must have at least 2 columns"
-    checkIdentical(obs, exp)
-}
-
-## Invalid design column one class
-test.metagene_add_design_invalid_design_column_one_class <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    design <- get_demo_design()
-    design[,1] <- seq_along(design[,1])
-    obs <- tryCatch(mg$add_design(design = design), error = conditionMessage)
-    exp <- "The first column of design must be BAM filenames"
-    checkIdentical(obs, exp)
-}
-
-## Invalid design column two plus class
-test.metagene_add_design_invalid_design_columns_two_plus_class <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    design <- get_demo_design()
-    design[,2] <- letters[seq_along(design[,2])]
-    obs <- tryCatch(mg$add_design(design = design), error = conditionMessage)
-    exp <- "All design column, except the first one, must be in numeric format"
-    checkIdentical(obs, exp)
-}
-
-## Invalid bam file check_bam_files TRUE
-test.metagene_add_design_invalid_bam_file_check_bam_files_true <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    design <- get_demo_design()
-    design[1,1] <- "not_a_valid_bam_file"
-    obs <- tryCatch(mg$add_design(design = design, check_bam_files = TRUE),
-                    error = conditionMessage)
-    exp <- "Design contains samples absent from the list of bam files provided on initialization."
-    checkIdentical(obs, exp)
-}
-
-## Invalid bam file check_bam_files FALSE
-test.metagene_add_design_invalid_bam_file_check_bam_files_false <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    design <- get_demo_design()
-    design[1,1] <- "not_a_valid_bam_file"
-    obs <- tryCatch(mg$add_design(design = design, check_bam_files = TRUE),
-                    error = conditionMessage)
-    exp <- "Design contains samples absent from the list of bam files provided on initialization."
-    checkIdentical(obs, exp)
-}
-
-##################################################
-# Test the metagene2$produce_table() function
-##################################################
-
-test.metagene_produce_table_valid_without_design <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    checkIdentical("bin_count" %in% mg$get_params(), FALSE)
-    mg$produce_table()
-    checkIdentical(mg$get_params()[["bin_count"]], 100)
-    checkIdentical(is.data.frame(mg$get_table()), TRUE)
-    #length of table : number of region * number of design * number of bin * number of range by region (demo = 50,000 lines)
-    tablength <- length(mg$get_regions())*length(mg$get_params()$bam_files)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    checkIdentical(dim(mg$get_table())[1] == tablength, TRUE)
-    checkIdentical(dim(mg$get_table())[2] == length(c('region', 'design', 'bin', 'value', 'strand')), TRUE)
-    tab <- mg$get_table()
-    #check for presence of levels of factors (region, design, strand)
-    checkIdentical(names(mg$get_regions()), unique(tab$region))
-    checkIdentical(tools::file_path_sans_ext(basename(mg$get_params()$bam_files)), unique(tab$design))
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(unique(as.vector(strand(mg$get_regions())[[region_names]])), unique(tab$strand[which(tab$region == region_names)]))
-    }
-    #check for number of line by factor region
-    reglength <- length(mg$get_params()$bam_files)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(length(tab$region[which(tab$region == region_names)]) == reglength , TRUE)
-    }
-    #check for number of line by factor design
-    designlength <- (mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        for (design_names in tools::file_path_sans_ext(basename(mg$get_params()$bam_files))){
-            #print(design_names)
-            checkIdentical(length(tab$design[which(tab$region == region_names & tab$design == design_names)]) == designlength , TRUE)
-        }
-    }
-    print(TRUE)
-}
-
-test.metagene_produce_table_valid_with_design <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    checkIdentical("bin_count" %in% mg$get_params(), FALSE)
-    demo_design <- get_demo_design()
-    mg$produce_table(design = demo_design)
-    checkIdentical(mg$get_params()[["bin_count"]], 100)
-    checkIdentical(is.data.frame(mg$get_table()), TRUE)
-    #length of table : number of region * number of design * number of bin * number of range by region (demo = 50,000 lines)
-    tablength <- length(mg$get_regions())*(dim(demo_design)[2]-1)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    checkIdentical(dim(mg$get_table())[1] == tablength, TRUE)
-    checkIdentical(dim(mg$get_table())[2] == length(c('region', 'design', 'bin', 'value', 'strand')), TRUE)
-    tab <- mg$get_table()
-    #check for presence of levels of factors (region, design, strand)
-    checkIdentical(names(mg$get_regions()), unique(tab$region))
-    checkIdentical(names(demo_design)[-1], unique(tab$design))
-    
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(unique(as.vector(strand(mg$get_regions())[[region_names]])), unique(tab$strand[which(tab$region == region_names)]))
-    }
-    #check for number of line by factor region
-    reglength <- (dim(demo_design)[2]-1)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(length(tab$region[which(tab$region == region_names)]) == reglength , TRUE)
-    }
-    #check for number of line by factor design
-    designlength <- (mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        for (design_names in names(demo_design)[-1]){
-            #print(design_names)
-            checkIdentical(length(tab$design[which(tab$region == region_names & tab$design == design_names)]) == designlength , TRUE)
-        }
-    }
-    print(TRUE)
-}
-
-test.metagene_produce_table_valid_without_design_bin_count_50 <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    checkIdentical("bin_count" %in% mg$get_params(), FALSE)
-    mg$produce_table(bin_count = 50)
-    checkIdentical(mg$get_params()[["bin_count"]], 50)
-    checkIdentical(is.data.frame(mg$get_table()), TRUE)
-    #length of table : number of region * number of design * number of bin * number of range by region (demo = 50,000 lines)
-    tablength <- length(mg$get_regions())*length(mg$get_params()$bam_files)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    checkIdentical(dim(mg$get_table())[1] == tablength, TRUE)
-    checkIdentical(dim(mg$get_table())[2] == length(c('region', 'design', 'bin', 'value', 'strand')), TRUE)
-    tab <- mg$get_table()
-    #check for presence of levels of factors (region, design, strand)
-    checkIdentical(names(mg$get_regions()), unique(tab$region))
-    checkIdentical(tools::file_path_sans_ext(basename(mg$get_params()$bam_files)), unique(tab$design))
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(unique(as.vector(strand(mg$get_regions())[[region_names]])), unique(tab$strand[which(tab$region == region_names)]))
-    }
-    #check for number of line by factor region
-    reglength <- length(mg$get_params()$bam_files)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(length(tab$region[which(tab$region == region_names)]) == reglength , TRUE)
-    }
-    #check for number of line by factor design
-    designlength <- (mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        for (design_names in tools::file_path_sans_ext(basename(mg$get_params()$bam_files))){
-            #print(design_names)
-            checkIdentical(length(tab$design[which(tab$region == region_names & tab$design == design_names)]) == designlength , TRUE)
-        }
-    }
-    print(TRUE)
-}
-
-test.metagene_produce_table_valid_with_design_bin_count_50 <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    checkIdentical("bin_count" %in% mg$get_params(), FALSE)
-    demo_design <- get_demo_design()
-    mg$produce_table(design = demo_design, bin_count = 50)
-    checkIdentical(mg$get_params()[["bin_count"]], 50)
-    checkIdentical(is.data.frame(mg$get_table()), TRUE)
-    #length of table : number of region * number of design * number of bin * number of range by region (demo = 50,000 lines)
-    tablength <- length(mg$get_regions())*(dim(demo_design)[2]-1)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    checkIdentical(dim(mg$get_table())[1] == tablength, TRUE)
-    checkIdentical(dim(mg$get_table())[2] == length(c('region', 'design', 'bin', 'value', 'strand')), TRUE)
-    tab <- mg$get_table()
-    #check for presence of levels of factors (region, design, strand)
-    checkIdentical(names(mg$get_regions()), unique(tab$region))
-    checkIdentical(names(demo_design)[-1], unique(tab$design))
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(unique(as.vector(strand(mg$get_regions())[[region_names]])), unique(tab$strand[which(tab$region == region_names)]))
-    }
-    #check for number of line by factor region
-    reglength <- (dim(demo_design)[2]-1)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(length(tab$region[which(tab$region == region_names)]) == reglength , TRUE)
-    }
-    #check for number of line by factor design
-    designlength <- (mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        for (design_names in names(demo_design)[-1]){
-            #print(design_names)
-            checkIdentical(length(tab$design[which(tab$region == region_names & tab$design == design_names)]) == designlength , TRUE)
-        }
-    }
-    print(TRUE)
-}
-#
-# Not valid design object
-test.metagene_produce_table_invalid_design <- function() {
- mg <- demo_mg$clone(deep=TRUE)
- obs <- tryCatch(mg$produce_table(design = c(1,2)),
-                error = conditionMessage)
- exp <- "design must be a data.frame object, NULL or NA"
- checkIdentical(obs, exp)
-}
-#
-# Design data.frame with not enough columns
-test.metagene_produce_table_invalid_design_data_frame <- function() {
- mg <- demo_mg$clone(deep=TRUE)
- design <- data.frame(a = c("ZOMBIE_ONE", "ZOMBIE_TWO"))
- obs <- tryCatch(mg$produce_table(design = design),
-                error = conditionMessage)
- exp <- "design must have at least 2 columns"
- checkIdentical(obs, exp)
-}
-
-# Design data.frame with invalid first column
-test.metagene_produce_table_invalid_design_first_column <- function() {
- mg <- demo_mg$clone(deep=TRUE)
- design <- data.frame(a = c(1,3), zombies = c("ZOMBIE_ONE", "ZOMBIE_TWO"))
- obs <- tryCatch(mg$produce_table(design = design),
-                error = conditionMessage)
- exp <- "The first column of design must be BAM filenames"
- checkIdentical(obs, exp)
-}
-
-# Design data.frame with invalid second column
-test.metagene_produce_table_invalid_design_second_column <- function() {
- mg <- demo_mg$clone(deep=TRUE)
- designTemp<-data.frame(a = named_bam_files,
-                        zombies = rep("ZOMBIE_ONE", length(named_bam_files)))
- obs <- tryCatch(mg$produce_table(design = designTemp),
-                error = conditionMessage)
- exp <- paste0("All design column, except the first one, must be in ",
-                "numeric format")
- checkIdentical(obs, exp)
-}
-
-# Design data.frame with invalid second column
-test.metagene_produce_table_invalid_design_not_defined_file <- function() {
- mg <- demo_mg$clone(deep=TRUE)
- designNew<-data.frame(a = c(bam_files, "I am not a file"),
-                        b = rep(1, length(bam_files) + 1))
- obs <- tryCatch(mg$produce_table(design = designNew),
-                error = conditionMessage)
- exp <- "Design contains samples absent from the list of bam files provided on initialization."
- checkIdentical(obs, exp)
-}
-
-# Design using zero file (0 in all rows of the design object)
-test.metagene_produce_table_design_using_no_file <- function() {
- mg <- demo_mg$clone(deep=TRUE)
- designNew<-data.frame(a = bam_files,
-                        b = rep(0, length(bam_files)))
- obs <- tryCatch(mg$produce_table(design = designNew),
-                error = conditionMessage)
- exp <- "At least one BAM file must be used in the design."
- checkIdentical(obs, exp)
 }
 
 # Invalid bin_count class
 test.metagene_invalid_bin_count <- function() {
-  test_invalid_param_value("bin_count", "a", "bin_coverages", "bin_count must be a positive integer")
-  test_invalid_param_value("bin_count", -1, "bin_coverages", "bin_count must be a positive integer")
-  test_invalid_param_value("bin_count", 1.2, "bin_coverages", "bin_count must be a positive integer")  
-}
-
-
-
-# Valid noise_removal NCIS
-test.metagene_produce_table_valid_noise_removal_ncis <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    design <- get_demo_design()[,1:2]
-    design[,2][2] <- 0
-    mg$produce_table(noise_removal = "NCIS", design = design)
-    checkIdentical(mg$get_params()[["bin_count"]], 100)
-    checkIdentical(mg$get_params()[["noise_removal"]], "NCIS")
-    tab <- mg$get_table()
-    tablength <- length(mg$get_regions())*(dim(design)[2]-1)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    checkIdentical(dim(tab)[1] == tablength, TRUE)
-    checkIdentical(dim(tab)[2] == length(c('region', 'design', 'bin', 'value', 'strand')), TRUE)
-    
-    tab <- mg$get_table()
-    #check for presence of levels of factors (region, design, strand)
-    checkIdentical(names(mg$get_regions()), unique(tab$region))
-    checkIdentical(names(design)[-1], unique(tab$design))
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(unique(as.vector(strand(mg$get_regions())[[region_names]])), unique(tab$strand[which(tab$region == region_names)]))
-    }
-    #check for number of line by factor region
-    reglength <- (dim(design)[2]-1)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(length(tab$region[which(tab$region == region_names)]) == reglength , TRUE)
-    }
-    #check for number of line by factor design
-    designlength <- (mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        for (design_names in names(design)[-1]){
-            #print(design_names)
-            checkIdentical(length(tab$design[which(tab$region == region_names & tab$design == design_names)]) == designlength , TRUE)
-        }
-    }
-    print(TRUE)
+  util_test_invalid_param_value("bin_count", "a", "bin_coverages", "bin_count must be a positive integer")
+  util_test_invalid_param_value("bin_count", -1, "bin_coverages", "bin_count must be a positive integer")
+  util_test_invalid_param_value("bin_count", 1.2, "bin_coverages", "bin_count must be a positive integer")  
 }
 
 # Invalid normalization class
 test.metagene_invalid_normalization <- function() {
- test_invalid_param_value("normalization", 1234, "group_coverages", 'normalization must be NULL, "RPM" or "NCIS".')
- test_invalid_param_value("normalization", "CSI", "group_coverages", 'normalization must be NULL, "RPM" or "NCIS".')
+ util_test_invalid_param_value("normalization", 1234, "group_coverages", 'normalization must be NULL, "RPM" or "NCIS".')
+ util_test_invalid_param_value("normalization", "CSI", "group_coverages", 'normalization must be NULL, "RPM" or "NCIS".')
 }
-
-## Valid normalization RPM
-test.metagene_produce_table_valid_normalization_rpm <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$produce_table(normalization = "RPM")
-    checkIdentical(mg$get_params()[["bin_count"]], 100)
-    checkIdentical(mg$get_params()[["normalization"]], "RPM")
-    tab <- mg$get_table()
-    tablength <- length(mg$get_regions())*length(mg$get_params()$bam_files)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    checkIdentical(dim(tab)[1] == tablength, TRUE)
-    checkIdentical(dim(tab)[2] == length(c('region', 'design', 'bin', 'value', 'strand')), TRUE)
-    
-    tab <- mg$get_table()
-    #check for presence of levels of factors (region, design, strand)
-    checkIdentical(names(mg$get_regions()), unique(tab$region))
-    checkIdentical(tools::file_path_sans_ext(basename(mg$get_params()$bam_files)), unique(tab$design))
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(unique(as.vector(strand(mg$get_regions())[[region_names]])), unique(tab$strand[which(tab$region == region_names)]))
-    }
-    #check for number of line by factor region
-    reglength <- length(mg$get_params()$bam_files)*(mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(length(tab$region[which(tab$region == region_names)]) == reglength , TRUE)
-    }
-    #check for number of line by factor design
-    designlength <- (mg$get_params()$bin_count)*length(mg$get_regions()[[1]])
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        for (design_names in tools::file_path_sans_ext(basename(mg$get_params()$bam_files))){
-            #print(design_names)
-            checkIdentical(length(tab$design[which(tab$region == region_names & tab$design == design_names)]) == designlength , TRUE)
-        }
-    }
-    print(TRUE)
-}
-#
-## Invalid flip_regions class
-test.metagene_produce_table_invalid_flip_regions_class <- function() {
- mg <- demo_mg$clone(deep=TRUE)
- obs <- tryCatch(mg$produce_table(flip_regions = 1234),
-                error = conditionMessage)
- exp <- "flip_regions must be a logical."
- checkIdentical(obs, exp)
-}
-#
-## Valid flip_regions true
-test.metagene_produce_table_valid_flip_regions_true <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    checkIdentical(mg$get_params()[["flip_regions"]], FALSE)
-    mg$produce_table(flip_regions = TRUE)
-    checkIdentical(mg$get_params()[["bin_count"]], 100)
-    checkIdentical(mg$get_params()[["flip_regions"]], TRUE)
-    
-    #modifier strand char for regions
-    
-    
-    #test expected == observed
-    tab <- mg$get_table()
-    # print(tab)
-    expect <- c()
-    for (region_names in names(mg$get_regions())){
-        if(as.vector(strand(mg$get_regions()[[region_names]]))[1] == "-") {
-            expect <- c(expect,rep(100:1,length(names(mg$get_design())[-1])*length(as.vector(strand(mg$get_regions()[[region_names]])))))
-        } else {
-            expect <- c(expect,rep(1:100,length(names(mg$get_design())[-1])*length(as.vector(strand(mg$get_regions()[[region_names]])))))
-        }
-    }
-    # print(class(tab$bin))
-    # print(class(expect))
-    checkIdentical(as.numeric(tab$bin), as.numeric(expect))
-}
-#
-## Valid flip_regions false
-test.metagene_produce_table_valid_flip_regions_false <- function() {
-    mg <- demo_mg$clone(deep=TRUE)
-    checkIdentical(mg$get_params()[["flip_regions"]], FALSE)
-    mg$produce_table(flip_regions = FALSE)
-    checkIdentical(mg$get_params()[["bin_count"]], 100)
-    checkIdentical(mg$get_params()[["flip_regions"]], FALSE)
-    
-    #modifier strand char dans regions
-    
-    
-    #test expected == observed
-    tab <- mg$get_table()
-    # print(tab)
-    expect <- c()
-    for (region_names in names(mg$get_regions())){
-        # if(as.vector(strand(mg$get_regions()[[region_names]]))[1] == "-") {
-            # expect <- c(expect,rep(100:1,length(names(mg$get_design())[-1])*length(as.vector(strand(mg$get_regions()[[region_names]])))))
-        # } else {
-            expect <- c(expect,rep(1:100,length(names(mg$get_design())[-1])*length(as.vector(strand(mg$get_regions()[[region_names]])))))
-        # }
-    }
-    # print(class(tab$bin))
-    # print(class(expect))
-    checkIdentical(as.numeric(tab$bin), as.numeric(expect))
-}
-
 ##################################################
 # Test the metagene2$produce_data_frame() function
 ##################################################
 
-## Valid default usage
-test.metagene_produce_data_frame_default_arguments <- function(){
-    mg <- demo_mg$clone(deep=TRUE)
-    mg$produce_table()
-    mg$produce_data_frame()
-    df <- mg$get_data_frame()
-    #check the nrow & ncol
-    checkIdentical(ncol(df), length(c('region', 'design', 'bin', 'value', 'strand', 'qinf', 'qsup', 'group')))
-    expectedNbRow <- length(mg$get_regions())*length(mg$get_params()$bam_files)*(mg$get_params()$bin_count)
-    checkIdentical(nrow(df) == expectedNbRow, TRUE)
-    #check colnames
-    checkIdentical(colnames(df), c('region', 'design', 'bin', 'value', 'strand', 'qinf', 'qsup','group'))
-    #check region, design repartition in data_frame
-    checkIdentical(names(mg$get_regions()), unique(df$region))
-    checkIdentical(names(mg$get_design()[-1]), unique(df$design))
-    #check for number of line by factor region
-    reglength <- length(names(mg$get_design())[-1])*(mg$get_params()$bin_count)
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(length(df$region[which(df$region == region_names)]) == reglength , TRUE)
-    }
-    #check for number of line by factor design
-    designlength <- (mg$get_params()$bin_count)
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        for (design_names in names(mg$get_design()[-1])){
-            #print(design_names)
-            checkIdentical(length(df$design[which(df$region == region_names & df$design == design_names)]) == designlength , TRUE)
-        }
-    }
-    #check for bin repartition
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(sum(df$bin), sum(1:100)*length(names(mg$get_design())[-1])*length(mg$get_regions()))
-    }
-    #strand matches
-    for (region_names in names(mg$get_regions())){
-        #print(region_names)
-        checkIdentical(unique(as.vector(strand(mg$get_regions())[[region_names]])), unique(df$strand[which(df$region == region_names)]))
-    }
-    print(TRUE)
-}
-
-
 ### Invalid alpha value
 test.metagene_invalid_alpha <- function(){
-    test_invalid_param_value("alpha", 'test', "calculate_ci", "alpha >= 0 & alpha <= 1 is not TRUE")
-    test_invalid_param_value("alpha", -0.8, "calculate_ci", "alpha >= 0 & alpha <= 1 is not TRUE")    
+    util_test_invalid_param_value("alpha", 'test', "calculate_ci", "is.numeric(alpha) is not TRUE")
+    util_test_invalid_param_value("alpha", -0.8, "calculate_ci", "alpha >= 0 & alpha <= 1 is not TRUE")    
 }
 
 ### Invalid sample_count class
 test.metagene_invalid_sample_count <- function(){
-    test_invalid_param_value("sample_count", 'test', "calculate_ci", "is.numeric(sample_count) is not TRUE")
-    test_invalid_param_value("sample_count", -10, "calculate_ci", "sample_count >= 0 is not TRUE")    
+    util_test_invalid_param_value("sample_count", 'test', "calculate_ci", "is.numeric(sample_count) is not TRUE")
+    util_test_invalid_param_value("sample_count", -10, "calculate_ci", "sample_count >= 0 is not TRUE")    
 }
 
 test.metagene_replace_metadata <- function() {
