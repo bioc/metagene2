@@ -656,3 +656,56 @@ test.metagene_replace_metadata <- function() {
     checkIdentical(obs, exp)    
     
 }
+
+test.metagene_strand_specific <- function() {
+    plus_file = file.path(system.file("extdata", package = "metagene2"), "fake_align1.bam")
+    minus_file = file.path(system.file("extdata", package = "metagene2"), "fake_align1_minus.bam")
+    
+    test_region_list=GRangesList(Plus=GRanges("chr1:1000001-1000100:+"),
+                                 Minus=GRanges("chr1:1001001-1001100:-"))
+    
+    mg = metagene2$new(bam_files=c(Plus=plus_file, Minus=minus_file),
+                       regions=test_region_list,
+                       strand_specific=TRUE)
+    
+    # Make sure raw coverages are strand-specific.
+    checkTrue(all(mg$get_raw_coverages()[["+"]][[plus_file]][test_region_list[["Plus"]]] == 1))
+    checkTrue(all(mg$get_raw_coverages()[["-"]][[plus_file]][test_region_list[["Plus"]]] == 0))
+    checkTrue(all(mg$get_raw_coverages()[["+"]][[minus_file]][test_region_list[["Plus"]]] == 0))
+    checkTrue(all(mg$get_raw_coverages()[["-"]][[minus_file]][test_region_list[["Plus"]]] == 0))
+    
+    checkTrue(all(mg$get_raw_coverages()[["+"]][[plus_file]][test_region_list[["Minus"]]] == 0))
+    checkTrue(all(mg$get_raw_coverages()[["-"]][[plus_file]][test_region_list[["Minus"]]] == 0))
+    checkTrue(all(mg$get_raw_coverages()[["+"]][[minus_file]][test_region_list[["Minus"]]] == 0))
+    checkTrue(all(mg$get_raw_coverages()[["-"]][[minus_file]][test_region_list[["Minus"]]] == 1))
+
+    # Make sure split coverages are strand-specific
+    split_matrices = mg$split_coverages_by_regions()
+    checkTrue(all(split_matrices[["Plus"]][["Plus"]] == 1))
+    checkTrue(all(split_matrices[["Plus"]][["Minus"]] == 0))
+    checkTrue(all(split_matrices[["Minus"]][["Plus"]] == 0))
+    checkTrue(all(split_matrices[["Minus"]][["Minus"]] == 1))
+    
+    # Now test with inverted strand.
+    mg = metagene2$new(bam_files=c(Plus=plus_file, Minus=minus_file),
+                       regions=test_region_list, 
+                       strand_specific=TRUE, invert_strand=TRUE)
+    
+    # Make sure raw coverages are strand-specific.
+    checkTrue(all(mg$get_raw_coverages()[["+"]][[plus_file]][test_region_list[["Plus"]]] == 0))
+    checkTrue(all(mg$get_raw_coverages()[["-"]][[plus_file]][test_region_list[["Plus"]]] == 0))
+    checkTrue(all(mg$get_raw_coverages()[["+"]][[minus_file]][test_region_list[["Plus"]]] == 1))
+    checkTrue(all(mg$get_raw_coverages()[["-"]][[minus_file]][test_region_list[["Plus"]]] == 0))
+    
+    checkTrue(all(mg$get_raw_coverages()[["+"]][[plus_file]][test_region_list[["Minus"]]] == 0))
+    checkTrue(all(mg$get_raw_coverages()[["-"]][[plus_file]][test_region_list[["Minus"]]] == 1))
+    checkTrue(all(mg$get_raw_coverages()[["+"]][[minus_file]][test_region_list[["Minus"]]] == 0))
+    checkTrue(all(mg$get_raw_coverages()[["-"]][[minus_file]][test_region_list[["Minus"]]] == 0))
+
+    # Make sure split coverages are strand-specific
+    split_matrices = mg$split_coverages_by_regions()
+    checkTrue(all(split_matrices[["Plus"]][["Plus"]] == 0))
+    checkTrue(all(split_matrices[["Plus"]][["Minus"]] == 1))
+    checkTrue(all(split_matrices[["Minus"]][["Plus"]] == 1))
+    checkTrue(all(split_matrices[["Minus"]][["Minus"]] == 0))    
+}
