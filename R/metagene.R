@@ -1045,16 +1045,17 @@ metagene2 <- R6Class("metagene2",
         },
         start_bm = function(msg) {
             private$print_verbose(paste0(msg, "..."))
-            return(list(Message=msg, Time=Sys.time(), Memory=pryr::mem_used()))
+            #return(list(Message=msg, Time=Sys.time(), Memory=pryr::mem_used()))
+            return(list(Message=msg, Time=Sys.time()))
         },
         stop_bm = function(bm_obj) {
             bm_after_time = Sys.time()
-            bm_after_mem = pryr::mem_used()            
+            #bm_after_mem = pryr::mem_used()            
             bm_time = difftime(bm_after_time, bm_obj$Time, unit="secs")
-            bm_mem = structure(bm_after_mem - bm_obj$Memory, class="bytes")
+            #bm_mem = structure(bm_after_mem - bm_obj$Memory, class="bytes")
             
             private$print_verbose(paste0("BENCHMARK-TIME-", bm_obj$Message, ":", bm_time))
-            private$print_verbose(paste0("BENCHMARK-MEMORY-", bm_obj$Message, ":", bm_mem))        
+            #private$print_verbose(paste0("BENCHMARK-MEMORY-", bm_obj$Message, ":", bm_mem))        
         },
         update_params_and_invalidate_caches = function(...) {
             # This prologue makes it possible to infer parameter names from the
