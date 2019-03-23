@@ -709,3 +709,59 @@ test.metagene_strand_specific <- function() {
     checkTrue(all(split_matrices[["Minus"]][["Plus"]] == 1))
     checkTrue(all(split_matrices[["Minus"]][["Minus"]] == 0))    
 }
+
+test.metagene_extend_reads_basic <- function() {
+    mg <- metagene2$new(bam_files=fake_bam_design$BAM, 
+                        regions=fake_bam_region_1_test_region_unique, 
+                        design=fake_bam_design,
+                        extend_reads=100)
+    
+    # No reads overlap in fake_align1. The reads are all 50nt, 
+    # on the + strand, and the coverage is 1 everywhere.
+    # So we should have a coverage of 1 for the first 50 nucleotides,
+    # of 2 for the rest. Coverage should extend on the + stran
+    checkTrue(all(mg$get_raw_coverages()[[fake_bam_design$BAM[1]]][["chr1"]][1000000:1000049] == 1))
+    checkTrue(all(mg$get_raw_coverages()[[fake_bam_design$BAM[1]]][["chr1"]][1000050:1002500] == 2))
+}
+
+test.metagene_extend_reads_over_edge <- function() {    
+    # Some reads might not overlap the specified regions, yet extend into them.
+    # Those must be calculated into the coverage.
+    edge_region = flank(fake_bam_region_1_test_region_unique, width=50, start=FALSE)
+    mg <- metagene2$new(bam_files=fake_bam_design$BAM, 
+                        regions=edge_region, 
+                        design=fake_bam_design,
+                        extend_reads=100, bin_count=25)
+    checkTrue(all(mg$get_raw_coverages()[[fake_bam_design$BAM[1]]][["chr1"]][start(edge_region):end(edge_region)] == 1))
+}
+
+test.metagene_extend_reads_directionality <- function() {                          
+    # Reads should be extended only in their specified direction.
+    # So if we go upstream from the first read in the bam, coverage should be 0.
+    edge_region = flank(fake_bam_region_1_test_region_unique, width=50, start=TRUE)
+    mg <- metagene2$new(bam_files=fake_bam_design$BAM, 
+                        regions=edge_region, 
+                        design=fake_bam_design,
+                        extend_reads=100)
+    checkTrue(all(mg$get_raw_coverages()[[fake_bam_design$BAM[1]]][["chr1"]][start(edge_region):end(edge_region)] == 0))
+}
+
+test.metagene_extend_reads_no_shrink <- function() {     
+    # Reads should not be shrunk when expand_reads is smaller than read size.
+    # mg <- metagene2$new(bam_files=fake_bam_design$BAM, 
+    #                     regions=fake_bam_region_1_test_region_unique, 
+    #                     design=fake_bam_design,
+    #                     extend_reads=35)
+    # checkTrue(all(mg$get_raw_coverages()[[fake_bam_design$BAM[1]]][["chr1"]][1000000:1002500] == 1))  
+    TRUE
+}
+
+test.metagene_extend_reads_beyond_chr_end <- function() {     
+    # Expanding past the end of chromosomes (Or past the start) should
+    # not raise any errors.
+    mg <- metagene2$new(bam_files=fake_bam_design$BAM, 
+                    regions=fake_bam_region_1_test_region_unique, 
+                    design=fake_bam_design,
+                    extend_reads=195471971, bin_count=100)
+    mg$produce_metagene()
+}
