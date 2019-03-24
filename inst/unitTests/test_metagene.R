@@ -765,3 +765,47 @@ test.metagene_extend_reads_beyond_chr_end <- function() {
                     extend_reads=195471971, bin_count=100)
     mg$produce_metagene()
 }
+
+test.metagene_discontiguous <- function() {
+    fake_genes = GRangesList(
+        Single=        GRanges(c("chr1:1000001-1000100:+")),
+        Multiple=      GRanges(c("chr1:1000001-1000100:+",
+                                 "chr1:1000201-1000300:+")),
+        MultipleValues=GRanges(c("chr1:1000001-1000100:+",
+                                 "chr1:1002501-1002600:+")))
+                               
+    mg <- metagene2$new(bam_files=fake_bam_design$BAM, 
+                    regions=fake_genes, 
+                    design=fake_bam_design,
+                    region_mode="stitch")
+    mg$produce_metagene()
+    
+    # Make sure each design has binned coverages for each gene.
+    split_coverages = mg$split_coverages_by_regions()
+    for(design_coverage in split_coverages) {
+        checkTrue(length(design_coverage) == length(fake_genes))
+    }
+    
+    # Check numerical values of binned coverages.
+    checkTrue(all(split_coverages[["fake_align1"]][["Single"]] == 1))
+    checkTrue(all(split_coverages[["fake_align1"]][["Multiple"]] == 1))
+    checkTrue(all(split_coverages[["fake_align1"]][["MultipleValues"]] == 1))
+
+    checkTrue(all(split_coverages[["fake_align3"]][["Single"]] == 4))
+    checkTrue(all(split_coverages[["fake_align3"]][["Multiple"]] == 4))
+    checkTrue(all(split_coverages[["fake_align3"]][["MultipleValues"]][1,1:50] == 4))
+    checkTrue(all(split_coverages[["fake_align3"]][["MultipleValues"]][1,51:100] == 8))
+    
+    # Try grouping genes using region_metadata.
+    region_metadata = data.frame(CustomGroup=c("A", "A", "B"))
+    mg$replace_region_metadata(region_metadata)
+    mg$produce_metagene(split_by="CustomGroup")
+    
+    split_coverages = mg$split_coverages_by_regions()
+    checkTrue(all(split_coverages[["fake_align1"]][["A"]] == 1))
+    checkTrue(all(split_coverages[["fake_align1"]][["B"]] == 1))
+    
+    checkTrue(all(split_coverages[["fake_align3"]][["A"]] == 4))
+    checkTrue(all(split_coverages[["fake_align3"]][["B"]][1,1:50] == 4))
+    checkTrue(all(split_coverages[["fake_align3"]][["B"]][1,51:100] == 8))    
+}
