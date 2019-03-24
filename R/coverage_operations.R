@@ -137,6 +137,23 @@ bin_region_coverages = function(coverages, regions, bin_count) {
 # Given a list of stranded coverages (+, -, *), bin them into bin_count bins over
 # each element of regions.
 bin_coverages_s = function(coverages, regions, bin_count) {
+    # Validate that the bin_count is smaller than the smallest region.
+    # It would be prettier if this was with the other
+    # validations, but it would require pre-calculating
+    # too much ahead of time (Which region will end up being used,
+    # prepared regions vs raw regions, etc.)
+    if(is(regions, "GRangesList")) {
+        smallest_region = min(unlist(lapply(regions, function(x) { sum(width(x))})))
+    } else {
+        smallest_region = min(width(regions))
+    }
+
+    if(smallest_region < bin_count) {
+        stop("The specified bin_count (", bin_count, "nt) ",
+             "is larger than the smallest effective region (", smallest_region, "nt).\n",
+             "Please make sure bin_count is >= ", smallest_region, "\n")
+    }
+    
     # In single_strand mode, we'll only have coverage info for the undefined strand.
     if(is.null(coverages[["+"]]) && is.null(coverages[["-"]])) {
         return(bin_region_coverages(coverages[["*"]], regions, bin_count))

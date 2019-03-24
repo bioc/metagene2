@@ -809,3 +809,40 @@ test.metagene_discontiguous <- function() {
     checkTrue(all(split_coverages[["fake_align3"]][["B"]][1,1:50] == 4))
     checkTrue(all(split_coverages[["fake_align3"]][["B"]][1,51:100] == 8))    
 }
+
+test.metagene_bin_count_larger_than_regions <- function() {
+    mg <- metagene2$new(bam_files=get_demo_bam_files(),
+                        regions=get_demo_regions(),
+                        bin_count=1000000)
+                    
+    # Test for contiguous regions.                    
+    obs = tryCatch(mg$bin_coverages(), error = conditionMessage)
+    smallest_region = min(width(unlist(get_demo_regions())))
+    exp = paste0("The specified bin_count (", 1000000, "nt) ",
+              "is larger than the smallest effective region (", smallest_region, "nt).\n",
+              "Please make sure bin_count is >= ", smallest_region, "\n")
+    checkTrue(obs==exp)
+   
+    # Test for discontiguous regions.
+    region_test = GRangesList(
+        Test1=GRanges(c("chr1:1000001-1000100:+",
+                        "chr1:1000301-1000400:+")),
+        Test2=GRanges(c("chr1:1000001-1000200:+",
+                        "chr1:1000301-1000500:+")))
+    mg <- metagene2$new(bam_files=get_demo_bam_files(),
+                        regions=region_test,
+                        bin_count=200, region_mode="stitch")   
+    
+    # Individual region minimum is 100, but the sum of stitched regions is 200,
+    # so a 200 bin_count should not fail.
+    mg$bin_coverages()
+    
+    # However, 1000000 should fail.
+    obs = tryCatch(mg$bin_coverages(bin_count=1000000), error = conditionMessage)
+    smallest_region = min(unlist(lapply(region_test, function(x) { sum(width(x)) })))
+    exp = paste0("The specified bin_count (", 1000000, "nt) ",
+             "is larger than the smallest effective region (", smallest_region, "nt).\n",
+             "Please make sure bin_count is >= ", smallest_region, "\n")
+    checkTrue(obs==exp)
+             
+}
