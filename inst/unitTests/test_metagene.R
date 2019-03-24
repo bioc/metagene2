@@ -128,7 +128,6 @@ test.metagene_invalid_core <- function() {
     util_test_invalid_param_constructor_value("cores", 0, "cores must be a positive integer or a BiocParallelParam instance.")    
 }
 
-
 ## Non-character vector bam_files value
 util_test_invalid_bam_file <- function(value, error_value) {
     obs <- tryCatch(metagene2:::metagene2$new(regions = get_demo_regions(),
@@ -843,6 +842,15 @@ test.metagene_bin_count_larger_than_regions <- function() {
     exp = paste0("The specified bin_count (", 1000000, "nt) ",
              "is larger than the smallest effective region (", smallest_region, "nt).\n",
              "Please make sure bin_count is >= ", smallest_region, "\n")
+    checkTrue(obs==exp)            
+}
+
+test.metagene_invalid_extend_paired_end <- function() {
+    obs = tryCatch(metagene2$new(bam_files=get_demo_bam_files(),
+                                 regions=get_demo_regions(),
+                                 paired_end=TRUE, extend_reads=200),
+                   error=conditionMessage)
+    exp = "extend_reads and paired_end cannot both be set at the same time."
     checkTrue(obs==exp)
-             
+
 }

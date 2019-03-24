@@ -117,6 +117,10 @@ validate_combination = function(params) {
     if(params$assay=="chipseq" && is.null(params$bin_count)) {
         stop("bin_count cannot be NULL in chipseq assays.")
     }
+    
+    if(params$extend_reads > 0 && params$paired_end) {
+        stop("extend_reads and paired_end cannot both be set at the same time.")
+    }
 }
 
 validate_region_mode = function(region_mode) {
