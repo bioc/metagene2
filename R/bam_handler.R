@@ -76,6 +76,7 @@
 #' bh$get_aligned_count(bam_file)
 #'
 #' @importFrom R6 R6Class
+#' @import GenomicAlignments
 #' @export
 #' @format A BAM manager
 

@@ -11,7 +11,8 @@
 #'                                     force_seqlevels = FALSE, paired_end = FALSE,
 #'                                     assay = 'chipseq', strand_specific=FALSE,
 #'                                     paired_end_strand_mode=2,
-#'                                     region_mode="auto", region_metadata=NULL, ...))}}
+#'                                     region_mode="auto", region_metadata=NULL, 
+#'                                     extend_reads=0, invert_strand=FALSE, ...))}}
 #'    \item{regions}{A description of all regions over which metagenes will be calculated.
 #'
 #'                   When \code{region_mode} is "separate", those should be provided using
@@ -47,11 +48,11 @@
 #'                       stitched together and treated as a single logical region. If \code{'auto'}
 #'                       then a logical value is inferred from the \code{assay} parameter.
 #'                       Default: \code{'auto'}}
-#'    \item{region_metadata}{A data-frame of metadata to be associated with the elements of regions
-#'                           it must contain has many rows as there are elements in regions. If 
+#'    \item{region_metadata}{A data-frame of metadata to be associated with the elements of \code{regions}.
+#'                           It must contain has many rows as there are elements in \code{regions}. If 
 #'                           \code{region_metadata} is NULL but \code{regions} has an mcols element,
 #'                           then it is used.}
-#'    \item{padding_size}{The regions will be extended on each side by the
+#'    \item{padding_size}{The provided \code{regions} will be extended on each side by the
 #'                        value of this parameter. The padding_size must be a
 #'                        non-negative integer. Default = 0.}
 #'    \item{cores}{The number of cores available to parallelize the analysis.
@@ -71,7 +72,7 @@
 #'                           count toward coverage for that region. Useful for RNA-seq
 #'                           profiles generated from strand-specific libraries, such
 #'                           as Illumina TruSeq. Default: \code{'FALSE'}}
-#'    \item{paired_end_strand_mode}{\code{'1'} or \code{'2'}. In paired-end mode
+#'    \item{paired_end_strand_mode}{\code{'1'} or \code{'2'}. In paired-end mode,
 #'                                  indicates which read in a pair sets the pair's strand.
 #'                                  If \code{1}, this is the first read (This should be used
 #'                                  with directional protocols such as Directional Illumina 
@@ -81,6 +82,10 @@
 #'                                  or Illumina stranded TruSeq PE).
 #'                                  Ignored if either paired_end or strand_specific is FALSE.
 #'                                  Default: \code{'2'}}
+#'    \item{extend_reads}{Extend individual reads to have a minimum length equal to this parameter.
+#'                        When set to 0, no read extension occurs. This is useful for single-end
+#'                        chip-seq experiments, where the length of the captured fragment is usually
+#'                        longer than the sequenced read.}
 #'    \item{invert_strand}{If \code{TRUE}, coverages for the given regions will be inferred 
 #'                         from the coverage on the strand opposite theirs. Useful
 #'                         for single-end stranded experiments which use cDNA.
@@ -89,9 +94,9 @@
 #'               for a list of possible parameters.}
 #' }
 #'
-#'    \code{metagene2$new} returns a \code{metagene} object that contains the
+#'    \code{metagene2$new} returns a \code{metagene2} object that contains the
 #'        coverages for every BAM files in the regions from the \code{regions}
-#'        param.
+#'        parameter.
 #'
 #' @return
 #' \code{metagene2$new} returns a \code{metagene} object which contains the
@@ -100,7 +105,7 @@
 #' @section Methods:
 #' \describe{
 #'    \item{}{\code{mg$group_coverages(design=NA, normalization=NA, 
-#'            design_filter=NA)}}
+#'            design_filter=NA, simplify=FALSE)}}
 #'    \item{Description}{This method normalizes genome-wide coverages, then groups
 #'            them according to the specified design groups. It returns
 #'            a list of possible read orientations (+, -, *), each element
@@ -108,26 +113,44 @@
 #'            strand_specific parameter) or a list of possible design groups.
 #'            In turn, the lists of design groups contain lists of \code{Rle}
 #'            objects representing coverage over a specific chromosome or sequence.}
-#'    \item{design}{A \code{data.frame} that describe to experiment to plot.
-#'            see \code{plot} function for more details. \code{NA} can 
-#'            be used keep previous design value. Default: \code{NA}.}
-#'    \item{normalization}{The algorithm to use to normalize samples. Possible
-#'                        values are \code{NULL}, "RPM" and "NCIS". See
-#'                        Liand and Keles 2012 for the NCIS algorithm.
-#'                        Default: NULL.}
-#'    \item{design_filter}{}
+#'    \item{design}{A \code{data.frame} that describes the grouping of the bam files
+#'            into design groups. The first column of the design should contain the 
+#'            names of bam_files passed on initialization. Each subsequent columns
+#'            represents a design group, that is to say a combination of bam files
+#'            whose coverages should be grouped together into a logical unit.
+#'            These columns should contain TRUE/FALSE values indicating whether the 
+#'            bam files on that row should be included within the specified group.
+#'            \code{NA} can be used keep previous design value. Default: \code{NA}.}
+#'    \item{normalization}{The algorithm to use to normalize coverages. Possible
+#'                        values are \code{NULL} (no normalization), "RPM" and "NCIS". See
+#'                        Liand and Keles 2012 for the NCIS algorithm. \code{NA} can 
+#'                        be used keep previous design value. Default: \code{NA}}
+#'    \item{design_filter}{A logical vector specifying which of the design groups specified
+#'                         within the \code{design} parameter should be included in the metagene.
+#'                         Useful for quickly reprocessing a subset of samples.
+#'                         \code{NA} can be used keep previous design value. Default: \code{NA}}
+#'    \item{simplify}{In single strand mode, set \code{simplify} to \code{TRUE} to return 
+#'                    only the '*' coverage and omit the empty '+' and '-' components.
+#'                    Default: \code{FALSE}}
 #' }
 #' \describe{
 #'    \item{}{\code{mg$bin_coverages(bin_count=NA, region_filter=NA)}}
 #'    \item{}{This method summarizes the coverage over regions of interests
-#'            into a specified number of bins. It returns a list where each element
-#'            represents a design group, and contains a matrix of binned coverages
-#'            where each row represents a region, and each column represents a bin.}
-#'    \item{bin_count}{The number of bin to create. \code{NA} can be used to
-#'                    keep previous bin_count value. A bin_count value of 100
-#'                    will be used if no value is specified. Default:
-#'                    \code{NA}.}
-#'    \item{region_filter}{}
+#'            into a specified number of bins. For each design group, it 
+#'            produces a matrix of binned coverages where each row represents a region,
+#'            and each column represents a bin. Those are returned in a named list where
+#'            each element contains the resulting matrix for a specific design group.}
+#'    \item{bin_count}{The number of bins regions should be split into. The specified 
+#'                     bin_count must always be equal or higher than the minimum size of
+#'                     the specified regions. \code{NA} can be used to keep the previous
+#'                     value. Default: \code{NA}.}
+#'    \item{region_filter}{This parameter defines the subset of regions within the \code{regions}
+#'                         parameter passed on initialization on which the metagene
+#'                         should be generated. \code{region_filter} can be (1) A quosure, to be evaluated
+#'                         in the context of the \code{region_metadata} data-frame, (2) a character
+#'                         vector containing the names of the regions to be used or (3) a logical or numeric
+#'                         vector to be used for subsetting. \code{NA} can be used to keep the previous
+#'                         value. Default: \code{NA}}
 #' }
 #' \describe{
 #'    \item{}{\code{mg$split_coverages_by_regions(split_by=NA)}}
@@ -143,10 +166,32 @@
 #'                    parameter, as specified on metagene initialization. The 
 #'                    selected columns must allow conversion into a factor.
 #'                    By default, this is set to region_name, a metadata column
-#'                    which is automatically generated by metagene.}
+#'                    which is automatically generated by metagene. \code{NA} can 
+#'                    be used to keep the previous value. Default: \code{NA}}
+#' }
+#' \describe{
+#'    \item{}{\code{mg$calculate_ci(alpha = NA, sample_count = NA, resampling_strategy=NA)}}
+#'    \item{}{This method calculates coverage means and confidence intervals for all 
+#'            design_group * region * bin combination. These are returned as a long-form
+#'            data-frame.}
+#'    \item{alpha}{The alpha level of the confidence interval estimate.
+#'                \code{NA} can be used to keep the previous value. 
+#'                Default: \code{NA}}
+#'    \item{sample_count}{The number of draws to perform in the bootstrap
+#'                        calculations used to calculate the confidence inteval.  
+#'                        \code{NA} can be used to keep the previous value. Default: \code{NA}}
+#'    \item{resampling_strategy}{The resampling strategy to be used when performing the
+#'                               bootstrap analysis, which can be either \code{'profile'}
+#'                               or \code{'bin'}. In \code{'profile'} mode, whole profiles
+#'                               across all bins are resampled. In \code{'bin'} mode,
+#'                               each bin is resampled individually and independantly from
+#'                               all others. \code{NA} can be used to keep the previous value.
+#'                               Default: \code{NA}}
 #' }
 #' \describe{
 #'    \item{}{\code{mg$add_metadata(design_metadata=NA)}}
+#'    \item{}{This method adds design group and region metadata to the data-frame
+#'            produced by \code{mg$calculate_ci} for easier plotting.}
 #'    \item{design_metadata}{A data-frame containing metadata for the design groups.
 #'                           It must contain as many rows as there are design groups,
 #'                           and must contain at least one column named 'design'
@@ -155,43 +200,39 @@
 #' \describe{
 #'    \item{}{\code{mg$plot(region_names = NULL, design_names = NULL,
 #'                title = NA, x_label = NA, facet_by=NA, group_by=NA)}}
-#'    \item{region_names}{The names of the regions to extract. If \code{NULL},
-#'                        all the regions are returned. Default: \code{NULL}.}
-#'    \item{design_names}{The names of the experiments to extract. If a design
-#'            was added to the \code{metagene} object, \code{design_names}
-#'            correspond to the column names in the design, otherwise
-#'            \code{design_names} corresponds to the BAM name or the BAM
-#'            filename. If \code{NULL}, all the experiments are
-#'            returned. Default: \code{NULL}.}
-#'    \item{title}{A title to add to the graph. If \code{NULL}, will be
-#'                        automatically created. Default: NULL}
-#'    \item{x_label}{X-axis label to add to the metagene plot. If \code{NULL},
-#'                    metagene will use generic label. Default: \code{NULL}.}
-#' }
-#' \describe{
-#'    \item{}{\code{mg$calculate_ci(alpha = NA, sample_count = NA, resampling_strategy=NA)}}
-#'    \item{alpha}{The alpha level of the confidence interval estimate.
-#'                \code{1 - alpha / 2} and \code{alpha / 2} will be used.
-#'                Default: 0.05.}
-#'    \item{sample_count}{The number of draws to perform in the bootstrap
-#'                        calculations. Default: 1000.}
-#'    \item{resampling_strategy}{The resampling strategy to be sued when performing the
-#'                               bootstrap analysis, which can be either \code{'profile'}
-#'                               or \code{'bin'}. In \code{'profile'} mode, whole profiles
-#'                               across all bins are resampled. In \code{'bin'} mode,
-#'                               each bin is resampled individually and independantly from
-#'                               all others. }
+#'    \item{}{This method produces a ggplot object giving a graphical representation
+#'            of the metagene analysis.}
+#'    \item{region_names}{The names of the regions to be plotted. If \code{NULL},
+#'                        all the regions are plotted. Default: \code{NULL}.}
+#'    \item{design_names}{The names of the design groups to be plotted. If 
+#'                        \code{NULL}, all the design groups are
+#'                        plotted. Default: \code{NULL}.}
+#'    \item{title}{A title to add to the graph. \code{NA} can be used to keep 
+#'                 the previous value. Default: \code{NA}}
+#'    \item{x_label}{X-axis label for the metagene plot. \code{NA} can be 
+#'                   used to keep the previous value. Default: \code{NA}.}
+#'    \item{facet_by}{A formula to be used for facetting the metagene plot. This
+#'                    formula can include any design metadata, or region_metadata 
+#.                    columns that were part of the \code{split_by} argument.
+#'                    \code{NA} can be used to keep the previous value.
+#'                    Default: \code{NA}.}
+#'    \item{group_by}{A string representing a single column from design_metadata or region_metadata
+#'                    which will be used to group observations together into lines and which will
+#'                    be used to generate the color scale.
+#'                    \code{NA} can be used to keep the previous value.
+#'                    Default: \code{NA}.}
 #' }
 #' \describe{
 #'    \item{}{mg$get_params()}
+#'    \item{}{Returns a list of all parameters used to perform this metagene analysis.}
 #' }
 #' \describe{
 #'    \item{}{mg$get_design()}
+#'    \item{}{Returns the design used to perform this metagene analysis.}
 #' }
 #' \describe{
-#'    \item{}{mg$get_regions(region_names = NULL)}
-#'    \item{region_names}{The names of the regions to extract. If \code{NULL},
-#'                        all the regions are returned. Default: \code{NULL}.}
+#'    \item{}{mg$get_regions(}
+#'    \item{region_names}{Returns the regions used for this metagene analysis.}
 #' }
 #' \describe{
 #'    \item{}{mg$get_matrices = function()}
@@ -200,40 +241,21 @@
 #'    \item{}{mg$get_data_frame(region_names = NULL, design_names = NULL)}
 #'    \item{region_names}{The names of the regions to extract. If \code{NULL},
 #'                        all the regions are returned. Default: \code{NULL}.}
-#'    \item{design_names}{The names of the experiments to extract. If a design
-#'            was added to the \code{metagene} object, \code{design_names}
-#'            correspond to the column names in the design, otherwise
-#'            \code{design_names} corresponds to the BAM name or the BAM
-#'            filename. If \code{NULL}, all the experiments are
-#'            returned. Default: \code{NULL}.}
+#'    \item{design_names}{The names of the design groups to extract. If \code{NULL},
+#'                        design groups are returned. Default: \code{NULL}.}
 #' }
 #' \describe{
 #'    \item{}{get_plot = function()}
+#'    \item{}{Returns the ggplot object generated by the \code{metagene2$plot} function.}
 #' }
 #' \describe{
-#'    \item{}{get_raw_coverages = function(filenames)}
-#'    \item{filenames}{The name of the files from which raw coverages should
-#'                     be extracted. Can be the filenames with extensions or
-#'                     the bam names, if named bam files were used during the
-#'                     creation of the metagene object). If \code{NULL}, 
-#'                     returns the coverages for all bam files. Default: 
-#'                     \code{NULL}.}
-#' }
+#'    \item{}{get_raw_coverages = function()}
+#'    \item{}{Returns raw coverages over the regions specified on initialization.}
+#'}
 #' \describe{
-#'    \item{}{get_normalized_coverages = function(filenames)}
-#'    \item{filenames}{The name of the files from which normalized coverages
-#'                     (in RPM)  should be extracted. Can be the filenames with
-#'                     extensions or the bam names, if named bam files were 
-#'                     used during the creation of the metagene object). If 
-#'                     \code{NULL}, returns the coverages for all bam files. 
-#'                     Default: \code{NULL}.}
-#' }
-#' \describe{
-#'    \item{}{\code{mg$export(bam_file, region, file)}}
-#'    \item{bam_file}{The name of the bam file to export.}
-#'    \item{region}{The name of the region to export.}
-#'    \item{file}{The name of the ouput file.}
-#' }
+#'    \item{}{get_normalized_coverages = function()}
+#'    \item{}{Returns normalized coverages over the regions specified on initialization.}
+#'}
 #' @examples
 #' region <- get_demo_regions()[1]
 #' bam_file <- get_demo_bam_files()[1]
@@ -242,21 +264,24 @@
 #'    df <- metagene2$plot()
 #' }
 #'
+#' @import GenomicRanges
+#' @import BiocParallel
 #' @importFrom R6 R6Class
 #' @importFrom data.table data.table
+#' @importFrom tools file_path_sans_ext
+#' @importFrom rtracklayer import
 #' @export
 #' @format A metagene experiment manager
-
 metagene2 <- R6Class("metagene2",
     public = list(
     # Methods
         initialize = function(regions, bam_files, padding_size = 0,
-                                cores = SerialParam(), verbose = FALSE,
-                                force_seqlevels = FALSE, paired_end = FALSE,
-                                assay = 'chipseq', strand_specific=FALSE,
-                                paired_end_strand_mode=2,
-                                region_mode="auto", region_metadata=NULL, 
-                                extend_reads=0, invert_strand=FALSE, ...) {
+                              cores = SerialParam(), verbose = FALSE,
+                              force_seqlevels = FALSE, paired_end = FALSE,
+                              assay = 'chipseq', strand_specific=FALSE,
+                              paired_end_strand_mode=2,
+                              region_mode="auto", region_metadata=NULL, 
+                              extend_reads=0, invert_strand=FALSE, ...) {
 
             # Validate the format of bam_files, since it is used to preprocess certain
             # parameters before initialization.

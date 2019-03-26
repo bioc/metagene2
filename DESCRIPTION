@@ -41,20 +41,16 @@ Depends:
     dplyr
 Imports:
     rtracklayer,
-    gplots,
     tools,
     GenomicAlignments,
     GenomeInfoDb,
     GenomicFeatures,
     IRanges,
     ggplot2,
-    muStat,
     Rsamtools,
     DBChIP,
-    matrixStats,
     purrr,
     data.table,
-    magrittr,
     methods,
 	utils, 
 	ensembldb,
@@ -66,6 +62,5 @@ Suggests:
     RUnit,
     knitr,
     BiocStyle,
-    rmarkdown,
-    similaRpeak
-RoxygenNote: 6.0.1
+    rmarkdown
+RoxygenNote: 6.1.1

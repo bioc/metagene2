@@ -4,7 +4,7 @@
 \alias{plot_metagene}
 \title{Produce a metagene plot}
 \usage{
-plot_metagene(df)
+plot_metagene(df, facet_by = NULL, group_by = NULL)
 }
 \arguments{
 \item{df}{a \code{data.frame} obtained with the \code{get_data_frame}

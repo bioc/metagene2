@@ -2,7 +2,7 @@
 % Please edit documentation in R/demo.R
 \name{get_demo_regions}
 \alias{get_demo_regions}
-\title{Get regions filenames for demo}
+\title{Get demo regions}
 \usage{
 get_demo_regions()
 }
@@ -10,7 +10,7 @@ get_demo_regions()
 A vector of regions filenames
 }
 \description{
-Get regions filenames for demo
+Get demo regions
 }
 \examples{
 regions <- get_demo_regions()
