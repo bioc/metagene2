@@ -77,6 +77,9 @@
 #'
 #' @importFrom R6 R6Class
 #' @import GenomicAlignments
+#' @import BiocParallel
+#' @import Rsamtools 
+#' @import DBChIP
 #' @export
 #' @format A BAM manager
 

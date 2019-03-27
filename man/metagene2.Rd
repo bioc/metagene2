@@ -19,14 +19,24 @@ metagene plots on the data or some subset of it.
 }
 \section{Constructor}{
 
+
+\strong{Usage:}
+
+ \code{mg <- metagene2$new(regions, bam_files, padding_size = 0,
+                           cores = SerialParam(), verbose = FALSE,
+                           force_seqlevels = FALSE, paired_end = FALSE,
+                           assay = 'chipseq', strand_specific=FALSE,
+                           paired_end_strand_mode=2,
+                           region_mode="auto", region_metadata=NULL, 
+                           extend_reads=0, invert_strand=FALSE, ...)}
+
+\strong{Description:}
+
+This method returns a new metagene object. Upon initialization, a metagene object
+calculates coverages over all given regions in the provided bam files.
+
+\strong{Parameters:}
 \describe{
-   \item{}{\code{mg <- metagene2$new(regions, bam_files, padding_size = 0,
-                                    cores = SerialParam(), verbose = FALSE,
-                                    force_seqlevels = FALSE, paired_end = FALSE,
-                                    assay = 'chipseq', strand_specific=FALSE,
-                                    paired_end_strand_mode=2,
-                                    region_mode="auto", region_metadata=NULL, 
-                                    extend_reads=0, invert_strand=FALSE, ...))}}
    \item{regions}{A description of all regions over which metagenes will be calculated.
 
                   When \code{region_mode} is "separate", those should be provided using
@@ -113,18 +123,36 @@ metagene plots on the data or some subset of it.
        parameter.
 }
 
-\section{Methods}{
+\section{Processing methods}{
 
+
+Each of the following methods perform one step of metagene processing.
+Most do not need to be called explicitly. Instead, you can simply call 
+\code{produce_metagene}. However, you can use them to access intermediary
+results: grouped coverages, binned coverages, split coverages, and long-form
+data-frame of coverages with confidence intervals.
+}
+
+\section{group_coverages}{
+
+
+\strong{Usage:}
+
+ \code{mg$group_coverages(design=NA, normalization=NA, 
+           design_filter=NA, simplify=FALSE)}
+
+\strong{Description:}
+
+ This method normalizes genome-wide coverages, then groups
+ them according to the specified design groups. It returns
+ a list of possible read orientations (+, -, *), each element
+ of which is either NULL (depending on the value of the 
+ strand_specific parameter) or a list of possible design groups.
+ In turn, the lists of design groups contain lists of \code{Rle}
+ objects representing coverage over a specific chromosome or sequence.
+
+\strong{Parameters:}
 \describe{
-   \item{}{\code{mg$group_coverages(design=NA, normalization=NA, 
-           design_filter=NA, simplify=FALSE)}}
-   \item{Description}{This method normalizes genome-wide coverages, then groups
-           them according to the specified design groups. It returns
-           a list of possible read orientations (+, -, *), each element
-           of which is either NULL (depending on the value of the 
-           strand_specific parameter) or a list of possible design groups.
-           In turn, the lists of design groups contain lists of \code{Rle}
-           objects representing coverage over a specific chromosome or sequence.}
    \item{design}{A \code{data.frame} that describes the grouping of the bam files
            into design groups. The first column of the design should contain the 
            names of bam_files passed on initialization. Each subsequent columns
@@ -145,13 +173,25 @@ metagene plots on the data or some subset of it.
                    only the '*' coverage and omit the empty '+' and '-' components.
                    Default: \code{FALSE}}
 }
+}
+
+\section{bin_coverages}{
+
+
+\strong{Usage:}
+
+ \code{mg$bin_coverages(bin_count=NA, region_filter=NA)}
+
+\strong{Description:}
+
+This method summarizes the coverage over regions of interests
+into a specified number of bins. For each design group, it 
+produces a matrix of binned coverages where each row represents a region,
+and each column represents a bin. Those are returned in a named list where
+each element contains the resulting matrix for a specific design group.
+
+\strong{Parameters:}
 \describe{
-   \item{}{\code{mg$bin_coverages(bin_count=NA, region_filter=NA)}}
-   \item{}{This method summarizes the coverage over regions of interests
-           into a specified number of bins. For each design group, it 
-           produces a matrix of binned coverages where each row represents a region,
-           and each column represents a bin. Those are returned in a named list where
-           each element contains the resulting matrix for a specific design group.}
    \item{bin_count}{The number of bins regions should be split into. The specified 
                     bin_count must always be equal or higher than the minimum size of
                     the specified regions. \code{NA} can be used to keep the previous
@@ -164,16 +204,28 @@ metagene plots on the data or some subset of it.
                         vector to be used for subsetting. \code{NA} can be used to keep the previous
                         value. Default: \code{NA}}
 }
+}
+
+\section{split_coverages_by_regions}{
+
+
+\strong{Usage:}
+
+ \code{mg$split_coverages_by_regions(split_by=NA)}
+
+\strong{Description:}
+
+This methods splits the matrices generated by mg$bin_coverages
+into groups of regions where the values of the metadata columns
+specified by \code{split_by} are homogeneous. It returns A list
+where each element represents a design group: each of those
+element is in turn a list representing groups of regions for which
+all metadata values specified by "split_by" are equal. The leaf elements
+of this list hierarchy are coverage matrices where each row represents a
+region, and each column represents a bin.
+
+\strong{Parameters:}
 \describe{
-   \item{}{\code{mg$split_coverages_by_regions(split_by=NA)}}
-   \item{}{This methods splits the matrices generated by mg$bin_coverages
-           into groups of regions where the values of the metadata columns
-           specified by \code{split_by} are homogeneous. It returns A list
-           where each element represents a design group: each of those
-           element is in turn a list representing groups of regions for which
-           all metadata values specified by "split_by" are equal. The leaf elements
-           of this list hierarchy are coverage matrices where each row represents a
-           region, and each column represents a bin.}
    \item{split_by}{A vector of column names from the region_metadata
                    parameter, as specified on metagene initialization. The 
                    selected columns must allow conversion into a factor.
@@ -181,11 +233,23 @@ metagene plots on the data or some subset of it.
                    which is automatically generated by metagene. \code{NA} can 
                    be used to keep the previous value. Default: \code{NA}}
 }
+}
+
+\section{calculate_ci}{
+
+
+\strong{Usage:}
+
+ \code{mg$calculate_ci(alpha = NA, sample_count = NA, resampling_strategy=NA)}
+
+\strong{Description:}
+
+This method calculates coverage means and confidence intervals for all 
+design_group * region * bin combination. These are returned as a long-form
+data-frame.
+
+\strong{Parameters:}
 \describe{
-   \item{}{\code{mg$calculate_ci(alpha = NA, sample_count = NA, resampling_strategy=NA)}}
-   \item{}{This method calculates coverage means and confidence intervals for all 
-           design_group * region * bin combination. These are returned as a long-form
-           data-frame.}
    \item{alpha}{The alpha level of the confidence interval estimate.
                \code{NA} can be used to keep the previous value. 
                Default: \code{NA}}
@@ -200,20 +264,44 @@ metagene plots on the data or some subset of it.
                               all others. \code{NA} can be used to keep the previous value.
                               Default: \code{NA}}
 }
+}
+
+\section{add_metadata}{
+
+
+\strong{Usage:}
+
+ \code{mg$add_metadata(design_metadata=NA)}
+
+\strong{Description:}
+
+This method adds design group and region metadata to the data-frame
+produced by \code{mg$calculate_ci} for easier plotting.
+
+\strong{Parameters:}
 \describe{
-   \item{}{\code{mg$add_metadata(design_metadata=NA)}}
-   \item{}{This method adds design group and region metadata to the data-frame
-           produced by \code{mg$calculate_ci} for easier plotting.}
    \item{design_metadata}{A data-frame containing metadata for the design groups.
                           It must contain as many rows as there are design groups,
                           and must contain at least one column named 'design'
                           which is used to match the rows to design groups.}
 }
+}
+
+\section{plot}{
+
+
+\strong{Usage:}
+
+ \code{mg$plot(region_names = NULL, design_names = NULL,
+               title = NA, x_label = NA, facet_by=NA, group_by=NA)}
+
+\strong{Description:}
+
+This method produces a ggplot object giving a graphical representation
+of the metagene analysis.
+
+\strong{Parameters:}
 \describe{
-   \item{}{\code{mg$plot(region_names = NULL, design_names = NULL,
-               title = NA, x_label = NA, facet_by=NA, group_by=NA)}}
-   \item{}{This method produces a ggplot object giving a graphical representation
-           of the metagene analysis.}
    \item{region_names}{The names of the regions to be plotted. If \code{NULL},
                        all the regions are plotted. Default: \code{NULL}.}
    \item{design_names}{The names of the design groups to be plotted. If 
@@ -233,48 +321,61 @@ metagene plots on the data or some subset of it.
                    \code{NA} can be used to keep the previous value.
                    Default: \code{NA}.}
 }
+}
+
+\section{Getter methods}{
+
+The following methods return various informations about the metagene object.
+
+\strong{mg$get_params()}
 \describe{
-   \item{}{mg$get_params()}
    \item{}{Returns a list of all parameters used to perform this metagene analysis.}
 }
+
+\strong{mg$get_design()}
 \describe{
-   \item{}{mg$get_design()}
    \item{}{Returns the design used to perform this metagene analysis.}
 }
+
+\strong{mg$get_regions()}
 \describe{
-   \item{}{mg$get_regions(}
-   \item{region_names}{Returns the regions used for this metagene analysis.}
+   \item{}{Returns the regions used for this metagene analysis.}
 }
+
+\strong{mg$get_matrices()}
 \describe{
-   \item{}{mg$get_matrices = function()}
+   \item{}{Returns matrices of binned coverages.}
 }
+
+\strong{mg$get_data_frame()}
 \describe{
-   \item{}{mg$get_data_frame(region_names = NULL, design_names = NULL)}
+   \item{}{Returns full data-frame of results.}
    \item{region_names}{The names of the regions to extract. If \code{NULL},
                        all the regions are returned. Default: \code{NULL}.}
    \item{design_names}{The names of the design groups to extract. If \code{NULL},
                        design groups are returned. Default: \code{NULL}.}
 }
+
+\strong{mg$get_plot()}
 \describe{
-   \item{}{get_plot = function()}
    \item{}{Returns the ggplot object generated by the \code{metagene2$plot} function.}
 }
+
+\strong{mg$get_raw_coverages()}
 \describe{
-   \item{}{get_raw_coverages = function()}
    \item{}{Returns raw coverages over the regions specified on initialization.}
 }
+
+\strong{mg$get_normalized_coverages()}
 \describe{
-   \item{}{get_normalized_coverages = function()}
    \item{}{Returns normalized coverages over the regions specified on initialization.}
 }
 }
 
 \examples{
-region <- get_demo_regions()[1]
-bam_file <- get_demo_bam_files()[1]
-mg <- metagene2$new(regions = region, bam_files = bam_file)
+mg <- metagene2$new(regions = get_demo_regions(), bam_files = get_demo_bam_files())
 \dontrun{
-   df <- metagene2$plot()
+   mg$plot()
 }
 
 }
