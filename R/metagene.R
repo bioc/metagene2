@@ -1,8 +1,41 @@
 #' A class to manage metagene analysis.
 #'
-#' This class will allow to load, convert and normalize alignments and regions
-#' files/data. Once the data is ready, the user can then choose to produce
-#' metagene plots on the data or some subset of it.
+#' This metagene2 class encapsulates all of the steps necessary to perform
+#' metagene analyses, which are aggregations of coverages over multiple regions 
+#' (genes) to reveal patterns that might not be apparent from looking at
+#' individual regions. It will allow to load, convert and normalize bam 
+#' alignments and regions files/data. Once the data is ready, the user can then
+#' choose to produce metagene plots on the data or some subset of it.
+#'
+#' Most metagene analyses are a two-step affair:
+#' \enumerate{
+#'  \item Initialize the object using mg = metagene2$new(), specifying which
+#'        regions and bam files should be used for the analysis.
+#'  \item Generate a metagene plot using mg$produce_metagene, specifying any
+#'        additional parameter (Number of bins, facetting variables, etc.).
+#' }
+#'
+#' The metagene2 object will then internally chain all 6 required processing 
+#' steps.
+#' \enumerate{
+#'  \item Coverages are inferred from bam files (During metagene2$new)
+#'  \item Coverages from multiple bam files are grouped and normalized 
+#'       (During mg$group_coverages)
+#'  \item Coverages are binned together (During mg$bin_coverages)
+#'  \item Binned coverages are split according to the type of region they belong 
+#.        to (During mg$split_coverages_by_regions)
+#'  \item Coverage means and confidence intervals are calculated for each 
+#'        region * group combination (During mg$calculate_ci)
+#'  \item Metadata is added to the calculated coverages (During mg$add_metadata)
+#'  \item The metagene is plotted (During mg$plot)
+#' }
+#'
+#' Each of these steps has an associated function, which takes as input certain 
+#' parameters of the metagene analysis and returns an intermediary structure
+#' of interest (coverages, binned coverages, etc.). Those are described below, 
+#' in the "Processing methods" section.
+#'
+#' For further examples, see the metagene2 vignette.
 #'
 #' @section Constructor:
 #'
@@ -18,8 +51,12 @@
 #'
 #' \strong{Description:}
 #'
-#' This method returns a new metagene object. Upon initialization, a metagene object
-#' calculates coverages over all given regions in the provided bam files.
+#' This method returns a new metagene object. Upon initialization, a metagene 
+#' object calculates coverages over all given regions in the provided bam files.
+#' Any and all parameter associated with any of the processing steps can be
+#' initialized upon object construction. All analysis parameters that are not 
+#' explicitly specified in the constructor call are initialized to sensible 
+#' defaults.
 #'
 #' \strong{Parameters:}
 #' \describe{
