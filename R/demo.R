@@ -4,6 +4,7 @@
 #' 
 #' @examples
 #' bam_files <- get_demo_bam_files()
+#' @export
 get_demo_bam_files <- function() {
     c(system.file("extdata/align1_rep1.bam", package="metagene2"),
         system.file("extdata/align1_rep2.bam", package="metagene2"),
@@ -18,6 +19,7 @@ get_demo_bam_files <- function() {
 #' 
 #' @examples
 #' bam_files <- get_demo_rna_bam_files()
+#' @export
 get_demo_rna_bam_files <- function() {
     c(system.file("extdata/cyto4.bam", package="metagene"),
                    system.file("extdata/cyto3.bam", package="metagene2"),
@@ -31,6 +33,7 @@ get_demo_rna_bam_files <- function() {
 #' 
 #' @examples
 #' regions <- get_demo_regions()
+#' @export
 get_demo_region_filenames <- function() {
     c(system.file("extdata/list1.bed", package="metagene2"),
         system.file("extdata/list2.bed", package="metagene2"))
@@ -42,6 +45,7 @@ get_demo_region_filenames <- function() {
 #' 
 #' @examples
 #' regions <- get_demo_regions()
+#' @export
 get_demo_regions <- function() {
     regions_list <- lapply(get_demo_region_filenames(), rtracklayer::import, format="bed")
     regions_grl <- GRangesList(regions_list)
@@ -57,6 +61,7 @@ get_demo_regions <- function() {
 #' 
 #' @examples
 #' regions <- get_demo_rna_regions()
+#' @export
 get_demo_rna_regions <- function() {
     gene_files = c(system.file("extdata/DPM1.bed", package="metagene2"),
                    system.file("extdata/NDUFAB1.bed", package="metagene2"))
@@ -75,6 +80,7 @@ get_demo_rna_regions <- function() {
 #'
 #' @examples
 #' mg <- get_demo_metagene()
+#' @export
 get_demo_metagene <- function() {
     regions <- get_demo_regions()
     bam_files <- get_demo_bam_files()
@@ -87,6 +93,7 @@ get_demo_metagene <- function() {
 #'
 #' @examples
 #' mg <- get_demo_design()
+#' @export
 get_demo_design <- function() {
     return(data.frame(Samples = get_demo_bam_files(),
                       align1 = c(1L,1L,0L,0L,2L),
