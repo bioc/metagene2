@@ -12,7 +12,7 @@ calculate_bin_ci = function(x, sample_count, alpha, sample_indices=NULL) {
     means = colMeans(sampled);
     
     # Put the results in a named vector.
-    return(c(mean(x), quantile(means, c(alpha/2, 1-(alpha/2)))))
+    return(c(mean(x), stats::quantile(means, c(alpha/2, 1-(alpha/2)))))
 }
 
 # Given a list with elements Region, Design and Matrix, resamples all columns

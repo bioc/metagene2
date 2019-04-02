@@ -482,7 +482,7 @@ test.metagene_calculate_ci_values_unique_region = function(){
     checkTrue(max(full_df$bin)==5 && length(unique(full_df$bin))==5)
     
     # Bin values should match
-    checkTrue((full_df %>% filter(bin==3 & design=="fake_align3") %>% pull(value)) == 6)
+    checkTrue(full_df[full_df$bin==3 & full_df$design=="fake_align3",]$value == 6)
     
     # All groups should be represented.
     checkTrue(all(full_df$design %in% colnames(fake_bam_design)[-1]))

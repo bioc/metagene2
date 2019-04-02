@@ -45,6 +45,22 @@ bin_contiguous_regions <- function(coverage, regions, bin_count) {
 # Binning of discontiguous regions (GRangesList objects)                      #
 ###############################################################################
 
+# Function copied from IRanges:::regroupBySupergroup
+# to avoid using ':::' operator.
+internal_regroupBySupergroup <- function (x, supergroups) 
+{
+    supergroups <- IRanges::PartitioningByEnd(supergroups)
+    x_breakpoints <- end(IRanges::PartitioningByEnd(x))
+    ans_breakpoints <- x_breakpoints[end(supergroups)]
+    nleading0s <- length(supergroups) - length(ans_breakpoints)
+    if (nleading0s != 0L) 
+        ans_breakpoints <- c(rep.int(0L, nleading0s), ans_breakpoints)
+    ans_partitioning <- IRanges::PartitioningByEnd(ans_breakpoints, names = names(supergroups))
+    if (is(x, "PartitioningByEnd")) 
+        return(ans_partitioning)
+    relist(unlist(x, use.names = FALSE), ans_partitioning)
+}
+
 ### Function copied and modified from GenomicFeatures::coverageByTranscript
 ### The original function accepted input on which coverage() could be called,
 ### whereas this one presumes the coverage to be already computed.
@@ -91,14 +107,14 @@ discontiguous_coverage <- function(cvg, transcripts)
   ## STEP 6 - Compute coverage of each transcript by concatenating coverage of
   ##          its exons.
 
-    ans <- IRanges:::regroupBySupergroup(ex_cvg, transcripts)
+    ans <- internal_regroupBySupergroup(ex_cvg, transcripts)
 
     ans
 }
 
 # Bin one element from an RleList (x) into bin_count bins.
 bin_rle_list = function(x, bin_count) { 
-    viewMeans(Views(x, breakInChunks(length(x), nchunk=bin_count)))
+    IRanges::viewMeans(IRanges::Views(x, IRanges::breakInChunks(length(x), nchunk=bin_count)))
 }
 
 # Split coverage (an RleList) into bin_count bins over the specified 
@@ -121,7 +137,7 @@ bin_discontiguous_regions <- function(coverage, regions, bin_count) {
 bin_region_coverages = function(coverages, regions, bin_count) {
     results = list()
     for(cov_name in names(coverages)) {
-        if(is(regions, "GRangesList")) {
+        if(methods::is(regions, "GRangesList")) {
             results[[cov_name]] = bin_discontiguous_regions(coverages[[cov_name]], regions, bin_count)
         } else {
             if(length(regions)>0) {
@@ -142,7 +158,7 @@ bin_coverages_s = function(coverages, regions, bin_count) {
     # validations, but it would require pre-calculating
     # too much ahead of time (Which region will end up being used,
     # prepared regions vs raw regions, etc.)
-    if(is(regions, "GRangesList")) {
+    if(methods::is(regions, "GRangesList")) {
         smallest_region = min(unlist(lapply(regions, function(x) { sum(width(x))})))
     } else {
         smallest_region = min(width(regions))
@@ -348,7 +364,7 @@ split_regions = function(regions, metadata, split_by) {
     }
 
     # If we were splitting a GRanges, we can make this a GRangesList.
-    if(is(regions, "GRanges")) {
+    if(methods::is(regions, "GRanges")) {
         out_regions = GRangesList(out_regions)
     }
     

@@ -31,14 +31,13 @@ biocViews: ChIPSeq, Genetics, MultipleComparison, Coverage, Alignment,
     Sequencing
 License: Artistic-2.0  | file LICENSE
 LazyData: true
-BugReports: https://github.com/CharlesJB/metagene/issues
+BugReports: https://github.com/ArnaudDroitLab/metagene2/issues
 VignetteBuilder: knitr
 Depends:
     R (>= 3.4.0),
     R6 (>= 2.0),
     GenomicRanges,
-    BiocParallel,
-    dplyr
+    BiocParallel
 Imports:
     rtracklayer,
     tools,
@@ -52,10 +51,11 @@ Imports:
     purrr,
     data.table,
     methods,
-	utils, 
 	ensembldb,
 	EnsDb.Hsapiens.v86,
-	stringr
+	stringr,
+    dplyr,
+    magrittr
 Suggests:
     BiocGenerics,
     similaRpeak,

@@ -385,10 +385,15 @@
 #'
 #' @import GenomicRanges
 #' @import BiocParallel
+#' @importFrom dplyr filter
+#' @importFrom dplyr mutate
+#' @importFrom dplyr pull
 #' @importFrom R6 R6Class
 #' @importFrom data.table data.table
 #' @importFrom tools file_path_sans_ext
 #' @importFrom rtracklayer import
+#' @importFrom purrr map
+#' @importFrom magrittr "%>%"
 #' @export
 #' @format A metagene experiment manager
 metagene2 <- R6Class("metagene2",
@@ -754,7 +759,7 @@ metagene2 <- R6Class("metagene2",
             
             # Make sure the region_name column is still present.
             if(is.null(region_metadata$region_name)) {
-                warning("region_name is missing from the new metadata. Recreating it.")
+                message("region_name is missing from the new metadata. Recreating it.")
                 region_metadata$region_name = private$region_metadata$region_name
             }
             
@@ -764,7 +769,7 @@ metagene2 <- R6Class("metagene2",
                 if(is.null(region_metadata[[split_column]]) ||
                    !all(region_metadata[[split_column]]==private$region_metadata[[split_column]])) {
                     # The split_by columns were removed or changed. Restore the original parameter value.
-                    warning("Replace region_metadata with metadata which would result in a different ",
+                    message("Replace region_metadata with metadata which would result in a different ",
                             "region split. All caches at the 'split_regions' step will be invalidated, ",
                             "and split_by will be reset to its default value.")
                     private$update_params_and_invalidate_caches(split_by="region_name")

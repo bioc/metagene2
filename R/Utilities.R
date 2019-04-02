@@ -15,7 +15,7 @@
 #'
 #' @import GenomeInfoDb
 get_promoters_txdb <- function(txdb, upstream = 1000, downstream = 1000) {
-    stopifnot(is(txdb, "TxDb"))
+    stopifnot(methods::is(txdb, "TxDb"))
     GenomicFeatures::promoters(GenomicFeatures::genes(txdb),
                                upstream = upstream, downstream = downstream)
 }
@@ -42,9 +42,10 @@ get_promoters_txdb <- function(txdb, upstream = 1000, downstream = 1000) {
 #' }
 #'
 #' @import EnsDb.Hsapiens.v86
+#' @importFrom purrr map
 #' @importFrom stringr str_replace
 exon_by_gene_with_observed_transcripts <- function (adb, quantification_files){
-    stopifnot((is(adb, "TxDb") | is(adb, "EnsDb")))
+    stopifnot((methods::is(adb, "TxDb") | methods::is(adb, "EnsDb")))
     stopifnot(all(tolower(tools::file_ext(quantification_files)) == 'tsv'))
     
     message(paste0('Please wait, the process will end in about one minute ',
@@ -57,7 +58,7 @@ exon_by_gene_with_observed_transcripts <- function (adb, quantification_files){
     if(is(adb, "EnsDb") & substr(transcript_id[1],1,3) == 'ENS') {
         message('Please, wait few minutes during requests to EnsDB.')
         edb <- EnsDb.Hsapiens.v86
-        all_exons_id <- unique(exons(edb)$exon_id)
+        all_exons_id <- unique(ensembldb::exons(edb)$exon_id)
         slct <- unique(ensembldb::select(edb, key=all_exons_id, 
                                     keytype='EXONID', 
                                     columns = c('GENEID', 'EXONID', 
@@ -72,7 +73,7 @@ exon_by_gene_with_observed_transcripts <- function (adb, quantification_files){
         
         gr <-
         GRanges(seqnames = paste0('chr',slct$SEQNAME),
-        ranges = IRanges(start=slct$EXONSEQSTART, end=slct$EXONSEQEND),
+        ranges = IRanges::IRanges(start=slct$EXONSEQSTART, end=slct$EXONSEQEND),
         strand = slct$SEQNAME, exon_id = slct$EXONID, 
                                                     gene_id = slct$GENEID)
         return(split(gr, gr$gene_id))

@@ -21,10 +21,10 @@ get_demo_bam_files <- function() {
 #' bam_files <- get_demo_rna_bam_files()
 #' @export
 get_demo_rna_bam_files <- function() {
-    c(system.file("extdata/cyto4.bam", package="metagene"),
-                   system.file("extdata/cyto3.bam", package="metagene2"),
-                   system.file("extdata/nuc4.bam", package="metagene2"),
-                   system.file("extdata/nuc3.bam", package="metagene2"))
+    c(system.file("extdata/cyto4.bam", package="metagene2"),
+      system.file("extdata/cyto3.bam", package="metagene2"),
+      system.file("extdata/nuc4.bam", package="metagene2"),
+      system.file("extdata/nuc3.bam", package="metagene2"))
 }
 
 #' Get regions filenames for demo

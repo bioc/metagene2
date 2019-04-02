@@ -1,5 +1,5 @@
 
-metagene: A package to produce metagene plots
+metagene2: A package to produce metagene plots
 ========================================================
 
 This package produces metagene plots to compare the behavior of DNA-interacting proteins at selected groups of genes/features. Bam files are used to increase the resolution. Multiple combination of group of bam files and/or group of genomic regions can be compared in a single analysis. Bootstraping analysis is used to compare the groups and locate regions with statistically different enrichment profiles.
@@ -9,7 +9,7 @@ This package produces metagene plots to compare the behavior of DNA-interacting 
 [![Bioconductor Time](http://bioconductor.org/shields/years-in-bioc/metagene.svg)](http://bioconductor.org/packages/release/bioc/html/metagene.html "Bioconductor status")
 
 metagene is now an official package of [Bioconductor](http://bioconductor.org/). The current release can be directly downloaded from their website:
-[Current release](http://www.bioconductor.org/packages/release/bioc/html/metagene.html)
+[Current release](http://www.bioconductor.org/packages/release/bioc/html/metagene2.html)
 
 
 ## Authors ##
@@ -39,4 +39,4 @@ For more information on Artistic 2.0 License see
 ## Bugs/Feature requests ##
 
 If you have any bugs or feature requests,
-[let us know](https://github.com/CharlesJB/metagene/issues). Thanks!
+[let us know](https://github.com/ArnaudDroitLab/metagene2/issues). Thanks!

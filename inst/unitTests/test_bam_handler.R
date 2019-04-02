@@ -8,6 +8,7 @@ if(FALSE) {
     library( "rtracklayer" )
     library( "DBChIP" )
     library( "stringr" )
+    library( "dplyr" )
 }
 
 ### }}}

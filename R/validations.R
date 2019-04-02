@@ -88,7 +88,7 @@ validate_padding_size = function(padding_size) {
 }
 
 validate_cores = function(cores) {
-    isBiocParallel = is(cores, "BiocParallelParam")
+    isBiocParallel = methods::is(cores, "BiocParallelParam")
     isInteger = ((is.numeric(cores) || is.integer(cores)) &&
                     cores > 0 && as.integer(cores) == cores)
     if (!isBiocParallel && !isInteger) {
