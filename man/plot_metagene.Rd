@@ -31,5 +31,5 @@ Produce a metagene plot
 \examples{
 mg <- get_demo_metagene()
 df <- mg$add_metadata()
-p <- metagene2:::plot_metagene(df)
+p <- metagene2::plot_metagene(df)
 }

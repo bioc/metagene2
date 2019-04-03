@@ -9,30 +9,31 @@
 #'
 #' Most metagene analyses are a two-step affair:
 #' \enumerate{
-#'  \item Initialize the object using mg = metagene2$new(), specifying which
-#'        regions and bam files should be used for the analysis.
-#'  \item Generate a metagene plot using mg$produce_metagene, specifying any
-#'        additional parameter (Number of bins, facetting variables, etc.).
+#'  \item Initialize the object using \code{mg = metagene2$new()}, specifying 
+#'        which regions and bam files should be used for the analysis.
+#'  \item Generate a metagene plot using \code{mg$produce_metagene}, specifying 
+#'        any additional parameter (Number of bins, facetting variables, etc).
 #' }
 #'
-#' The metagene2 object will then internally chain all 6 required processing 
-#' steps.
+#' The \code{metagene2} object will then internally chain all 6 required  
+#' processing steps.
 #' \enumerate{
-#'  \item Coverages are inferred from bam files (During metagene2$new)
+#'  \item Coverages are inferred from bam files (During \code{metagene2$new})
 #'  \item Coverages from multiple bam files are grouped and normalized 
-#'       (During mg$group_coverages)
-#'  \item Coverages are binned together (During mg$bin_coverages)
+#'       (During \code{mg$group_coverages})
+#'  \item Coverages are binned together (During \code{mg$bin_coverages})
 #'  \item Binned coverages are split according to the type of region they belong 
-#.        to (During mg$split_coverages_by_regions)
+#'        to (During \code{mg$split_coverages_by_regions})
 #'  \item Coverage means and confidence intervals are calculated for each 
-#'        region * group combination (During mg$calculate_ci)
-#'  \item Metadata is added to the calculated coverages (During mg$add_metadata)
-#'  \item The metagene is plotted (During mg$plot)
+#'        region * group combination (During \code{mg$calculate_ci})
+#'  \item Metadata is added to the calculated coverages (During 
+#'        \code{mg$add_metadata})
+#'  \item The metagene is plotted (During \code{mg$plot})
 #' }
 #'
 #' Each of these steps has an associated function, which takes as input certain 
 #' parameters of the metagene analysis and returns an intermediary structure
-#' of interest (coverages, binned coverages, etc.). Those are described below, 
+#' of interest (coverages, binned coverages, etc). Those are described below, 
 #' in the "Processing methods" section.
 #'
 #' For further examples, see the metagene2 vignette.
@@ -51,12 +52,12 @@
 #'
 #' \strong{Description:}
 #'
-#' This method returns a new metagene object. Upon initialization, a metagene 
-#' object calculates coverages over all given regions in the provided bam files.
-#' Any and all parameter associated with any of the processing steps can be
-#' initialized upon object construction. All analysis parameters that are not 
-#' explicitly specified in the constructor call are initialized to sensible 
-#' defaults.
+#' This method returns a new \code{metagene2} object. Upon initialization, a  
+#' \code{metagene2} object calculates coverages over all given regions in the 
+#' provided bam files. Any and all parameter associated with any of the 
+#' processing steps can be initialized upon object construction. All analysis  
+#' parameters that are not explicitly specified in the constructor call are  
+#' initialized to sensible defaults.
 #'
 #' \strong{Parameters:}
 #' \describe{
@@ -70,20 +71,21 @@
 #'                   \code{GRangesList} object where each individual \code{GRanges} element
 #'                   represents a set of regions to be stitched together.
 #'
-#'                   As a convenience, in "separate" mode, \code{metagene} will convert any
+#'                   As a convenience, in "separate" mode, \code{metagene2} will convert any
 #'                   passed in \code{GRangesList} into an unlisted \code{GRanges} with an 
-#'                   additional region_name metadata column containing the name of the
-#'                   \code{GRangesList} element it was extracted from.
+#'                   additional \code{region_name} metadata column containing 
+#'                   the name of the \code{GRangesList} element it was extracted 
+#'                   from.
 #'
-#'                   Also as a convenience, regions can also be a \code{character} 
+#'                   Also as a convenience, \code{regions} can also be a \code{character} 
 #'                   \code{vector} of filenames, which are then imported into a GRangesList.
 #'                   Supported file formats are BED, narrowPeak, broadPeak, gff and gtf.}
 #'    \item{bam_files}{A \code{vector} of BAM filenames. The BAM files must be
 #'                    indexed. i.e.: if a file is named file.bam, there must
 #'                    be a file named file.bam.bai or file.bai in the same 
-#'                    directory. If bam_files is a named vector, then the provided names
+#'                    directory. If \code{bam_files} is a named vector, then the provided names
 #'                    can be used downstream to refer to those bam files. If no
-#'                    names are provided, \code{metagene} will try to infer appropriate ones.}
+#'                    names are provided, \code{metagene2} will try to infer appropriate ones.}
 #'    \item{assay}{\code{'chipseq'}, \code{'rnaseq'} or NULL. If non-NULL, metagene will
 #'                 set other parameters, such as region_mode and strand_specific, to logical
 #'                 values for the given assay. Default: \code{'chipseq'}}
@@ -107,8 +109,8 @@
 #'                Default: \code{SerialParam()}.}
 #'    \item{verbose}{Print progression of the analysis. A logical constant.
 #'                    Default: \code{FALSE}.}
-#'    \item{force_seqlevels}{If \code{TRUE}, Remove regions that are not found
-#'                in bam file header. Default: \code{FALSE}. TRUE and FALSE
+#'    \item{force_seqlevels}{If \code{TRUE}, remove regions that are not found
+#'                in bam file header. Default: \code{FALSE}. \code{TRUE} and \code{FALSE}
 #'                respectively correspond to pruning.mode = "coarse"
 #'                and "error" in ?seqinfo.}
 #'    \item{paired_end}{Set this to \code{TRUE} if the provided bam files
@@ -146,7 +148,7 @@
 #'        parameter.
 #'
 #' @return
-#' \code{metagene2$new} returns a \code{metagene} object which contains the
+#' \code{metagene2$new} returns a \code{metagene2} object which contains the
 #' normalized coverage values for every regions in all specified BAM files.
 #'
 #' @section Processing methods:
@@ -181,13 +183,15 @@
 #'            names of bam_files passed on initialization. Each subsequent columns
 #'            represents a design group, that is to say a combination of bam files
 #'            whose coverages should be grouped together into a logical unit.
-#'            These columns should contain TRUE/FALSE values indicating whether the 
-#'            bam files on that row should be included within the specified group.
+#'            These columns should contain integer values indicating whether the 
+#'            bam files on that row should be excluded (0), included as an`
+#'            "input" (1) or included as a "control" (2) within the specified 
+#'            design group.
 #'            \code{NA} can be used keep previous design value. Default: \code{NA}.}
 #'    \item{normalization}{The algorithm to use to normalize coverages. Possible
 #'                        values are \code{NULL} (no normalization), "RPM" and "NCIS". See
 #'                        Liand and Keles 2012 for the NCIS algorithm. \code{NA} can 
-#'                        be used keep previous design value. Default: \code{NA}}
+#'                        be used keep the previous value. Default: \code{NA}}
 #'    \item{design_filter}{A logical vector specifying which of the design groups specified
 #'                         within the \code{design} parameter should be included in the metagene.
 #'                         Useful for quickly reprocessing a subset of samples.
@@ -353,7 +357,7 @@
 #'    \item{}{Returns matrices of binned coverages.}
 #' }
 #'
-#' \strong{mg$get_data_frame()}
+#' \strong{mg$get_data_frame(region_names = NULL, design_names = NULL)}
 #' \describe{
 #'    \item{}{Returns full data-frame of results.}
 #'    \item{region_names}{The names of the regions to extract. If \code{NULL},

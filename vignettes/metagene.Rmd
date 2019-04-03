@@ -4,7 +4,7 @@ output:
     BiocStyle::html_document:
         toc: true
 vignette: >
-    %\VignetteIndexEntry{Introduction to metagene}
+    %\VignetteIndexEntry{Introduction to metagene2}
     %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
 ---
@@ -15,7 +15,7 @@ library(knitr)
 ```
 
 **Package**: `r Biocpkg("metagene2")`<br />
-**Modified**: July 20th, 2018<br />
+**Modified**: April 2nd, 2019<br />
 **Compiled**: `r date()`<br />
 **License**: `r packageDescription("metagene2")[["License"]]`<br />
 
@@ -32,12 +32,11 @@ of groups of features and/or groups of bam files can be compared in a single ana
 The metagene2 package uses bootstrap analysis to provide an estimation
 of the mean enrichment and a confidence interval for each group of samples.
 
-This vignette will introduce the main features of the metagene2 package. You can load 
+This vignette will introduce the main features of the metagene2 package. You can load 
 the metagene2 package by calling `library(metagene2)`:
 
 ```{r libraryLoad, message = FALSE}
 library(metagene2)
-library(ggplot2)
 ```
 
 # Creating a metagene object
@@ -127,7 +126,7 @@ regions <- get_demo_region_filenames()
 regions
 ```
 
-By providing those to file names to `metagene2$new`, they will be loaded 
+By providing those two file names to `metagene2$new`, they will be loaded 
 and converted into appropriate objects:
 ```{r regionsArgumentFilenameLoad}
 mg <- metagene2$new(regions = get_demo_region_filenames(),
@@ -137,7 +136,7 @@ mg$get_regions()
 
 ### Defining contiguous regions using GRanges or GRangesList objects
 
-As an alternative to a list of BED files, `GRanges` objects can be also used
+As an alternative to a list of BED files, `GRanges` objects can be used
 to define contiguous regions of interest. Each range defined within the `GRanges`
 object is treated separately from the others. `GRangesList` objects
 are also accepted, but they are automatically coerced into `GRanges`
@@ -341,8 +340,9 @@ A full metagene analysis consists of several steps, each of which
 produces an intermediary result of interest. Calling the `new` and 
 `produce_metagene` methods automatically perform all of those steps 
 sequentially. However, if a full analysis is not required, it is also 
-possible to carry these out one by one. The following schematic 
-illustrates those intermediate steps and results:
+possible to carry these out one by one. When calling any step of the chain,
+all previous steps are automatically carried out if they hadn't previously been.
+The following schema illustrates those intermediate steps and results:
 ![schematic representation of processing steps](img/processing_step_schema.png)
 
 ## Arguments, results caching and chaining
@@ -355,7 +355,9 @@ an internal list of all analytical parameters, which can be obtained by calling
 
 ```{r getParams}
 mg <- get_demo_metagene()
-mg$get_params()
+names(mg$get_params())
+
+mg$get_params()[["bin_count"]]
 ```
 
 Any of these parameters can be set when calling `metagene2$new` or `produce_metagene`.
@@ -367,6 +369,8 @@ mg$produce_metagene(alpha=0.01, title="Set parameters on produce_metagene")
 ```
 
 These parameter values can be overwritten in further calls to produce_metagene.
+All parameters for metagene's intermediary steps default to NA, which means 
+"keep the previous value for this parameter".
 When metagene detects that a parameter has changed, it invalidates only the 
 necessary caches, and updates the parameter value in its internal list.
 
@@ -374,8 +378,9 @@ In the following example, we regenerate the previous metagene object by changing
 the number of bins. Genome-wide coverages are not computed again, and our previous 
 alpha value and title remain the same.
 
-both `metagene2$new` and 
-metagene2$produce_metagene All parameters for metagene's intermediary steps default to NA
+```{r changeSingleParamProduceMetagene}
+mg$produce_metagene(bin_count=100)
+```
 
 Below, we provide a short explanation of all of the above steps, as well as
 a brief description of their most commonly used parameters. You can refer to 
@@ -384,69 +389,118 @@ each function's formal documentation in the `metagene2` manual for more details.
 ## `metagene2$new`
 Initializing the metagene object calculates genome wide coverages for all 
 bam files, and performs some preprocessing on the regions of interest.
-* regions, 
-* bam_files, 
-* **assay** = 'chipseq',
-* **region_mode**="auto", 
+* **regions**: Use this argument to specify which regions the metagene must be 
+               computed over. See section 2.2, "Specifying genomic regions". 
+
+* **bam_files**: Use this argument to specify which bam_files contain sample 
+                 information. See section 2.1, "Specifying alignment files".
+
+* **assay**: You can use this as a shorthand for specifying sensible defaults 
+             for analysis parameters based on the type of experiment. You can 
+             use "chipseq" for a strand agnostic experiment using contiguous
+             regions, or "rnaseq" for a strand-specific experiment where
+             regions are stitched exons.
+
+* **region_mode**:Set the way the regions parameter is interpreted. Can be 
+                  'separate', 'stitch' or 'auto'. See section 2.2, 
+                  "Specifying regions".
 
 * **padding_size**: The regions defined in `regions` will be padded by this 
     many nucleotides at both ends.
+    
 * **cores**: By passing an integer (the number of cores to use) or a 
     `BiocParallelParam` object, this argument allows metagene to run certain 
     operations in parallel.
+    
 * **paired_end**: Setting this to true indicates that your bam files containing
     paired_end data.
  
 * **strand_specific**: Set this to TRUE if you want reads on the opposite strand
-    to be discarded when calculating coverage.
+    to be discarded when calculating coverages.
+    
 * **paired_end_strand_mode**: When `strand_specific` is TRUE, this flag determines
     how read orientation should be interpreted. See the documentation for 
     `GenomicAlignments:::readGAlignmentPairs` for the possible values.
 
-* region_metadata=NULL
+* **region_metadata**: Use this to specify metadata about your regions. It must
+                       have as many rows as you have regions. You can then use
+                       the columns therein for the `split_by` (in `mg$split_coverages_by_regions`),
+                       `group_by` and `facet_by` (in `mg$plot()`) parameters.
+
+* **extend_reads**: When calculating coverages, reads will be extended as if they 
+                    were this long. In single-end chip-seq experiments, the captured
+                    fragments are usually longer than their sequenced reads.
+                    This option allows for "restoring" those fragments, and
+                    provides smoother coverages.
+
+* **invert_strand**: Set this to TRUE to invert strands when computing coverages.
+                     thisis useful when dealing with single-end stranded RNA-seq,
+                     which is often based cDNA rather than mRNAs.
 
 ## `group_coverages`
 
 This function groups bam file coverages into design group coverages, and performs
 normalization and noise removal when requested.
-* **design**:=NA,
-* **normalization**: This parameter determines how the coverages are normalized. There
-   are only two possible values: "RPM" (Reads per million) or NULL (No normalization).
-* **noise_removal**: This parameter determines whether coverage from control samples
-   should be subtracted from coverage of the input samples. There are only two possible
-    values: "NCIS" and NULL.
-* **design_filter**:=NA
+
+* **design**: The design explains how bam files are grouped together into logical
+              design groups. See section 3.1, "Grouping bam files". By default,
+              each bam file is in its own design group.
+* **normalization**: This parameter determines how the coverages are normalized. 
+   There are three possible values: "RPM" (Reads per million), "NCIS" (See
+   Liand and Keles 2012) or NULL (No normalization).
+* **design_filter**: You can exclude certain design groups from further processing
+                     by filtering them. This is useful if you want to quickly 
+                     recalculate certain values without processing every single 
+                     bam file.
 
 ## `bin_coverages`
 * **bin_count**: Determines the number of bins regions will be divided into.
-* **region_filter**: 
+                 `bin_count` cannot be smaller than the size of your smallest region.
+* **region_filter**: You can exclude certain regions from further processing
+                     by filtering them. This is useful if you want to quickly 
+                     recalculate certain values without processing every single 
+                     region.
 
 ## `split_coverages_by_regions`
-* **split_by**:
+
+This function splits the coverage matrices into submatrices where all regions
+have identical metadata.
+
+* **split_by**: This parameter is used to group together regions with similar 
+                metadata. See section 3.2.2, "Grouping regions using metadata".
 
 ## `calculate_ci`
+
+`calculate_ci` calculates coverage means across all (regions * design group * bin) 
+combinations. It also estimates a confidence interval for those coverages,
+using a resampling strategy.
+
 * **alpha**: The alpha parameter for the confidence interval calculations.
 * **sample_count**: The number of resampling to be performed.
-* **resampling_strategy**: 
+* **resampling_strategy**: The resampling strategy to be used when performing the
+                           bootstrap analysis, which can be either 'profile'
+                           or 'bin'. In 'profile' mode, whole profiles
+                           across all bins are resampled. In 'bin' mode,
+                           each bin is resampled individually and independantly 
+                           from all others.
 
 ## `add_metadata`
-* **design_metadata**:
+
+`add_metadata` takes the data-frame produced by `calculate_ci`and adds region
+and design metadata to it so it can be more easily plotted.
+
+* **design_metadata**: A data-frame providing metadata about the design groups.
 
 ## `plot`
-During this step, metagene will use the `data.frame` to plot the calculated
-values using `ggplot2`. We show a subset of the regions by using the 
-`region_names` and `design_names` parameter. The `region_names` correspond to 
-the names of the regions used during the initialization. The `design_name` 
-will vary depending if a design was added. If no design was added, this param 
-correspond to the BAM name or BAM filenames. Otherwise, we have to use the 
-names of the columns from the design.
 
-* **region_names** = NULL, 
-* **design_names** = NULL, 
-* **title** = NA,
-* **x_label** = NA, 
-* **facet_by**=NA, 
-* **group_by**=NA
+During this step, metagene will use the `data.frame` provided by àdd_metadata` 
+to plot the calculated values using `ggplot2`. 
+
+* **title**: A title for the plot.
+* **x_label**: = An x label for the plot.
+* **facet_by**:+- A faceting formula.
+* **group_by**: Which metadata column should we use for determining the
+                color scale?
                         
 ```{r showPlot}
 mg$plot(title = "Demo plot subset")
@@ -459,7 +513,7 @@ mg$plot(title = "Demo plot subset")
 ## Getters
 
 Multiple getters functions are available to access the data that is stored in a
-`metagene2` object.
+`metagene2` object. Here we present the most relevant ones.
 
 ### `get_params`
 
@@ -475,19 +529,11 @@ one if the parameter has yet to be defined by the user.
 
 ```{r getParams2}
 mg <- get_demo_metagene()
-mg$get_params()
+names(mg$get_params())
+
+mg$get_params()[c("bin_count", "alpha", "design")]
 ```
 
-### `get_design`
-
-While the metagene design is available through `get_params` in the same way as 
-all other parameters, a convenient `get_design` function allows us to retrieve
-it directly:
-
-```{r getDesign}
-mg <- get_demo_metagene()
-mg$get_design()
-```
 
 ### `get_bam_count`
 
@@ -502,6 +548,7 @@ mg$get_bam_count(mg$get_params()[["bam_files"]][1])
 
 The `get_regions` function returns the post-processed regions that 
 `metagene2` uses internally:
+
 ```{r getRegions}
 # Out demo regions are a GRangesList of two elements containing 50 ranges each.
 get_demo_regions()
@@ -520,7 +567,7 @@ mg$get_regions()
 
 To get the coverages produced during the initialization of the `metagene2`
 object, you can use the `get_raw_coverages` function. Please note that to save
-space, metagene will only extract the coverages in the regions provided.
+memory, metagene will only extract the coverages in the selected regions.
 
 ```{r getRawCoverages}
 coverages <- mg$get_raw_coverages()
@@ -551,19 +598,14 @@ memory limits when working with multiple large datasets (especially when there
 is a lot of regions with a large width).
 
 One way to avoid this is to analyse each dataset seperately,  then merge the
-resulting data-frames before producing the metagene plot:
-
-```{r memory, collapse=TRUE}
-#mg1 <- metagene2$new(bam_files = bam_files, regions = regions[1])
-#mg1$produce_metagene()
-#mg2 <- metagene2$new(bam_files = bam_files, regions = regions[2])
-#mg2$produce_metagene()
-```
-
-Then you can extract the `data.frame`s and combine them with `rbind` before 
-Finally passing them to the `plot_metagene` function:
+resulting data-frames using `rbind` before passing them to passing them to the
+`plot_metagene` function:
 
 ```{r plotMetagene}
-#p <- plot_metagene(rbind(mg1$get_data_frame(), mg2$get_data_frame()))
-#p + ggplot2::ggtitle("Managing large datasets")
+mg1 <- metagene2$new(bam_files = get_demo_bam_files(), 
+                     regions = get_demo_regions()[1])
+mg2 <- metagene2$new(bam_files = get_demo_bam_files(),
+                     regions = get_demo_regions()[2])
+plot_metagene(rbind(mg1$add_metadata(), mg2$add_metadata()),
+              facet_by=.~region_name)
 ```

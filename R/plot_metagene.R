@@ -21,7 +21,8 @@
 #' @examples
 #' mg <- get_demo_metagene()
 #' df <- mg$add_metadata()
-#' p <- metagene2:::plot_metagene(df)
+#' p <- metagene2::plot_metagene(df)
+#' @export
 plot_metagene <- function(df, facet_by=NULL, group_by=NULL) {
     df$design <- as.factor(df$design)
 
