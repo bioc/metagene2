@@ -76,27 +76,27 @@ names.
 ```{r bamFiles_show}
 # We create a vector with paths to the bam files of interest.
 bam_files <- get_demo_bam_files()
-bam_files
+basename(bam_files)
 ```
 
 Each bam file must have a corresponding index file:
 ```{r bamFiles_bai}
 # List .bai matching our specified bam files.
-Sys.glob(gsub(".bam", ".ba*", bam_files))
+basename(Sys.glob(gsub(".bam", ".ba*", bam_files)))
 ```
 
 If no names were provided for the bam files, metagene automatically 
 generates some:
 ```{r bamFiles_autoname}
 mg <- metagene2$new(regions = get_demo_regions(), bam_files = bam_files)
-mg$get_params()[["bam_files"]]
+names(mg$get_params()[["bam_files"]])
 ```
 
 We also could have explicitly named our bam files.
 ```{r bamFiles_explicitname}
 names(bam_files) = c("a1_1", "a1_2", "a2_1", "a2_2", "ctrl")
 mg <- metagene2$new(regions = get_demo_regions(), bam_files = bam_files)
-mg$get_params()[["bam_files"]]
+names(mg$get_params()[["bam_files"]])
 ```
 
 ## Specifying genomic regions
@@ -505,8 +505,6 @@ to plot the calculated values using `ggplot2`.
 ```{r showPlot}
 mg$plot(title = "Demo plot subset")
 ```
-
-## `produce_metagene`
 
 # Manipulating the `metagene2` objects
 
