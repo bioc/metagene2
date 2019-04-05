@@ -1,32 +1,28 @@
 Package: metagene2
-Version: 0.0.99
-Date: 2017-10-13
+Version: 1.1.0
+Date: 2019-04-05
 Title: A package to produce metagene plots
-Author: Charles Joly Beauparlant 
-	<charles.joly-beauparlant@crchul.ulaval.ca>, Fabien Claude Lamaze 
-	<fabien.lamaze.1@ulaval.ca>, Rawane Samb <rawane.samb.1@ulaval.ca>, 
-        Cedric Lippens <lippens.cedric@protonmail>,
-	Astrid Louise Deschenes <Astrid-Louise.Deschenes@crchudequebec.ulaval.ca> 
+Author: Eric Fournier <fournier.eric.2@crchudequebec.ulaval.ca>, 
+    Charles Joly Beauparlant <charles.joly-beauparlant@crchul.ulaval.ca>,
+    Cedric Lippens <lippens.cedric@protonmail>
 	and Arnaud Droit <arnaud.droit@crchuq.ulaval.ca>.
-Author@R: c(person("Charles", "Joly Beauparlant",
+Author@R: c(person("Eric", "Fournier",
+    email="fournier.eric.2@crchudequebec.ulaval.ca"), 
+    c(person("Charles", "Joly Beauparlant",
     email="charles.joly-beauparlant@crchul.ulaval.ca"), 
-	person("Fabien Claude", "Lamaze", 
-	email="fabien.lamaze.1@ulaval.ca"), 
-	person("Rawane", "Samb",
-    email="rawane.samb.1@ulaval.ca"), 
 	person("Cedric", "Lippens",
     email="lippens.cedric@protonmail.com"),
-    person("Astrid Louise","Deschenes",
-    email="Astrid-Louise.Deschenes@crchudequebec.ulaval.ca"), 
 	person("Arnaud", "Droit", 
 	email="arnaud.droit@crchuq.ulaval.ca"))
-Maintainer: Charles Joly Beauparlant <charles.joly-beauparlant@crchul.ulaval.ca>
-Description: This package produces metagene plots to compare the behavior of
-    DNA-interacting proteins at selected groups of genes/features. Bam files
-    are used to increase the resolution. Multiple combination of group of bam
-    files and/or group of genomic regions can be compared in a single analysis.
-    Bootstraping analysis is used to compare the groups and locate regions with
-    statistically different enrichment profiles.
+Maintainer: Eric Fournier <fournier.eric.2@crchudequebec.ulaval.ca>
+Description: This package produces metagene plots to compare coverages
+    of sequencing experiments at selected groups of genomic regions. It can
+    be used for such analyses as assessing the binding of DNA-interacting 
+    proteins at promoter regions or surveying antisense transcription over the
+    length of a gene. The metagene2 package can manage all aspects of the 
+    analysis, from normalization of coverages to plot facetting according to
+    experimental metadata. Bootstraping analysis is used to provide confidence
+    intervals of per-sample mean coverages.
 biocViews: ChIPSeq, Genetics, MultipleComparison, Coverage, Alignment,
     Sequencing
 License: Artistic-2.0  | file LICENSE
@@ -34,7 +30,7 @@ LazyData: true
 BugReports: https://github.com/ArnaudDroitLab/metagene2/issues
 VignetteBuilder: knitr
 Depends:
-    R (>= 3.4.0),
+    R (>= 3.5.0),
     R6 (>= 2.0),
     GenomicRanges,
     BiocParallel
