@@ -14,10 +14,9 @@ metagene is now an official package of [Bioconductor](http://bioconductor.org/).
 
 ## Authors ##
 
+[Eric Fournier](fournier.eric.2@crchudequebec.ulaval.ca), 
 [Charles Joly Beauparlant](http://ca.linkedin.com/pub/charles-joly-beauparlant/89/491/3b3),
-[Fabien Claude Lamaze](http://ca.linkedin.com/in/fabienlamaze/en),
-[Rawane Samb](http://ca.linkedin.com/in/rawanesamb),
-[Astrid Deschenes](http://ca.linkedin.com/in/astriddeschenes) and
+[Cedric Lippens](lippens.cedric@protonmail),
 [Arnaud Droit](http://ca.linkedin.com/in/drarnaud).
 
 See
@@ -26,7 +25,7 @@ website.
 
 ## Maintainer ##
 
-[Charles Joly Beauparlant](http://ca.linkedin.com/pub/charles-joly-beauparlant/89/491/3b3)
+[Eric Fournier](fournier.eric.2@crchudequebec.ulaval.ca)
 
 ## License ##
 
