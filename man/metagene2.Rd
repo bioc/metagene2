@@ -30,25 +30,37 @@ Most metagene analyses are a two-step affair:
 }
 
 The \code{metagene2} object will then internally chain all 6 required  
-processing steps.
+processing steps, updating its internal caches along the way:
 \enumerate{
- \item Coverages are inferred from bam files (During \code{metagene2$new})
+ \item Coverages are inferred from bam files (\code{metagene2$new}).
  \item Coverages from multiple bam files are grouped and normalized 
-      (During \code{mg$group_coverages})
- \item Coverages are binned together (During \code{mg$bin_coverages})
+      (\code{mg$group_coverages}).
+ \item Coverages are binned together (\code{mg$bin_coverages})
  \item Binned coverages are split according to the type of region they belong 
-       to (During \code{mg$split_coverages_by_regions})
+       to (\code{mg$split_coverages_by_regions}).
  \item Coverage means and confidence intervals are calculated for each 
-       region * group combination (During \code{mg$calculate_ci})
- \item Metadata is added to the calculated coverages (During 
-       \code{mg$add_metadata})
- \item The metagene is plotted (During \code{mg$plot})
+       region * group combination (\code{mg$calculate_ci}).
+ \item Metadata is added to the calculated coverages ( 
+       \code{mg$add_metadata}).
+ \item The metagene is plotted (\code{mg$plot}).
 }
 
 Each of these steps has an associated function, which takes as input certain 
 parameters of the metagene analysis and returns an intermediary structure
-of interest (coverages, binned coverages, etc). Those are described below, 
-in the "Processing methods" section.
+of interest (coverages, binned coverages, long-form data frame of confidence 
+intervals, etc). Those are described below, in the "Processing methods" 
+section.
+
+All processing methods automatically call previous processing steps if
+those have not already been run. For example, there is no need to call
+\code{mg$group_coverages()} before calling \code{mg$bin_coverages()}: the
+metagene2 object will automatically detect that certain prerequisite steps 
+have not yet been performed, and run them.
+
+Additionally, when calling produce_metagene a second time to change certain
+analysis parameters after generating an initial metagene plot, only the 
+required caches are reset: all non-impacted aspects of the analysis are left 
+untouched, decreasing processing time.
 
 For further examples, see the metagene2 vignette.
 }
@@ -163,6 +175,69 @@ initialized to sensible defaults.
        parameter.
 }
 
+\section{produce_metagene()}{
+
+
+\strong{Usage:}
+
+\code{mg$produce_metagene(...)}
+
+\strong{Description:}
+
+\code{produce_metagene} is the workhorse method of the metagene2 object.
+This method performs all of the necessary analysis steps for the production
+of the metagene plot, and returns that plot. Any and all parameters of the 
+metagene analysis, as documented in the individual processing steps, can be 
+passed to \code{produce_metagene}. The metagene2 object will then determines
+which intermediate caches would be affected by changes to those parameters,
+invalidate them, and rerun all steps up to the plotting. This makes 
+\code{produce_metagene} ideal for fast, iterative takes on the data.
+
+Below we present those parameters and a brief description of their usage.
+Please refer to the affected processing step for a more in-depth explanation
+of each parameter.
+
+\strong{Parameters:}
+\describe{
+   \item{design}{A \code{data.frame} that describes the grouping of the bam files
+           into design groups. By default, each bam file is its own design group.
+           See \code{group_coverages}.}
+   \item{normalization}{The algorithm to use to normalize coverages,
+                       \code{NULL} (no normalization), "RPM" or "NCIS". By default,
+                       no normalization occurs. See \code{group_coverages}.}
+   \item{design_filter}{Indices indicating which subset of design groups should 
+                        be included in the analysis. By default, all design  
+                        groups/bam files are included. See 
+                        \code{group_coverages}.}
+   \item{bin_count}{The number of bins regions should be split into. Defaults
+                    to 100. See \code{bin_coverages}.}
+   \item{region_filter}{The subset of regions to be kept for the analysis.
+                        By default, all regions are kept. See \code{bin_coverages}}
+   \item{split_by}{Which metadata columns should we use to split the set of 
+                   regions into subset of interests? Defaults to "region_name",
+                   an automatically added column. 
+                   See \code{split_coverages_by_regions}.}
+   \item{alpha}{The alpha level of the confidence interval estimates.
+                Defaults to 0.05. See \code{calculate_ci}.}
+   \item{sample_count}{The number of draws to perform in the bootstrap
+                       calculations used to calculate the confidence inteval.  
+                       Defaults to 1000. See \code{calculate_ci}}
+   \item{resampling_strategy}{The resampling strategy to be used when performing the
+                              bootstrap analysis, which can be either \code{'profile'}
+                              or \code{'bin'}. Defaults to \code{'bin'}}
+   \item{design_metadata}{A data-frame containing metadata for the design groups.
+                          By default, no metadata is associated. See 
+                          \code{add_metadata}.}
+   \item{title}{A title to add to the graph. See \code{plot}.}
+   \item{x_label}{X-axis label for the metagene plot. See \code{plot}.}
+   \item{facet_by}{A formula to be used for facetting the metagene plot. 
+                   By default, no facetting occurs. See \code{plot}.}
+   \item{group_by}{The metadata column used to build the color scale. By 
+                   default, the combination of design and region name is 
+                   used. See \code{plot}.}
+}
+}
+
 \section{Processing methods}{
 
 
@@ -240,7 +315,7 @@ each element contains the resulting matrix for a specific design group.
                     value. Default: \code{NA}.}
    \item{region_filter}{This parameter defines the subset of regions within the \code{regions}
                         parameter passed on initialization on which the metagene
-                        should be generated. \code{region_filter} can be (1) A quosure, to be evaluated
+                        should be generated. \code{region_filter} can be (1) a quosure, to be evaluated
                         in the context of the \code{region_metadata} data-frame, (2) a character
                         vector containing the names of the regions to be used or (3) a logical or numeric
                         vector to be used for subsetting. \code{NA} can be used to keep the previous
@@ -259,7 +334,7 @@ each element contains the resulting matrix for a specific design group.
 
 This methods splits the matrices generated by mg$bin_coverages
 into groups of regions where the values of the metadata columns
-specified by \code{split_by} are homogeneous. It returns A list
+specified by \code{split_by} are homogeneous. It returns a list
 where each element represents a design group: each of those
 element is in turn a list representing groups of regions for which
 all metadata values specified by "split_by" are equal. The leaf elements
