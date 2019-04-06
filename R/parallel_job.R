@@ -31,9 +31,9 @@ Parallel_Job <- R6Class("Parallel_Job",
             # Stop any previous thread pool. I can't really fathom
             # a situation where people just keep setting new BPPARAMs
             # until we run out of threads or memory, but better safe than sorry.
-            tryCatch({
-                bpstop(self$BPPARAM)
-            })            
+            # tryCatch({
+            #     bpstop(self$BPPARAM)
+            # })            
             
             # Note: cores can be numeric or BiocParallelParam instance
             #       BPPARAM is always a BiocParallelParam instance
