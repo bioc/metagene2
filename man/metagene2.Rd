@@ -224,7 +224,8 @@ of each parameter.
                        Defaults to 1000. See \code{calculate_ci}}
    \item{resampling_strategy}{The resampling strategy to be used when performing the
                               bootstrap analysis, which can be either \code{'profile'}
-                              or \code{'bin'}. Defaults to \code{'bin'}}
+                              or \code{'bin'}. Defaults to \code{'bin'}. See
+                              \code{calculate_ci}.}
    \item{design_metadata}{A data-frame containing metadata for the design groups.
                           By default, no metadata is associated. See 
                           \code{add_metadata}.}

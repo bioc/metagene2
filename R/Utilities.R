@@ -44,6 +44,7 @@ get_promoters_txdb <- function(txdb, upstream = 1000, downstream = 1000) {
 #' @import EnsDb.Hsapiens.v86
 #' @importFrom purrr map
 #' @importFrom stringr str_replace
+#' @importFrom methods is
 exon_by_gene_with_observed_transcripts <- function (adb, quantification_files){
     stopifnot((methods::is(adb, "TxDb") | methods::is(adb, "EnsDb")))
     stopifnot(all(tolower(tools::file_ext(quantification_files)) == 'tsv'))

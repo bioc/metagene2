@@ -1,5 +1,5 @@
 Package: metagene2
-Version: 1.1.0
+Version: 1.1.1
 Date: 2019-04-05
 Title: A package to produce metagene plots
 Author: Eric Fournier <fournier.eric.2@crchudequebec.ulaval.ca>, 
@@ -30,7 +30,7 @@ LazyData: true
 BugReports: https://github.com/ArnaudDroitLab/metagene2/issues
 VignetteBuilder: knitr
 Depends:
-    R (>= 3.5.0),
+    R (>= 3.6),
     R6 (>= 2.0),
     GenomicRanges,
     BiocParallel

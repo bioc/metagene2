@@ -5,6 +5,9 @@
 # Split the ranges within gr into bcount bins and returns 
 # the mean coverage for each bin in a matrix where each row
 # is a binned region, and each column is a bin.
+#' @importFrom IRanges Views
+#' @importFrom IRanges viewMeans
+#'
 get_view_means = function(gr, bcount, cov) {
     chr <- unique(as.character(GenomeInfoDb::seqnames(gr)))
     gr <- unlist(tile(gr, n=bcount))
@@ -47,6 +50,8 @@ bin_contiguous_regions <- function(coverage, regions, bin_count) {
 
 # Function copied from IRanges:::regroupBySupergroup
 # to avoid using ':::' operator.
+#' @importFrom IRanges relist
+#' @importFrom methods is
 internal_regroupBySupergroup <- function (x, supergroups) 
 {
     supergroups <- IRanges::PartitioningByEnd(supergroups)
@@ -70,6 +75,7 @@ internal_regroupBySupergroup <- function (x, supergroups)
 ### Computing coverage by transcript (or CDS) of a set of ranges is an
 ### operation that feels a lot like extracting transcript sequences from a
 ### genome. Defined as an ordinary function for now.
+#' @importFrom IRanges revElements
 discontiguous_coverage <- function(cvg, transcripts)
 {
   ## STEP 2 - Compute unique exons ('uex').
