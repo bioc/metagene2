@@ -39,7 +39,6 @@ Imports:
     tools,
     GenomicAlignments,
     GenomeInfoDb,
-    GenomicFeatures,
     IRanges,
     ggplot2,
     Rsamtools,
@@ -47,14 +46,11 @@ Imports:
     purrr,
     data.table,
     methods,
-	ensembldb,
-	EnsDb.Hsapiens.v86,
 	stringr,
     dplyr,
     magrittr
 Suggests:
     BiocGenerics,
-    similaRpeak,
     RUnit,
     knitr,
     BiocStyle,
