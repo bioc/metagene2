@@ -46,7 +46,6 @@ Imports:
     purrr,
     data.table,
     methods,
-	stringr,
     dplyr,
     magrittr
 Suggests:
