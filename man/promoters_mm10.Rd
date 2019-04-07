@@ -18,7 +18,4 @@ start site.
 \examples{
   data(promoters_mm10)
 }
-\seealso{
-\code{\link{get_promoters_txdb}}
-}
 \keyword{datasets}

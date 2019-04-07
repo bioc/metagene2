@@ -3,8 +3,6 @@
 #' Each regions have a width of 2000 nucleotide centered at the transcription
 #' start site.
 #'
-#' @seealso \code{\link{get_promoters_txdb}}
-#'
 #' @format A \code{GRanges} object with 23056 ranges.
 #'
 #' @return A \code{GRanges}.
@@ -17,8 +15,6 @@
 #'
 #' Each regions have a width of 2000 nucleotide centered at the transcription
 #' start site.
-#'
-#' @seealso \code{\link{get_promoters_txdb}}
 #'
 #' @format A \code{GRanges} object with 19742 ranges.
 #'
@@ -33,8 +29,6 @@
 #' Each regions have a width of 2000 nucleotide centered at the transcription
 #' start site.
 #'
-#' @seealso \code{\link{get_promoters_txdb}}
-#'
 #' @format A \code{GRanges} object with 23653 ranges.
 #'
 #' @return A \code{GRanges}.
@@ -47,8 +41,6 @@
 #'
 #' Each regions have a width of 2000 nucleotide centered at the transcription
 #' start site.
-#'
-#' @seealso \code{\link{get_promoters_txdb}}
 #'
 #' @format A \code{GRanges} object with 21677 ranges.
 #'
