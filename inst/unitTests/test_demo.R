@@ -43,7 +43,7 @@ test.get_demo_region_filenames <- function() {
 
 test.get_demo_metagene <- function() {
     mg <- get_demo_metagene()
-    checkTrue(all(class(mg) == c("metagene2", "R6")))
+    checkTrue(is(mg, c("metagene2", "R6")))
     
     bam_files <- mg$get_params()$bam_files
     checkTrue(length(bam_files) == 5)

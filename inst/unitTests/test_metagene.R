@@ -555,7 +555,7 @@ test.metagene_get_plot_valid_case_no_graph <- function() {
 ## Valid case graph
 test.metagene_get_plot_valid_case_graph <- function() {
     plot <- full_mg$get_plot()
-    checkTrue(all(class(plot) == c("gg", "ggplot")))
+    checkTrue(is(plot, c("gg", "ggplot")))
 }
 
 ##################################################
