@@ -49,7 +49,7 @@ parameter_manager <- R6Class("parameter_manager",
             #
             # It cannot be factorized into a function, since in any further call,
             # the argument list will deparse as "list(...)".
-            param_names_alt = sapply( substitute(list(...)), deparse)[-1]
+            param_names_alt = unlist(lapply( substitute(list(...)), deparse)[-1])
             arg_list = list(...)
             if(is.null(names(arg_list))) {
                 names(arg_list) = param_names_alt
@@ -65,7 +65,7 @@ parameter_manager <- R6Class("parameter_manager",
             #
             # It cannot be factorized into a function, since in any further call,
             # the argument list will deparse as "list(...)".
-            param_names_alt = sapply( substitute(list(...)), deparse)[-1]
+            param_names_alt = unlist(lapply( substitute(list(...)), deparse)[-1])
             arg_list = list(...)
             if(is.null(names(arg_list))) {
                 names(arg_list) = param_names_alt

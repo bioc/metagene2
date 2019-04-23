@@ -877,7 +877,7 @@ metagene2 <- R6Class("metagene2",
         prepare_regions = function(regions, region_mode, region_metadata) {
             if (is(regions, "character")) {
                 # Validation specific to regions as a vector
-                if (!all(sapply(regions, file.exists))) {
+                if (!all(vapply(regions, file.exists, TRUE))) {
                     stop("regions is a list of files, but some of those files do not exist.")
                 }
                 regions = private$import_regions_from_disk(regions)
@@ -1278,7 +1278,7 @@ metagene2 <- R6Class("metagene2",
             #
             # It cannot be factorized into a function, since in any further call,
             # the argument list will deparse as "list(...)".
-            param_names_alt = sapply( substitute(list(...)), deparse)[-1]
+            param_names_alt = unlist(lapply( substitute(list(...)), deparse)[-1])
             arg_list = list(...)
             if(is.null(names(arg_list))) {
                 names(arg_list) = param_names_alt

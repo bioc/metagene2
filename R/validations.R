@@ -108,7 +108,7 @@ validate_bam_files_format = function(bam_files) {
 }
 
 validate_bam_files_values = function(bam_files) {
-    if (!all(sapply(bam_files, file.exists))) {
+    if (!all(vapply(bam_files, file.exists, TRUE))) {
         stop("At least one BAM file does not exist.")
     }        
 }   

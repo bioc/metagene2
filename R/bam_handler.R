@@ -97,12 +97,12 @@ Bam_Handler <- R6Class("Bam_Handler",
             }
 
             # All BAM files must exist
-            if (!all(sapply(bam_files, file.exists))) {
+            if (!all(vapply(bam_files, file.exists, TRUE))) {
                 stop("At least one BAM file does not exist")
             }
 
             # All BAM files must be indexed
-            if (any(is.na(sapply(bam_files, private$get_bam_index_filename)))) {
+            if (any(is.na(vapply(bam_files, private$get_bam_index_filename, "")))) {
                 stop("All BAM files must be indexed")
             }
 
@@ -145,7 +145,7 @@ Bam_Handler <- R6Class("Bam_Handler",
                                             stringsAsFactors = FALSE)
 
             private$bam_files[["aligned_count"]] <-
-                sapply(private$bam_files[["bam"]], private$get_file_count)
+                vapply(private$bam_files[["bam"]], private$get_file_count, 0)
                 
             # Check the seqnames
             get_seqnames <- function(bam_file) {
@@ -196,7 +196,7 @@ Bam_Handler <- R6Class("Bam_Handler",
             return(self$get_aligned_count(bam_file) / 1000000)
         },
         index_bam_files = function(bam_files) {
-            sapply(bam_files, private$index_bam_file)
+            vapply(bam_files, private$index_bam_file, "")
         },
         get_bam_files = function() {
             private$bam_files
@@ -275,7 +275,7 @@ Bam_Handler <- R6Class("Bam_Handler",
                 }
             }
             # No index file found, return NA.
-            return(NA)
+            return(NA_character_)
         },
         index_bam_file = function(bam_file) {
             if (is.na(private$get_bam_index_filename(bam_file))) {
