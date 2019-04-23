@@ -460,11 +460,6 @@ The following methods return various informations about the metagene object.
    \item{}{Returns the regions used for this metagene analysis.}
 }
 
-\strong{mg$get_matrices()}
-\describe{
-   \item{}{Returns matrices of binned coverages.}
-}
-
 \strong{mg$get_data_frame(region_names = NULL, design_names = NULL)}
 \describe{
    \item{}{Returns full data-frame of results.}

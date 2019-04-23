@@ -426,11 +426,6 @@
 #'    \item{}{Returns the regions used for this metagene analysis.}
 #' }
 #'
-#' \strong{mg$get_matrices()}
-#' \describe{
-#'    \item{}{Returns matrices of binned coverages.}
-#' }
-#'
 #' \strong{mg$get_data_frame(region_names = NULL, design_names = NULL)}
 #' \describe{
 #'    \item{}{Returns full data-frame of results.}
@@ -595,9 +590,6 @@ metagene2 <- R6Class("metagene2",
                                  private$region_metadata, 
                                  private$ph$get("split_by")))
         },
-        get_matrices = function() {
-            return(private$split_coverage_cache)
-        },
         get_data_frame = function(region_names = NULL, design_names = NULL) {
             if(!is.null(private$ci_meta_df)) {
                 results = private$ci_meta_df
@@ -642,11 +634,6 @@ metagene2 <- R6Class("metagene2",
             } else {
                 private$parallel_job$set_core_count(cores)
             }
-        },
-        produce_data_frame = function(alpha=NA, sample_count=NA, avoid_gaps=NA, 
-                                      gaps_threshold=NA, design_metadata=NA) {
-            self$add_metadata()
-            invisible(self)
         },
         group_coverages = function(design=NA, normalization=NA, design_filter=NA, simplify=TRUE) {
             # Clean up the design so it'll have the expected format.
