@@ -25,7 +25,7 @@ bin_contiguous_regions <- function(coverage, regions, bin_count) {
   grl <- split(regions, GenomeInfoDb::seqnames(regions))
   
   # Discard chromosomes where no regions are found.
-  i <- vapply(grl, length, numeric(1)) > 0
+  i <- lengths(grl) > 0
   
   # Get region means on a per-chromosome basis.
   vector_means = do.call("c", lapply(grl[i], get_view_means,
