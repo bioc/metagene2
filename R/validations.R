@@ -75,8 +75,7 @@ validate_verbose = function(verbose) {
 
 validate_force_seqlevels = function(force_seqlevels) {
     if (!is.logical(force_seqlevels)) {
-        stop(paste("force_seqlevels must be a logicial ",
-                    "value (TRUE or FALSE)",sep=""))
+        stop("force_seqlevels must be a logicial value (TRUE or FALSE)")
     }        
 }
 
