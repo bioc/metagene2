@@ -43,7 +43,7 @@ Parallel_Job <- R6Class("Parallel_Job",
     ),
     private = list(
         set_bpparam = function(cores) {
-			if (is.numeric(cores)) {
+            if (is.numeric(cores)) {
                 # The number of cores has to be a positive integer
                 if(as.integer(cores) != cores || cores <= 0) {
                     msg <- "cores must be positive numeric or "
