@@ -77,7 +77,8 @@ calculate_matrices_ci = function(matrices, sample_count, alpha, resampling_mode,
     
     # Concatenate resampling results and add bin column.
     res = data.table::rbindlist(ci, idcol=NULL, use.names=TRUE, fill=FALSE)
-    res$bin = 1:ncol(matrix_list[[1]]$Matrix)
+    bin_per_group = ncol(matrix_list[[1]]$Matrix)
+    res$bin = rep(seq_len(bin_per_group), nrow(res) / bin_per_group)
     
     res
 }
