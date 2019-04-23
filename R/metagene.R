@@ -1313,7 +1313,7 @@ metagene2 <- R6Class("metagene2",
             
             # Loop over all passed-in parameters.
             if(length(arg_list) > 0) {
-                for(arg_index in 1:length(arg_list)) {
+                for(arg_index in seq_along(arg_list)) {
                     arg_name=names(arg_list)[arg_index]
                     
                     # Determine if the parameter has changed from its last value.
@@ -1325,7 +1325,7 @@ metagene2 <- R6Class("metagene2",
                         if(!is.na(invalidated_step)) {
                             # Invalidate all caches for the step the parameter belonged to,
                             # as well as all caches for downsteam steps.
-                            invalidated_caches = step_cache_map[1:which(names(step_cache_map)==invalidated_step)]
+                            invalidated_caches = step_cache_map[seq_len(which(names(step_cache_map)==invalidated_step))]
                             private$print_verbose(paste0(paste0(invalidated_caches, collapse=", "), " will be invalidated.\n"))
                             for(cache in invalidated_caches) {
                                 private[[cache]] = NULL
@@ -1345,7 +1345,7 @@ metagene2 <- R6Class("metagene2",
                 # Using dplyr for this because I'm not comfortable enough with
                 # quosures.
                 selected_indices = as.data.frame(private$region_metadata) %>%
-                                       dplyr::mutate(METAGENE_IDX=1:n()) %>%
+                                       dplyr::mutate(METAGENE_IDX=seq_len(n())) %>%
                                        dplyr::filter(!! selector) %>%
                                        dplyr::pull(METAGENE_IDX)
             } else if(is(selector, "character")) {

@@ -312,10 +312,10 @@ split_by_metadata = function(metadata, split_by) {
     out_subsets=list()
     new_metadata_list = list()
     partition = rep(NA, nrow(metadata))
-    for(i in 1:nrow(combinations)) {
+    for(i in seq_len(nrow(combinations))) {
         # Select the columns where all values match the current combination.
         selected_subset = TRUE
-        for(j in 1:ncol(combinations)) {
+        for(j in seq_len(ncol(combinations))) {
             col_name = colnames(combinations)[j]
             col_value = combinations[i,j]
             if(!is.na(col_value)) {
