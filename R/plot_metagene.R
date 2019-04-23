@@ -41,7 +41,7 @@ plot_metagene <- function(df, facet_by=NULL, group_by=NULL) {
         group_by="group"
     }
     
-    p <- ggplot(df, aes(x=bin, y=value, ymin=qinf, ymax=qsup)) +
+    p <- ggplot(df, aes_string(x="bin", y="value", ymin="qinf", ymax="qsup")) +
         geom_ribbon(aes_string(fill=group_by), alpha=0.3) +
         geom_line(aes_string(color=group_by), size=1) +
         theme(panel.grid.major = element_line()) +
