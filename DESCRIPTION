@@ -2,19 +2,18 @@ Package: metagene2
 Version: 0.99.7
 Date: 2019-04-05
 Title: A package to produce metagene plots
-Author: Eric Fournier <fournier.eric.2@crchudequebec.ulaval.ca>, 
-    Charles Joly Beauparlant <charles.joly-beauparlant@crchul.ulaval.ca>,
-    Cedric Lippens <lippens.cedric@protonmail>
-	and Arnaud Droit <arnaud.droit@crchuq.ulaval.ca>.
-Author@R: c(person("Eric", "Fournier",
-    email="fournier.eric.2@crchudequebec.ulaval.ca"), 
-    c(person("Charles", "Joly Beauparlant",
-    email="charles.joly-beauparlant@crchul.ulaval.ca"), 
+Authors@R: c(person("Eric", "Fournier",
+    email="fournier.eric.2@crchudequebec.ulaval.ca",
+    role=c("cre", "aut")), 
+    person("Charles", "Joly Beauparlant",
+    email="charles.joly-beauparlant@crchul.ulaval.ca", 
+    role="aut"),
 	person("Cedric", "Lippens",
-    email="lippens.cedric@protonmail.com"),
+    email="lippens.cedric@protonmail.com",
+    role="aut"),
 	person("Arnaud", "Droit", 
-	email="arnaud.droit@crchuq.ulaval.ca"))
-Maintainer: Eric Fournier <fournier.eric.2@crchudequebec.ulaval.ca>
+	email="arnaud.droit@crchuq.ulaval.ca",
+    role="aut"))
 Description: This package produces metagene plots to compare coverages
     of sequencing experiments at selected groups of genomic regions. It can
     be used for such analyses as assessing the binding of DNA-interacting 
