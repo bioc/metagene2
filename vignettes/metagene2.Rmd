@@ -156,17 +156,32 @@ mg <- metagene2$new(regions = regions,
 mg$get_regions()
 ```
 
-Some common datasets are made available as `GRanges` directly from the 
-`metagene2` package:
+Some common ranges that can be useful for plotting include the set of all TSSes
+or gene bodies. While metagene2 does not provide those, they can easily be 
+generated using packages from BioConductor:
 
-* `promoters_hg19`
-* `promoters_hg18`
-* `promoters_mm10`
-* `promoters_mm9`
-
-```{r showDatasets}
-data(promoters_hg19)
-promoters_hg19
+```{r genratePromoterGRange, eval=FALSE}
+    # First locate the TxDb package containing the geneset of interest.
+    # Some of the most common TxDb packages include:
+    #  - TxDb.Hsapiens.UCSC.hg38.knownGene
+    #  - TxDb.Hsapiens.UCSC.hg19.knownGene
+    #  - TxDb.Mmusculus.UCSC.mm10.knownGene
+    #  - TxDb.Mmusculus.UCSC.mm10.ensGene
+    library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+    
+    # We'll use the GenomicFeatures package to obtain gene/TSS coordinates
+    # from the TxDb package.
+    library(GenomicFeatures)
+    
+    # The GenomicFeatures::genes function provides us with gene bodies.
+    all_gene_bodies = GenomicFeatures::genes(TxDb.Hsapiens.UCSC.hg38.knownGene)
+    
+    # The GenomicFeatures::promoters function gets a region flanking the TSS.
+    # By using it directly on TxDb.Hsapiens.UCSC.hg38.knownGene, we would get
+    # the TSSes of all transcripts. Here, we use it on the gene_bodies GRanges
+    # we've just created, and limit ourselves to one TSS per gene.
+    all_TSS = GenomicFeatures::promoters(all_gene_bodies,
+                                         upstream=2000, downstream=2000)
 ```
 
 For more details about each datasets, please refer to their documentation 
