@@ -46,9 +46,9 @@ get_demo_region_filenames <- function() {
 #' regions <- get_demo_regions()
 #' @export
 get_demo_regions <- function() {
-    regions_list <- lapply(get_demo_region_filenames(), rtracklayer::import, format="bed")
-    regions_grl <- GRangesList(regions_list)
-    names(regions_grl) <-  gsub(".bed", "", basename(get_demo_region_filenames()))
+    region_filenames = get_demo_region_filenames()
+    names(region_filenames) = gsub(".bed", "", basename(region_filenames))
+    regions_list <- lapply(region_filenames, rtracklayer::import, format="bed")
     
     # We now have a named GRangesList with two set of 50 regions.
     regions_grl    
