@@ -24,7 +24,7 @@ Description: This package produces metagene plots to compare coverages
     intervals of per-sample mean coverages.
 biocViews: ChIPSeq, Genetics, MultipleComparison, Coverage, Alignment,
     Sequencing
-License: Artistic-2.0  | file LICENSE
+License: Artistic-2.0
 LazyData: true
 BugReports: https://github.com/ArnaudDroitLab/metagene2/issues
 VignetteBuilder: knitr
