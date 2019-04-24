@@ -6,11 +6,12 @@
 #' bam_files <- get_demo_bam_files()
 #' @export
 get_demo_bam_files <- function() {
-    c(system.file("extdata/align1_rep1.bam", package="metagene2"),
-        system.file("extdata/align1_rep2.bam", package="metagene2"),
-        system.file("extdata/align2_rep1.bam", package="metagene2"),
-        system.file("extdata/align2_rep2.bam", package="metagene2"),
-        system.file("extdata/ctrl.bam", package="metagene2"))
+    demo_bam = c("extdata/align1_rep1.bam",
+                 "extdata/align1_rep2.bam",
+                 "extdata/align2_rep1.bam",
+                 "extdata/align2_rep2.bam",
+                 "extdata/ctrl.bam")
+    system.file(demo_bam, package="metagene2")
 }
 
 #' Get BAM filenames for demo
@@ -21,8 +22,8 @@ get_demo_bam_files <- function() {
 #' bam_files <- get_demo_rna_bam_files()
 #' @export
 get_demo_rna_bam_files <- function() {
-    c(system.file("extdata/cyto3.bam", package="metagene2"),
-      system.file("extdata/nuc3.bam", package="metagene2"))
+    demo_rna_bam = c("extdata/cyto3.bam", "extdata/nuc3.bam")
+    system.file(demo_rna_bam, package="metagene2")
 }
 
 #' Get regions filenames for demo
@@ -33,8 +34,8 @@ get_demo_rna_bam_files <- function() {
 #' regions <- get_demo_regions()
 #' @export
 get_demo_region_filenames <- function() {
-    c(system.file("extdata/list1.bed", package="metagene2"),
-        system.file("extdata/list2.bed", package="metagene2"))
+    demo_bed = c("extdata/list1.bed", "extdata/list2.bed")
+    system.file(demo_bed, package="metagene2")
 }
 
 #' Get demo regions
@@ -61,8 +62,8 @@ get_demo_regions <- function() {
 #' regions <- get_demo_rna_regions()
 #' @export
 get_demo_rna_regions <- function() {
-    gene_files = c(system.file("extdata/DPM1.bed", package="metagene2"),
-                   system.file("extdata/NDUFAB1.bed", package="metagene2"))
+    rna_demo_bed = c("extdata/DPM1.bed", "extdata/NDUFAB1.bed")
+    gene_files = system.file(rna_demo_bed, package="metagene2")
     regions_list <- lapply(gene_files, rtracklayer::import, format="bed")
     regions_grl <- GRangesList(regions_list)
     names(regions_grl) <- c("DPM1", "NDUFAB1")
