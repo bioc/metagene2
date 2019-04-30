@@ -231,6 +231,8 @@ group_coverages_s = function(coverage_s, design, merge_operation='+', bam_handle
     } else {
         if (merge_operation=="NCIS") {
             results <- remove_controls(coverage_s, design, bam_handler)
+        } else if (merge_operation=="log2_ratio") {
+            results <- merge_chip_ratio(coverage_s, design)
         } else {
             results <- merge_chip(coverage_s, design, merge_operation)
         }
@@ -273,6 +275,24 @@ merge_chip = function(coverages, design, merge_operation) {
     result <- list()
     for (design_name in colnames(design)[-1]) {
         result[[design_name]] <- merge_reduce(coverages, design, design_name, 1, merge_operation)$Coverage
+    }
+    result
+}
+
+# Calculate the log2-ratio between treatment and control coverages within the 
+# design. This function presumes that all design columns have at least one 
+# control. Coverages are also expected to eb in RPMs (hence why we default
+# to the mean merge operation.
+# We add 1 to both numerator and control coverages to avoid divide-by-zero
+# errors. 1 is chosen arbitrarily: since we aren't dealing with integers,
+# it could be anything else.
+merge_chip_ratio = function(coverages, design, merge_operation) {
+    result <- list()
+    for (design_name in colnames(design)[-1]) {
+        numerator <- merge_reduce(coverages, design, design_name, 1, "mean")$Coverage
+        denominator <- merge_reduce(coverages, design, design_name, 2, "mean")$Coverage
+        
+        result[[design_name]] = log2((numerator + 1) / (denominator + 1))
     }
     result
 }

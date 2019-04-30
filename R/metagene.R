@@ -662,6 +662,8 @@ metagene2 <- R6Class("metagene2",
                     merge_operation = "mean"
                 } else if(private$ph$get("normalization")=="NCIS") {
                     merge_operation = "NCIS"
+                } else if(private$ph$get("normalization")=="log2_ratio") {
+                    merge_operation = "log2_ratio"
                 } else {
                     stop("Unsupported normalization value.")
                 }
@@ -1036,6 +1038,8 @@ metagene2 <- R6Class("metagene2",
             y_label <- "Mean coverage"
             if (is.null(private$ph$get("normalization"))) {
                 y_label <- paste(y_label, "(raw)")
+            } else if(private$ph$get("normalization") == "log2_ratio") {
+                y_label <- "log2((Treatment RPM + 1) / (Control RPM + 1))"
             } else {
                 y_label <- paste(y_label, "(RPM)")
             }
