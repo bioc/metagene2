@@ -45,8 +45,11 @@ validate_gaps_threshold = function(gaps_threshold) {
 }
 
 validate_normalization = function(normalization) {
-    if (!is.null(normalization) && normalization != "RPM" && normalization != "NCIS") {
-        stop('normalization must be NULL, "RPM" or "NCIS".')
+    if (!is.null(normalization) &&
+        normalization != "RPM" && 
+        normalization != "NCIS" &&
+        normalization != "log2_ratio") {
+        stop('normalization must be NULL, "RPM", "NCIS" or "log2_ratio".')
     }
 }
 
@@ -119,6 +122,14 @@ validate_combination = function(params) {
     
     if(params$extend_reads > 0 && params$paired_end) {
         stop("extend_reads and paired_end cannot both be set at the same time.")
+    }
+    
+    all_designs_have_control = all(apply(params$design[,-1, drop=FALSE] == 2, 2, any))
+    log2_norm = !is.null(params$normalization) && 
+                params$normalization=="log2_ratio"
+    if(log2_norm && !all_designs_have_control) {
+        stop("log2_ratio normalization requires all designs to have at least ",
+             "one control. Please update the design parameter.")
     }
 }
 

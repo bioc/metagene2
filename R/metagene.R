@@ -263,7 +263,11 @@
 #'            design group.
 #'            \code{NA} can be used keep previous design value. Default: \code{NA}.}
 #'    \item{normalization}{The algorithm to use to normalize coverages. Possible
-#'                        values are \code{NULL} (no normalization), "RPM" and "NCIS". See
+#'                        values are \code{NULL} (no normalization), "RPM", "log2_ratio"
+#'                        and "NCIS". "RPM" transforms raw counts into Reads-Per-Million.
+#'                        "log2_ratio" uses the formula log2((input RPM + 1) / (control RPM + 1))
+#'                        to calculate a log-ratio between input and control. NCIS
+#'                        attempts to subtract control from input. See
 #'                        Liand and Keles 2012 for the NCIS algorithm. \code{NA} can 
 #'                        be used keep the previous value. Default: \code{NA}}
 #'    \item{design_filter}{A logical vector specifying which of the design groups specified
@@ -662,6 +666,8 @@ metagene2 <- R6Class("metagene2",
                     merge_operation = "mean"
                 } else if(private$ph$get("normalization")=="NCIS") {
                     merge_operation = "NCIS"
+                } else if(private$ph$get("normalization")=="log2_ratio") {
+                    merge_operation = "log2_ratio"
                 } else {
                     stop("Unsupported normalization value.")
                 }
@@ -1036,6 +1042,8 @@ metagene2 <- R6Class("metagene2",
             y_label <- "Mean coverage"
             if (is.null(private$ph$get("normalization"))) {
                 y_label <- paste(y_label, "(raw)")
+            } else if(private$ph$get("normalization") == "log2_ratio") {
+                y_label <- "log2((Treatment RPM + 1) / (Control RPM + 1))"
             } else {
                 y_label <- paste(y_label, "(RPM)")
             }

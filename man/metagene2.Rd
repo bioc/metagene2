@@ -280,7 +280,11 @@ data-frame of coverages with confidence intervals.
            design group.
            \code{NA} can be used keep previous design value. Default: \code{NA}.}
    \item{normalization}{The algorithm to use to normalize coverages. Possible
-                       values are \code{NULL} (no normalization), "RPM" and "NCIS". See
+                       values are \code{NULL} (no normalization), "RPM", "log2_ratio"
+                       and "NCIS". "RPM" transforms raw counts into Reads-Per-Million.
+                       "log2_ratio" uses the formula log2((input RPM + 1) / (control RPM + 1))
+                       to calculate a log-ratio between input and control. NCIS
+                       attempts to subtract control from input. See
                        Liand and Keles 2012 for the NCIS algorithm. \code{NA} can 
                        be used keep the previous value. Default: \code{NA}}
    \item{design_filter}{A logical vector specifying which of the design groups specified

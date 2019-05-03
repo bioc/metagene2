@@ -599,9 +599,14 @@ test.metagene_invalid_bin_count <- function() {
 
 # Invalid normalization class
 test.metagene_invalid_normalization <- function() {
- util_test_invalid_param_value("normalization", 1234, "group_coverages", 'normalization must be NULL, "RPM" or "NCIS".')
- util_test_invalid_param_value("normalization", "CSI", "group_coverages", 'normalization must be NULL, "RPM" or "NCIS".')
+  util_test_invalid_param_value("normalization", 1234, "group_coverages", 'normalization must be NULL, "RPM", "NCIS" or "log2_ratio".')
+  util_test_invalid_param_value("normalization", "CSI", "group_coverages", 'normalization must be NULL, "RPM", "NCIS" or "log2_ratio".')
+  
+  # Invalid log2_ratio normalization without a valid design
+  util_test_invalid_param_value("normalization", "log2_ratio", "group_coverages",
+                                "log2_ratio normalization requires all designs to have at least one control. Please update the design parameter.")
 }
+
 ##################################################
 # Test the metagene2$produce_data_frame() function
 ##################################################
@@ -852,5 +857,37 @@ test.metagene_invalid_extend_paired_end <- function() {
                    error=conditionMessage)
     exp = "extend_reads and paired_end cannot both be set at the same time."
     checkTrue(obs==exp)
+}
 
+test.metagene_log2_ratio <- function() {
+    mg = metagene2$new(bam_files=fake_bam_files, 
+                       regions=fake_bam_region_1_test_region_unique)
+    fake_design_ratio = data.frame(bam=fake_bam_files, 
+                                   FB1vsFB2=c(1,2,0), 
+                                   FB1vsFB3=c(1,0,2))    
+                                   
+    test_coverages = mg$group_coverages(normalization="log2_ratio",
+                                        design=fake_design_ratio)
+                
+    # Fake BAM 1 and Fake BAM 2 have the same coverages, so the ratio
+    # should be 0
+    checkTrue(all(test_coverages[["FB1vsFB2"]][fake_bam_region_1_test_region_unique]==0))
+    
+    # Fake BAM 1 has coverage of 1, with 100 reads, so an RPM of (1 / 100) * 10^6 = 10000.
+    # Fake BAM 3 has coverage of 4 (first 2500 nt)_and 8 (last 2500 nt), and a total of 
+    # 600 reads, so RPMs of (4 / 600) * 10^6 = 6666.667 and 13333.33.
+    # The log2_ratio formula is log2(input RPM + 1 / control RPM + 1)
+    # So the expected values are log2(10000 + 1 / 6666.667 + 1)=0.5848903 and
+    # log2(10000 + 1 / 13333.33 + 1)=-0.4150011, plus accounting for rounding errors.
+    
+    cov_run = test_coverages[["FB1vsFB3"]][fake_bam_region_1_test_region_unique]$chr1
+    cov_run_1 = cov_run[1:2500]
+    cov_run_2 = cov_run[2501:5000]
+    
+    delta_val = 0.00001
+    cov_run_1_val = 0.5848903 
+    checkTrue(all(cov_run_1 > (cov_run_1_val - delta_val) & cov_run_1 < (cov_run_1_val + delta_val)))
+    
+    cov_run_2_val = -0.4150011 
+    checkTrue(all(cov_run_2 > (cov_run_2_val - delta_val) & cov_run_2 < (cov_run_2_val + delta_val)))
 }
