@@ -461,7 +461,8 @@ normalization and noise removal when requested.
               design groups. See section 3.1, "Grouping bam files". By default,
               each bam file is in its own design group.
 * **normalization**: This parameter determines how the coverages are normalized. 
-   There are three possible values: "RPM" (Reads per million), "NCIS" (See
+   There are four possible values: "RPM" (Reads per million), "log2_ratio"
+   (log2((input RPM + 1) / (control RPM + 1))), "NCIS" (See
    Liand and Keles 2012) or NULL (No normalization).
 * **design_filter**: You can exclude certain design groups from further processing
                      by filtering them. This is useful if you want to quickly 

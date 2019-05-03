@@ -1,3 +1,5 @@
-CHANGES FOR VERSION 1.1.0 (2019-04-05)
-------------------------
-    o Submitted package to Bioconductor.
+Changes in version 1.1.0 (2019-04-05)
++ Submitted package to Bioconductor.
+
+Changes in version 1.1.1 (2019-05-03)
++ Added log2_ratio normalization option.

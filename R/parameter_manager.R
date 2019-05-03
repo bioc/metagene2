@@ -22,25 +22,7 @@ parameter_manager <- R6Class("parameter_manager",
             return(private$parameter_values)
         },
         set = function(param_name, param_value) {
-            private$validate_exists(param_name)
-        
-            # Don't do anything for NA params.
-            if(!private$test_for_na(param_value)) {
-                if(is.null(param_value)) {
-                    # Cannot directly set NULL values inside a list outside of construction.
-                    # See https://stackoverflow.com/questions/7944809/assigning-null-to-a-list-element-in-r
-                    private$parameter_values[param_name] <- list(NULL)
-                } else {
-                    if(!is.null(private$parameter_validations[[param_name]])) {
-                        private$parameter_validations[[param_name]](param_value)
-                        #if(!private$parameter_validations[[param_name]](param_value)) {
-                        #    warning("Parameter validation failed for ", param_name)
-                        #    return(NULL)
-                        #}
-                    }
-                    private$parameter_values[[param_name]] <- param_value
-                }
-            }
+            private$set_internal(param_name, param_value)
         },
         have_params_changed = function(...) {
             # This prologue makes it possible to infer parameter names from the
@@ -96,8 +78,9 @@ parameter_manager <- R6Class("parameter_manager",
         update_params_internal = function(param_list) {
             if(private$have_params_changed_internal(param_list)) {
                 for(i in names(param_list)) {
-                    self$set(i, param_list[[i]])
+                    private$set_internal(i, param_list[[i]], FALSE)
                 }
+                private$validate_all()
                 return(TRUE)
             } else {
                 return(FALSE)
@@ -125,6 +108,31 @@ parameter_manager <- R6Class("parameter_manager",
             
             if(!is.null(private$overall_validation)) {
                 private$overall_validation(private$parameter_values)
+            }
+        },
+        set_internal = function(param_name, param_value, skip_combined_validation=FALSE) {
+            private$validate_exists(param_name)
+        
+            # Don't do anything for NA params.
+            if(!private$test_for_na(param_value)) {
+                if(is.null(param_value)) {
+                    # Cannot directly set NULL values inside a list outside of construction.
+                    # See https://stackoverflow.com/questions/7944809/assigning-null-to-a-list-element-in-r
+                    private$parameter_values[param_name] <- list(NULL)
+                } else {
+                    if(!is.null(private$parameter_validations[[param_name]])) {
+                        private$parameter_validations[[param_name]](param_value)
+                        #if(!private$parameter_validations[[param_name]](param_value)) {
+                        #    warning("Parameter validation failed for ", param_name)
+                        #    return(NULL)
+                        #}
+                    }
+                    private$parameter_values[[param_name]] <- param_value
+                }
+            }
+            
+            if(!skip_combined_validation) {
+                private$validate_all()
             }
         }
     )
