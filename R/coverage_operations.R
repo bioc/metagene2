@@ -143,14 +143,14 @@ bin_discontiguous_regions <- function(coverage, regions, bin_count) {
 bin_region_coverages = function(coverages, regions, bin_count) {
     results = list()
     for(cov_name in names(coverages)) {
-        if(methods::is(regions, "GRangesList")) {
-            results[[cov_name]] = bin_discontiguous_regions(coverages[[cov_name]], regions, bin_count)
-        } else {
-            if(length(regions)>0) {
-                results[[cov_name]] = bin_contiguous_regions(coverages[[cov_name]], regions, bin_count)
+        if(length(regions)>0) {
+            if(methods::is(regions, "GRangesList")) {
+                results[[cov_name]] = bin_discontiguous_regions(coverages[[cov_name]], regions, bin_count)
             } else {
-                results[cov_name] = list(NULL)
+                results[[cov_name]] = bin_contiguous_regions(coverages[[cov_name]], regions, bin_count)
             }
+        } else {
+            results[cov_name] = list(NULL)
         }        
     }
     return(results)
@@ -180,40 +180,29 @@ bin_coverages_s = function(coverages, regions, bin_count) {
     if(is.null(coverages[["+"]]) && is.null(coverages[["-"]])) {
         return(bin_region_coverages(coverages[["*"]], regions, bin_count))
     } else {
-        strand_split=split(regions, strand(regions))
-
-        # Combine coverages? Star coverage should include every single read.
-        # Maybe not compute star coverage and add + and - here?
-        ## Figure out star coverage by combining regions.
-        # star_coverage_plus = bin_region_coverages(coverages[["+"]], strand_split[["*"]], bin_count)
-        # star_coverage_minus = bin_region_coverages(coverages[["-"]], strand_split[["*"]], bin_count)
-        # star_coverage_star = bin_region_coverages(coverages[["*"]], strand_split[["*"]], bin_count)
-        # 
-        # # Recombine star coverages.
-        # star_coverage = purrr::pmap(list(star_coverage_plus, star_coverage_minus, star_coverage_star), function(x, y, z) {x+y+z})
+        # GRanges and GRangesList do not return the same types of values for
+        # strand, so we'll have to preprocess the regions differently.
+        if(is(regions, "GRanges")) {
+            strand_info = strand(regions)
+            strand_split=split(regions, strand(regions))
+        } else {
+            strand_info = unlist(lapply(strand(regions), function(x) { as.vector(x[1]) }))
+            strand_split = list("+"=regions[strand_info=="+"],
+                                "-"=regions[strand_info=="-"],
+                                "*"=regions[strand_info=="*"])
+        }    
         
+        # Calculate coverages for all strands independantly.
         coverage_list = list("+"=bin_region_coverages(coverages[["+"]], strand_split[["+"]], bin_count),
                              "-"=bin_region_coverages(coverages[["-"]], strand_split[["-"]], bin_count),
                              "*"=bin_region_coverages(coverages[["*"]], strand_split[["*"]], bin_count))
         
-        #recombine_regions = function(x,y,z, strand_info, bin_count) {
-        #    results = matrix(0, nrow=length(strand_info), ncol=bin_count)
-        #    results[strand_info=="+",] = x
-        #    results[strand_info=="-",] = y
-        #    results[strand_info=="*",] = z
-        #    
-        #    results
-        #}
-        
         # Recombine all coverages
-        #purrr::pmap(coverage_list, recombine_regions, strand_info=strand(regions), bin_count=bin_count)
-        results = list()
         for(i in names(coverage_list[["+"]])) {
-            #results[[i]] = recombine_regions(coverage_list[["+"]][[i]], coverage_list[["-"]][[i]], coverage_list[["*"]][[i]], strand(regions), bin_count)
             results[[i]] = matrix(0, nrow=length(strand(regions)), ncol=bin_count)
-            results[[i]][as.logical(strand(regions)=="+"),] = coverage_list[["+"]][[i]]
-            results[[i]][as.logical(strand(regions)=="-"),] = coverage_list[["-"]][[i]]
-            results[[i]][as.logical(strand(regions)=="*"),] = coverage_list[["*"]][[i]]
+            results[[i]][as.logical(strand_info=="+"),] = coverage_list[["+"]][[i]]
+            results[[i]][as.logical(strand_info=="-"),] = coverage_list[["-"]][[i]]
+            results[[i]][as.logical(strand_info=="*"),] = coverage_list[["*"]][[i]]
             
         }
         return(results)

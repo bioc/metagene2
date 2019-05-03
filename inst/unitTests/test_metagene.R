@@ -891,3 +891,22 @@ test.metagene_log2_ratio <- function() {
     cov_run_2_val = -0.4150011 
     checkTrue(all(cov_run_2 > (cov_run_2_val - delta_val) & cov_run_2 < (cov_run_2_val + delta_val)))
 }
+
+# This test checks to see that strand_specific discontiguous mode works 
+test.metagene_strand_specific_discontiguous <- function() {
+    mg = metagene2$new(bam_files=get_demo_rna_bam_files(),
+                  regions=get_demo_rna_regions(),
+                  strand_specific=TRUE,
+                  region_mode="stitch")
+    mg$produce_metagene()
+}
+
+# This test checks for an issue that occured if strand_specific is set to TRUE 
+# but one strand possesses no regions.
+# See https://github.com/ArnaudDroitLab/metagene2/issues/9
+test.metagene_strand_specific_no_region_on_strand <- function() {
+    mg = metagene2$new(bam_files=get_demo_bam_files(),
+                  regions=get_demo_regions()[[1]],
+                  strand_specific=TRUE)    
+    mg$produce_metagene()
+}
