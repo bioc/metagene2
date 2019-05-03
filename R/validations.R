@@ -124,7 +124,7 @@ validate_combination = function(params) {
         stop("extend_reads and paired_end cannot both be set at the same time.")
     }
     
-    all_designs_have_control = all(apply(params$design[,-1] == 2, 1, any))
+    all_designs_have_control = all(apply(params$design[,-1, drop=FALSE] == 2, 2, any))
     log2_norm = !is.null(params$normalization) && 
                 params$normalization=="log2_ratio"
     if(log2_norm && !all_designs_have_control) {
