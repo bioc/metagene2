@@ -198,6 +198,7 @@ bin_coverages_s = function(coverages, regions, bin_count) {
                              "*"=bin_region_coverages(coverages[["*"]], strand_split[["*"]], bin_count))
         
         # Recombine all coverages
+        results = list()
         for(i in names(coverage_list[["+"]])) {
             results[[i]] = matrix(0, nrow=length(strand(regions)), ncol=bin_count)
             results[[i]][as.logical(strand_info=="+"),] = coverage_list[["+"]][[i]]
@@ -309,6 +310,10 @@ merge_reduce = function(coverages, design, design_name, design_value, merge_oper
 # builds a partition of rows based on all possible combinations
 # of the columns identified by split_by.
 split_by_metadata = function(metadata, split_by) {
+    if(!all(split_by %in% colnames(metadata))) {
+        stop(ERROR_SPLIT_BY)
+    }
+
     # Determine all possible values for the split_by columns.
     split_by_list = as.list(split_by)
     names(split_by_list) = split_by

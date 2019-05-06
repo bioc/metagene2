@@ -1,3 +1,6 @@
+ERROR_SPLIT_BY = paste0("split_by must be a character vector of ",
+                        "region_metadata column names.")
+
 validate_design_format = function(design) {
     if(!is.data.frame(design)) {
         stop("design must be a data.frame object, NULL or NA")
@@ -124,6 +127,11 @@ validate_combination = function(params) {
         stop("extend_reads and paired_end cannot both be set at the same time.")
     }
     
+    # This test should be performed if region_metadata ever makes it inside params.
+    #if(!all(params$split_by %in% colnames(params$region_metadata))) {
+    #    stop(ERROR_SPLIT_BY)
+    #}
+    
     all_designs_have_control = all(apply(params$design[,-1, drop=FALSE] == 2, 2, any))
     log2_norm = !is.null(params$normalization) && 
                 params$normalization=="log2_ratio"
@@ -142,4 +150,10 @@ validate_region_mode = function(region_mode) {
 validate_extend_reads = function(extend_reads) {
     stopifnot(is.numeric(extend_reads))
     stopifnot(extend_reads >= 0)
+}
+
+validate_split_by = function(split_by) {
+    if(!(is.character(split_by) && all(!is.na(split_by)))) {
+        stop(ERROR_SPLIT_BY)
+    }
 }

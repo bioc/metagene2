@@ -540,7 +540,8 @@ metagene2 <- R6Class("metagene2",
                     alpha=validate_alpha,
                     sample_count=validate_sample_count,
                     region_mode=validate_region_mode,
-                    extend_reads=validate_extend_reads),
+                    extend_reads=validate_extend_reads,
+                    split_by=validate_split_by),
                 overall_validation=validate_combination)
                 
             # Update any other parameter passed as a ... argument.

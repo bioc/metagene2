@@ -340,6 +340,15 @@ test.metagene_bin_coverages_valid_usage_custom_design = function(){
     }
 }
 
+# Invalid split_by
+test.metagene_invalid_split_by <- function() {
+  util_test_invalid_param_value("split_by", -4, "split_coverages_by_regions", metagene2:::ERROR_SPLIT_BY)
+  util_test_invalid_param_value("split_by", c("region_name", NA), "split_coverages_by_regions", metagene2:::ERROR_SPLIT_BY)
+  
+  # This should fail if region_metadata is brought back inside the parameter handler.
+  #util_test_invalid_param_value("split_by", "patate", "split_coverages_by_regions", metagene2:::ERROR_SPLIT_BY)
+}
+
 test.metagene_split_coverages_valid_usage_default = function(){
     # We'll populate a list with split_coverages results which should all be identical,
     # then run validations against those list elements.
@@ -607,10 +616,6 @@ test.metagene_invalid_normalization <- function() {
                                 "log2_ratio normalization requires all designs to have at least one control. Please update the design parameter.")
 }
 
-##################################################
-# Test the metagene2$produce_data_frame() function
-##################################################
-
 ### Invalid alpha value
 test.metagene_invalid_alpha <- function(){
     util_test_invalid_param_value("alpha", 'test', "calculate_ci", "is.numeric(alpha) is not TRUE")
@@ -723,7 +728,7 @@ test.metagene_extend_reads_basic <- function() {
     # No reads overlap in fake_align1. The reads are all 50nt, 
     # on the + strand, and the coverage is 1 everywhere.
     # So we should have a coverage of 1 for the first 50 nucleotides,
-    # of 2 for the rest. Coverage should extend on the + stran
+    # of 2 for the rest. Coverage should extend on the + strand
     checkTrue(all(mg$get_raw_coverages()[[fake_bam_design$BAM[1]]][["chr1"]][1000000:1000049] == 1))
     checkTrue(all(mg$get_raw_coverages()[[fake_bam_design$BAM[1]]][["chr1"]][1000050:1002500] == 2))
 }
