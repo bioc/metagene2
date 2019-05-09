@@ -613,7 +613,7 @@ metagene2 <- R6Class("metagene2",
             if (!is.null(design_names)) {
                 design_subset = results$design %in% design_names
             }
-            return(results[region_subset & design_subset,,drop=F])
+            return(results[region_subset & design_subset,,drop=FALSE])
         },
         get_plot = function() {
             private$graph
@@ -972,7 +972,7 @@ metagene2 <- R6Class("metagene2",
                 stopifnot(nrow(region_metadata)==length(regions))
                 non_duplicate_columns = setdiff(colnames(mcol_metadata), colnames(region_metadata))
                 if(length(non_duplicate_columns) > 0) {
-                    private$region_metadata = cbind(region_metadata, mcol_metadata[,non_duplicate_columns, drop=F])
+                    private$region_metadata = cbind(region_metadata, mcol_metadata[,non_duplicate_columns, drop=FALSE])
                 }
             }
             
@@ -1373,7 +1373,7 @@ metagene2 <- R6Class("metagene2",
             self$get_regions()[private$select_region_indices(selector)]
         },
         select_region_metadata = function(selector) {
-            private$region_metadata[private$select_region_indices(selector),, drop=F]
+            private$region_metadata[private$select_region_indices(selector),, drop=FALSE]
         }
     )
 )
