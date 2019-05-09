@@ -21,7 +21,11 @@ library(knitr)
 
 # Introduction
 
-This package produces metagene plots, which aggregate coverages from
+This package produces metagene plots, and is the successor to the `metagene`
+package. Users of `metagene` can find a list of differences between `metagene2`
+and `metagene` in the [Differences with metagene](#diff_v1) section of this vignette. 
+
+Metagene plots which aggregate coverages from
 multiple sources (bam files) over multiple regions (genes, cofactor binding
 sites, etc.) to provide profiles of average coverage. They are useful for
 many different purposes, such as comparing the binding profiles of
@@ -349,7 +353,7 @@ mg <- metagene2$new(regions = get_demo_regions(),
 mg$produce_metagene(split_by=c("EvenStart", "Strand"), facet_by=EvenStart~Strand, group_by="design")
 ```
 
-# Intermediary processing steps and further parameters
+# Intermediary processing steps and further parameters {#intermediary_steps}
 
 A full metagene analysis consists of several steps, each of which
 produces an intermediary result of interest. Calling the `new` and 
@@ -545,7 +549,7 @@ one if the parameter has yet to be defined by the user.
 mg <- get_demo_metagene()
 names(mg$get_params())
 
-mg$get_params()[c("bin_count", "alpha", "design")]
+mg$get_params()[c("bin_count", "alpha", "normalization")]
 ```
 
 
@@ -567,8 +571,8 @@ The `get_regions` function returns the post-processed regions that
 # Out demo regions are a GRangesList of two elements containing 50 ranges each.
 get_demo_regions()
 
-# When we initialize the metagene object, thsoe regions will be pre-processed,
-# flattening the list into a single GRanges object and adding a region_name`
+# When we initialize the metagene object, those regions will be pre-processed,
+# flattening the list into a single GRanges object and adding a region_name
 # column for tracking.
 mg <- metagene2$new(regions = get_demo_regions(),
                    bam_files = get_demo_bam_files())
@@ -623,3 +627,109 @@ mg2 <- metagene2$new(bam_files = get_demo_bam_files(),
 plot_metagene(rbind(mg1$add_metadata(), mg2$add_metadata()),
               facet_by=.~region_name)
 ```
+
+# Differences with metagene {#diff_v1}
+
+`metagene2` is a thorough overhaul of `metagene`, adding many new features and
+streamlining others. The most important differences between the two versions are
+detailed below:
+
+## Better-defined operations
+
+`metagene` had a 4 step pipeline: 
+1. `metagene2$new`
+2. `produce_table`
+3. `produce_data_frame`
+4. `plot`
+ 
+Some of these steps were ambiguous (What is the difference between 
+`produce_table` and `produce_data_frame` in this context?) and many useful 
+intermediary structures were hidden from the user. `metagene2` remedies this by 
+making all intermediary operations explicit:
+1. `metagene2$new`
+2. `group_coverages`
+3. `bin_coverages`
+4. `split_coverages_by_regions`
+5. `calculate_ci`
+6. `add_metadata`
+7. `plot`
+ 
+Each of these intermediary operations now returns the results of their 
+calculations rather than a reference to the `metagene2` object. As a result, 
+you can no longer chain metagene operations (`mg$produce_data_frame()$plot()`, 
+for example.) `metagene2` also adds a new method, `produce_metagene`, which can
+be used to go through the whole pipeline all at once.
+
+See the 
+[Intermediary processing steps and further parameters](#intermediary_steps)
+section for more informations on each of the intermediary steps.
+
+## Better parameter management
+
+To change certain parameters (`alpha`, `bin_count`), `metagene` required you
+to call on the intermediary steps directly. Some parameters (like `bin_count`)
+had a default value of `NA`, which allowed you to keep the previous value. 
+Others had a default value (`alpha`) where `NA` was an invalid input.
+
+This has been streamlined: now, all intermediary parameters default to `NA`, and 
+are given reasonable defaults upon object initialization. Also, all parameters 
+can be changed by calling `produce_metagene`. `metagene2` manages a 
+smart cache of intermediary results. Upon calling `produce_metagene` and setting 
+parameters, only the caches of those operations downstream of that parameter are
+invalidated and recalculated.
+   
+## Working with metadata
+
+In `metagene`, the only way to differentiate regions was to split them up in a
+`GRangesList` upon object initialization. There was also no way to use 
+information about the various designs/samples when plotting. In our experience, 
+rather than using `metagene`'s built-in plotting capabilities, most users 
+resorted to getting the `data.frame` and `dplyr::left_join`'ing it with their
+metadata.
+
+In `metagene2`, metadata management is now part of `metagene2`object. Regions 
+have explicit metadata (through their `mcols`, or an explicit `region_metadata` 
+parameter) which can be used to split them up into metagene units using the 
+`split_coverages_by_regions` method. Thus, it is no longer necessary
+to create a new `metagene` object to change the way regions are grouped 
+together.
+
+Designs/samples can also have metadata, added at the `add_metadata` step, giving
+details about antibodies, strains, sample conditions, etc. These information
+can be used to change the facetting and grouping of the metagenes when plotting,
+using the `facet_by`and `group_by` parameters.
+
+## True RNA-seq metagenes
+
+`metagene` had an experimental "rnaseq" mode. However, this mode mostly 
+generated per-nucleotide coverages over single genes, and did not allow for the
+aggregations of multiple genes together. Furthermode, `metagene` did not
+differentiate between reads that were on different strands, limiting its 
+usefulness for RNA analysis.
+
+In `metagene2`, rnaseq mode is no longer fundamentally different from chipseq
+mode. Both allow the binning and aggregation of multiple regions.
+This behaviour is controlled through the `region_mode` parameter, which must be 
+set to `stitch` for the input `GRangesList` `regions`object to be treated as a set
+of exons to be "stitched" together. The `strand_specific` argument on object
+initialization also also for reads to be counted only if they lie on the correct
+strand.
+
+## Miscellaneous changes and improvements
+
+* `flip_regions` and `unflip_regions` have been removed. The strand is now
+  always taken into account when binning regions.
+* `add_design` has been removed. You can now change the design by setting it 
+  directly in `groud_coverages`or `produce_metagene`.
+* `get_matrix`, `get_table` and `get_data_frame` have been removed. 
+  Intermediary results are now accessed by calling the correct step directly
+  (`bin_coverages` for `get_matrix`, `calculate_ci` or `add_metadata` for 
+  `get_data_frame`)
+* Parallel processing has been improved! It's now available on Windows, and it 
+  is used in more places where it can provide a performance boost.
+* `metagene2` now supports `strand_specific`metagenes, with an option to 
+  `invert_strand`s when sequencing cDNA directly.
+* `metagene2` can now `extend_reads`, a common analysis step when analyzing
+   chip-seq data.
+* `metagene2`now has a `plot_single_region` method, which can be used to 
+  generate a coverage plot for a single region as a diagnostic/QC tool.
