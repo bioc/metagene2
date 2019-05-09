@@ -25,7 +25,7 @@ This package produces metagene plots, and is the successor to the `metagene`
 package. Users of `metagene` can find a list of differences between `metagene2`
 and `metagene` in the [Differences with metagene](#diff_v1) section of this vignette. 
 
-Metagene plots which aggregate coverages from
+Metagene plots aggregate coverages from
 multiple sources (bam files) over multiple regions (genes, cofactor binding
 sites, etc.) to provide profiles of average coverage. They are useful for
 many different purposes, such as comparing the binding profiles of
@@ -46,12 +46,12 @@ library(metagene2)
 # Creating a metagene object
 
 `metagene2` objects are used to perform all of the analysis steps necessary
-to produce metagene plots. Calling `metagene2$new` creates a `metagene2` object and requires only two 
-mandatory parameters: `bam_files`, which is the list of bam files from which
-coverages should be extracted, and `regions`, which is the list of regions
-over which said coverages are computed. We also recommend using the optional 
-`assay` parameter, which can be one of `'chipseq'` or `'rnaseq'`, and will
-automatically set other optional parameters to convenient defaults.
+to produce metagene plots. Calling `metagene2$new` creates a `metagene2` object 
+and requires only two mandatory parameters: `bam_files`, which is the list of 
+bam files from which coverages should be extracted, and `regions`, which is the 
+list of regions over which said coverages are computed. We also recommend using 
+the optional `assay` parameter, which can be one of `'chipseq'` or `'rnaseq'`, 
+and will automatically set other optional parameters to convenient defaults.
 We discuss each of these arguments below.
 
 ```{r minimalAnalysis}
@@ -160,34 +160,6 @@ mg <- metagene2$new(regions = regions,
 mg$get_regions()
 ```
 
-Some common ranges that can be useful for plotting include the set of all TSSes
-or gene bodies. While metagene2 does not provide those, they can easily be 
-generated using packages from BioConductor:
-
-```{r genratePromoterGRange, eval=FALSE}
-    # First locate the TxDb package containing the geneset of interest.
-    # Some of the most common TxDb packages include:
-    #  - TxDb.Hsapiens.UCSC.hg38.knownGene
-    #  - TxDb.Hsapiens.UCSC.hg19.knownGene
-    #  - TxDb.Mmusculus.UCSC.mm10.knownGene
-    #  - TxDb.Mmusculus.UCSC.mm10.ensGene
-    library(TxDb.Hsapiens.UCSC.hg38.knownGene)
-    
-    # We'll use the GenomicFeatures package to obtain gene/TSS coordinates
-    # from the TxDb package.
-    library(GenomicFeatures)
-    
-    # The GenomicFeatures::genes function provides us with gene bodies.
-    all_gene_bodies = GenomicFeatures::genes(TxDb.Hsapiens.UCSC.hg38.knownGene)
-    
-    # The GenomicFeatures::promoters function gets a region flanking the TSS.
-    # By using it directly on TxDb.Hsapiens.UCSC.hg38.knownGene, we would get
-    # the TSSes of all transcripts. Here, we use it on the gene_bodies GRanges
-    # we've just created, and limit ourselves to one TSS per gene.
-    all_TSS = GenomicFeatures::promoters(all_gene_bodies,
-                                         upstream=2000, downstream=2000)
-```
-
 For more details about each datasets, please refer to their documentation 
 (i.e.:`?promoters_hg19`).
 
@@ -217,6 +189,36 @@ mg <- metagene2$new(regions = regions,
 mg$get_regions()
 ```
 
+### Generating common ranges (Promoters, gene bodies) {#common_ranges}
+
+Some common ranges that can be useful for plotting include the set of all TSSes
+or gene bodies. While metagene2 does not provide those, they can easily be 
+generated using packages from BioConductor:
+
+```{r genratePromoterGRange, eval=FALSE}
+    # First locate the TxDb package containing the geneset of interest.
+    # Some of the most common TxDb packages include:
+    #  - TxDb.Hsapiens.UCSC.hg38.knownGene
+    #  - TxDb.Hsapiens.UCSC.hg19.knownGene
+    #  - TxDb.Mmusculus.UCSC.mm10.knownGene
+    #  - TxDb.Mmusculus.UCSC.mm10.ensGene
+    library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+    
+    # We'll use the GenomicFeatures package to obtain gene/TSS coordinates
+    # from the TxDb package.
+    library(GenomicFeatures)
+    
+    # The GenomicFeatures::genes function provides us with gene bodies.
+    all_gene_bodies = GenomicFeatures::genes(TxDb.Hsapiens.UCSC.hg38.knownGene)
+    
+    # The GenomicFeatures::promoters function gets a region flanking the TSS.
+    # By using it directly on TxDb.Hsapiens.UCSC.hg38.knownGene, we would get
+    # the TSSes of all transcripts. Here, we use it on the gene_bodies GRanges
+    # we've just created, and limit ourselves to one TSS per gene.
+    all_TSS = GenomicFeatures::promoters(all_gene_bodies,
+                                         upstream=2000, downstream=2000)
+```
+
 # Grouping regions and bam files
 
 By default, `metagene2` aggregates all passed-in regions together, and treats all
@@ -241,9 +243,10 @@ using either their paths or their names as specified in the `bam_files` argument
 Each subsequent column then represents an individual design group. The column name
 defines the design group's name, and the column values determine how each bam file
 relates to the design group:
-    + 0: ignore file
-    + 1: input
-    + 2: control
+
+    * 0: ignore file
+    * 1: input
+    * 2: control
 
 A design group does not need to have a control, but it must have at least
 one input.    
@@ -637,6 +640,7 @@ detailed below:
 ## Better-defined operations
 
 `metagene` had a 4 step pipeline: 
+
 1. `metagene2$new`
 2. `produce_table`
 3. `produce_data_frame`
@@ -646,6 +650,7 @@ Some of these steps were ambiguous (What is the difference between
 `produce_table` and `produce_data_frame` in this context?) and many useful 
 intermediary structures were hidden from the user. `metagene2` remedies this by 
 making all intermediary operations explicit:
+
 1. `metagene2$new`
 2. `group_coverages`
 3. `bin_coverages`
@@ -733,3 +738,6 @@ strand.
    chip-seq data.
 * `metagene2`now has a `plot_single_region` method, which can be used to 
   generate a coverage plot for a single region as a diagnostic/QC tool.
+* The promoters_hg19, promoters_hg18, promoters_mm10 and promoters_mm9
+  objects have been removed. See the [Generating common ranges](#common_ranges)
+  section for details on how to generate equivalent objects yourself.
