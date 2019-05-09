@@ -487,9 +487,14 @@ metagene2 <- R6Class("metagene2",
             # Validate the format of bam_files, since it is used to preprocess certain
             # parameters before initialization.
             validate_bam_files_format(bam_files)
+            validate_assay(assay)
             
             if(region_mode=="auto") {
                 region_mode = ifelse(assay=='rnaseq', "stitch", "separate")
+            }
+            
+            if(assay=='rnaseq') {
+                strand_specific=TRUE
             }
             
             # Define default design.

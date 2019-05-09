@@ -4,3 +4,6 @@ Changes in version 1.1.0 (2019-04-05)
 Changes in version 1.1.1 (2019-05-03)
 + Added log2_ratio normalization option.
 + Fix a bug that prevented strand_specific and stitch mode to work together.
+
+Changes in version 1.1.2 (2019-05-09)
++ rnaseq mode now sets strand_specific to TRUE by default.
