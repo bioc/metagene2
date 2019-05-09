@@ -1035,13 +1035,7 @@ metagene2 <- R6Class("metagene2",
             # Prepare x label
             assay = private$ph$get("assay")
             if (is.null(x_label)) {
-                if (assay == "chipseq") {
-                    x_label <- "Distance in bins"
-                } else if (assay == "rnaseq") {
-                    x_label = ifelse(is.null(private$ph$get("bin_count")),
-                                     "Distance in nucleotides",
-                                     "Distance in bins")
-                }
+                x_label <- "Distance in bins"
             }
 
             # Prepare y label
