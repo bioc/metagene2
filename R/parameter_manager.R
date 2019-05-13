@@ -22,7 +22,9 @@ parameter_manager <- R6Class("parameter_manager",
             return(private$parameter_values)
         },
         set = function(param_name, param_value) {
-            private$set_internal(param_name, param_value)
+            params = list()
+            params[[param_name]] = param_value
+            private$update_params_with_reset(params)
         },
         have_params_changed = function(...) {
             # This prologue makes it possible to infer parameter names from the
@@ -55,7 +57,7 @@ parameter_manager <- R6Class("parameter_manager",
                 names(arg_list) = ifelse(names(arg_list)=="", param_names_alt, names(arg_list))
             }
 
-            private$update_params_internal(arg_list)
+            private$update_params_with_reset(arg_list)
         }
     ),
     private=list(
@@ -74,6 +76,17 @@ parameter_manager <- R6Class("parameter_manager",
             }
         
             return(ret_val)        
+        },
+        update_params_with_reset = function(param_list) {
+            old_values = private$parameter_values
+            reset_recover = function(e) {
+                private$parameter_values = old_values
+                stop(e)
+            }
+            
+            withCallingHandlers(
+                private$update_params_internal(param_list),
+                error=reset_recover);
         },
         update_params_internal = function(param_list) {
             if(private$have_params_changed_internal(param_list)) {
