@@ -249,7 +249,10 @@ relates to the design group:
     * 2: control
 
 A design group does not need to have a control, but it must have at least
-one input.    
+one input. Control samples are ignored when no normalization or "RPM"
+normalization is chosen. However, they are used to remove background noise
+using "NCIS" normalization is selected, or to compute coverage ratios
+with a control sample when "log2_ratio" normalization is applied.
     
 ```{r design_definition}
 example_design <- data.frame(Samples = bam_files,

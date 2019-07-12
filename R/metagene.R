@@ -260,7 +260,8 @@
 #'            These columns should contain integer values indicating whether the 
 #'            bam files on that row should be excluded (0), included as an`
 #'            "input" (1) or included as a "control" (2) within the specified 
-#'            design group.
+#'            design group. Control samples are used for "NCIS" and "log2_ratio"
+#'            normalization, but are ignored for no or "RPM" normalization.
 #'            \code{NA} can be used keep previous design value. Default: \code{NA}.}
 #'    \item{normalization}{The algorithm to use to normalize coverages. Possible
 #'                        values are \code{NULL} (no normalization), "RPM", "log2_ratio"
