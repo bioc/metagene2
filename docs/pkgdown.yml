@@ -3,4 +3,7 @@ pkgdown: 1.4.1
 pkgdown_sha: ~
 articles:
   metagene2: metagene2.html
+urls:
+  reference: https://arnauddroitlab.github.io/metagene2//reference
+  article: https://arnauddroitlab.github.io/metagene2//articles
 

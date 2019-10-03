@@ -27,6 +27,7 @@ biocViews: ChIPSeq, Genetics, MultipleComparison, Coverage, Alignment,
 License: Artistic-2.0
 LazyData: true
 BugReports: https://github.com/ArnaudDroitLab/metagene2/issues
+URL: https://github.com/ArnaudDroitLab/metagene2
 VignetteBuilder: knitr
 Depends:
     R (>= 3.6),
