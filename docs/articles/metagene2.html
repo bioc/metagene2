@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (links[i].hostname != window.location.hostname)
       links[i].target = '_blank';
 });
-</script><p><strong>Package</strong>: <em><a href="https://bioconductor.org/packages/3.10/metagene2">metagene2</a></em><br><strong>Modified</strong>: April 2nd, 2019<br><strong>Compiled</strong>: Thu Oct 03 10:46:14 2019<br><strong>License</strong>: Artistic-2.0<br></p>
+</script><p><strong>Package</strong>: <em><a href="https://bioconductor.org/packages/3.10/metagene2">metagene2</a></em><br><strong>Modified</strong>: April 2nd, 2019<br><strong>Compiled</strong>: Thu Oct 03 11:19:16 2019<br><strong>License</strong>: Artistic-2.0<br></p>
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
@@ -166,8 +166,8 @@ mg &lt;-<span class="st"> </span>metagene2$<span class="kw">new</span>(<span cla
 <p>A file’s extension will usually reflect the format it is stored in.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">regions &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_demo_region_filenames.html">get_demo_region_filenames</a></span>()
 regions</code></pre></div>
-<pre><code>## [1] "C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath738600918dc/metagene2/extdata/list1.bed"
-## [2] "C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath738600918dc/metagene2/extdata/list2.bed"</code></pre>
+<pre><code>## [1] "C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath73817d615f6/metagene2/extdata/list1.bed"
+## [2] "C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath73817d615f6/metagene2/extdata/list2.bed"</code></pre>
 <p>By providing those two file names to <code>metagene2$new</code>, they will be loaded and converted into appropriate objects:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mg &lt;-<span class="st"> </span>metagene2$<span class="kw">new</span>(<span class="dt">regions =</span> <span class="kw"><a href="../reference/get_demo_region_filenames.html">get_demo_region_filenames</a></span>(),
                    <span class="dt">bam_files =</span> <span class="kw"><a href="../reference/get_demo_bam_files.html">get_demo_bam_files</a></span>())
@@ -433,31 +433,31 @@ mg$<span class="kw">get_regions</span>()</code></pre></div>
 <tbody>
 <tr class="odd">
 <td>a1_1</td>
-<td align="left">C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath738600918dc/metagene2/extdata/align1_rep1.bam</td>
+<td align="left">C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath73817d615f6/metagene2/extdata/align1_rep1.bam</td>
 <td align="right">1</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
 <td>a1_2</td>
-<td align="left">C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath738600918dc/metagene2/extdata/align1_rep2.bam</td>
+<td align="left">C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath73817d615f6/metagene2/extdata/align1_rep2.bam</td>
 <td align="right">1</td>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
 <td>a2_1</td>
-<td align="left">C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath738600918dc/metagene2/extdata/align2_rep1.bam</td>
+<td align="left">C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath73817d615f6/metagene2/extdata/align2_rep1.bam</td>
 <td align="right">0</td>
 <td align="right">1</td>
 </tr>
 <tr class="even">
 <td>a2_2</td>
-<td align="left">C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath738600918dc/metagene2/extdata/align2_rep2.bam</td>
+<td align="left">C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath73817d615f6/metagene2/extdata/align2_rep2.bam</td>
 <td align="right">0</td>
 <td align="right">1</td>
 </tr>
 <tr class="odd">
 <td>ctrl</td>
-<td align="left">C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath738600918dc/metagene2/extdata/ctrl.bam</td>
+<td align="left">C:/Users/Eric/AppData/Local/Temp/RtmpCkeeA5/temp_libpath73817d615f6/metagene2/extdata/ctrl.bam</td>
 <td align="right">2</td>
 <td align="right">2</td>
 </tr>

@@ -8,8 +8,16 @@ This package produces metagene plots to compare the behavior of DNA-interacting 
 
 [![Bioconductor Time](http://bioconductor.org/shields/years-in-bioc/metagene2.svg)](http://bioconductor.org/packages/release/bioc/html/metagene.html "Bioconductor status")
 
-metagene is now an official package of [Bioconductor](http://bioconductor.org/). The current release can be directly downloaded from their website:
-[Current release](http://www.bioconductor.org/packages/release/bioc/html/metagene2.html)
+metagene2 is an official package of [Bioconductor](http://bioconductor.org/). The current release and devel builds can be downloaded from their website:
+ - [Current release](http://www.bioconductor.org/packages/release/bioc/html/metagene2.html)
+ - [devel](http://www.bioconductor.org/packages/devel/bioc/html/metagene2.html)
+
+## Documentation ##
+
+The official [release](http://www.bioconductor.org/packages/release/bioc/html/metagene2.html)
+and [devel](http://www.bioconductor.org/packages/devel/bioc/html/metagene2.html) documentation
+of the package is available from Bioconductor. We also maintain a mirror of the devel documentation 
+on the [package website on github.io](https://arnauddroitlab.github.io/metagene2/).
 
 
 ## Authors ##
@@ -38,4 +46,4 @@ For more information on Artistic 2.0 License see
 ## Bugs/Feature requests ##
 
 If you have any bugs or feature requests,
-[let us know](https://github.com/ArnaudDroitLab/metagene2/issues). Thanks!
+[let us know](https://github.com/ArnaudDroitLab/metagene2/issues).
