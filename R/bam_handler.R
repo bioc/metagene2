@@ -239,7 +239,6 @@ Bam_Handler <- R6Class("Bam_Handler",
             {
                 if (force_seqlevels == FALSE) {
                     stop(SEQ_LEVEL_ERROR)
-                    )
                 } else { #force_seqlevels = TRUE
                     #force_seqlevels is used here but the user interface 
                     #continue to use force_seqlevels an boolean mode
