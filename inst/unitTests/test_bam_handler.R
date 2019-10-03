@@ -345,7 +345,7 @@ test.bam_handler_get_coverage_invalid_regions_all_seqnames_not_in_bam <-
     obs <- tryCatch(bam_handler$get_coverage(bam_file = bam_file,
                                              regions = region),
                     error = conditionMessage)
-    exp <- "Some seqlevels of regions are absent in bam_file"
+    exp <- metagene2:::SEQ_LEVEL_ERROR
     checkIdentical(obs, exp)
 }
 
@@ -376,7 +376,7 @@ test.bam_handler_get_coverage_invalid_regions_one_seqnames_not_in_bam <-
     obs <- tryCatch(bam_handler$get_coverage(bam_file = bam_file,
                                              regions = region),
                     error = conditionMessage)
-    exp <- "Some seqlevels of regions are absent in bam_file"
+    exp <- metagene2:::SEQ_LEVEL_ERROR
     checkIdentical(obs, exp)
 }
 
@@ -390,7 +390,7 @@ test.bam_handler_get_coverage_invalid_regions_seqlevels_not_in_bam <-
     obs <- tryCatch(bam_handler$get_coverage(bam_file = bam_file,
                                              regions = region),
                     error = conditionMessage)
-    exp <- "Some seqlevels of regions are absent in bam_file"
+    exp <- metagene2:::SEQ_LEVEL_ERROR
     checkIdentical(obs, exp)
 }
 
@@ -524,7 +524,7 @@ test.bam_handler_get_normalized_coverage_invalid_all_seqnames_not_in_bam <-
     obs <- tryCatch(bam_handler$get_normalized_coverage(bam_file = bam_file,
                                                         regions = region),
                     error = conditionMessage)
-    exp <- "Some seqlevels of regions are absent in bam_file"
+    exp <- metagene2:::SEQ_LEVEL_ERROR
     checkIdentical(obs, exp)
 }
 
@@ -555,7 +555,7 @@ test.bam_handler_get_normalized_coverage_invalid_regions_seqnames_not_in_bam <-
     obs <- tryCatch(bam_handler$get_normalized_coverage(bam_file = bam_file,
                                                         regions = region),
                     error = conditionMessage)
-    exp <- "Some seqlevels of regions are absent in bam_file"
+    exp <- metagene2:::SEQ_LEVEL_ERROR
     checkIdentical(obs, exp)
 }
 
@@ -569,7 +569,7 @@ test.bam_handler_get_normalized_coverage_regions_seqlevels_not_in_bam_no_regions
     obs <- tryCatch(bam_handler$get_normalized_coverage(bam_file = bam_file,
                                                         regions = region),
                     error = conditionMessage)
-    checkTrue(obs == "Some seqlevels of regions are absent in bam_file")
+    checkTrue(obs == metagene2:::SEQ_LEVEL_ERROR)
 }
 
 ## Valid regions seqlevels not in bam force

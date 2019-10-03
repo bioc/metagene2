@@ -176,7 +176,7 @@ test.metagene_regions_seqlevels <- function() {
     GenomeInfoDb::seqlevels(region_with_extra_seq_level) <- c(GenomeInfoDb::seqlevels(region_with_extra_seq_level),
                                                               "extra_seqlevels")
     
-    util_test_invalid_region(region_with_extra_seq_level, "Some seqlevels of regions are absent in bam_file")
+    util_test_invalid_region(region_with_extra_seq_level, metagene2:::SEQ_LEVEL_ERROR)
     util_test_valid_region(region_with_extra_seq_level, force_seqlevels = TRUE)
 
     # Extra seqnames means we must drop certain regions. We only do so
@@ -184,7 +184,7 @@ test.metagene_regions_seqlevels <- function() {
     region_with_extra_seq = region_with_extra_seq_level
     seqnames(region_with_extra_seq)[1] = "extra_seqlevels"
 
-    util_test_invalid_region(region_with_extra_seq, "Some seqlevels of regions are absent in bam_file")
+    util_test_invalid_region(region_with_extra_seq, metagene2:::SEQ_LEVEL_ERROR)
     util_test_valid_region(region_with_extra_seq, force_seqlevels = TRUE)
 
     # Sometimes there can be no seqnames left after removing

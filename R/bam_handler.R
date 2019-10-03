@@ -238,7 +238,8 @@ Bam_Handler <- R6Class("Bam_Handler",
             if (!all(unique(GenomeInfoDb::seqlevels(regions)) %in% bam_levels))
             {
                 if (force_seqlevels == FALSE) {
-                    stop("Some seqlevels of regions are absent in bam_file")
+                    stop(SEQ_LEVEL_ERROR)
+                    )
                 } else { #force_seqlevels = TRUE
                     #force_seqlevels is used here but the user interface 
                     #continue to use force_seqlevels an boolean mode
@@ -458,3 +459,10 @@ Bam_Handler <- R6Class("Bam_Handler",
         }
     )
 )
+
+SEQ_LEVEL_ERROR = paste0("Some seqlevels of regions are absent in bam_file. ",
+                         "This could be caused by 'unknown' chromosomes or by ",
+                         "discrepancies in the seqlevels style",
+                         " (i.e.: UCSC:chr1 versus NCBI:1)\n\n",
+                         "If you are certain your region and bam files ",
+                         "match, you can use force_seqlevels=TRUE to ignore this error.")
