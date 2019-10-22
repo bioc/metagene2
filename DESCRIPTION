@@ -47,7 +47,8 @@ Imports:
     data.table,
     methods,
     dplyr,
-    magrittr
+    magrittr,
+    reshape2
 Suggests:
     BiocGenerics,
     RUnit,
