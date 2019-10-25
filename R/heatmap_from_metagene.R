@@ -107,7 +107,7 @@ coverage_order <- function(metagene, design_groups=NULL, decreasing=TRUE) {
 #'   metagene2_heatmap(demo_metagene)
 #' @import ggplot2
 #' @export
-metagene2_heatmap <- function(metagene, region_order = as_is_region_order(metagene)) {
+metagene2_heatmap <- function(metagene, region_order = as_is_region_order(metagene), scale_trans="identity") {
     stopifnot(is(metagene, "metagene2"))
     stopifnot(is(region_order, "list"))
     # Make sure the names of the region groups and ordering match.
@@ -129,10 +129,10 @@ metagene2_heatmap <- function(metagene, region_order = as_is_region_order(metage
 
     # Build the plot.
     ggplot(heatmap_df) +
-        geom_tile(mapping=aes_string(x="bin", y="region", fill="coverage")) + 
+        geom_raster(mapping=aes_string(x="bin", y="region", fill="coverage")) + 
         facet_grid(region_name~bam_name) +
         scale_y_continuous(trans = "reverse") +
-        scale_fill_gradient(low="#FFFFFF", high="#18448c") +
+        scale_fill_gradient(low="#FFFFFF", high="#18448c", trans=scale_trans) +
         theme(panel.grid.major = element_blank(), 
               panel.grid.minor = element_blank(),
               panel.background = element_blank(),
