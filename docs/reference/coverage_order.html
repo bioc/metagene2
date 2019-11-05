@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get BAM filenames for demo — get_demo_rna_bam_files • metagene2</title>
+<title>Determines ordering of regions as a function of coverage. — coverage_order • metagene2</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,10 @@
 
 
 
-<meta property="og:title" content="Get BAM filenames for demo — get_demo_rna_bam_files" />
-<meta property="og:description" content="Get BAM filenames for demo" />
+<meta property="og:title" content="Determines ordering of regions as a function of coverage. — coverage_order" />
+<meta property="og:description" content="This function creates an ordering of regions within region groups based on 
+ascending or descending mean coverage. This is used with the 
+metagene2_heatmap function." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -108,28 +110,59 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get BAM filenames for demo</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ArnaudDroitLab/metagene2/blob/master/R/demo.R'><code>R/demo.R</code></a></small>
-    <div class="hidden name"><code>get_demo_rna_bam_files.Rd</code></div>
+    <h1>Determines ordering of regions as a function of coverage.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ArnaudDroitLab/metagene2/blob/master/R/heatmap_from_metagene.R'><code>R/heatmap_from_metagene.R</code></a></small>
+    <div class="hidden name"><code>coverage_order.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get BAM filenames for demo</p>
+    <p>This function creates an ordering of regions within region groups based on 
+ascending or descending mean coverage. This is used with the 
+<code><a href='metagene2_heatmap.html'>metagene2_heatmap</a></code> function.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_demo_rna_bam_files</span>()</pre>
+    <pre class="usage"><span class='fu'>coverage_order</span>(<span class='no'>metagene</span>, <span class='kw'>design_groups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>decreasing</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>metagene</th>
+      <td><p>The metagene object whose grouped regions should be ordered.</p></td>
+    </tr>
+    <tr>
+      <th>design_groups</th>
+      <td><p>A vector of design groups to be used for determining the 
+ordering. If <code>NULL</code>, all design groups are used.</p></td>
+    </tr>
+    <tr>
+      <th>decreasing</th>
+      <td><p>If TRUE, regions are ordered from the highest mean coverage
+to the lowest mean coverage, and vice versa.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A vector of BAM filenames</p>
+    <p>A list, with as many elements as there are region groups in the
+        metagene object. Each element of that list is an ordering of the
+        regions of that group based on their mean coverage.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>bam_files</span> <span class='kw'>&lt;-</span> <span class='fu'>get_demo_rna_bam_files</span>()</div></pre>
+    <pre class="examples"><div class='input'>  <span class='no'>demo_metagene</span> <span class='kw'>=</span> <span class='fu'><a href='get_demo_metagene.html'>get_demo_metagene</a></span>()
+  <span class='fu'>coverage_order</span>(<span class='no'>demo_metagene</span>)</div><div class='output co'>#&gt; $list1
+#&gt;  [1] 30 27 13 39 34 44 28 10 12 29 43 48 15 36  7  8  4  5 33 31 22 24 45 16 37
+#&gt; [26] 38 42 32 49 25  1 11 40 20  9 18 23 41 21 17 46 47 35 26 19  2  3 14 50  6
+#&gt; 
+#&gt; $list2
+#&gt;  [1]  6  7 30  3  1 27 37 20 44 29  4  2 43 23 50 24 42 22 38  9 10 36 40 48 35
+#&gt; [26] 25  5  8 34 18 12 33 21 31 45 14 32 17 11 26 41 46 13 39 49 19 15 28 16 47
+#&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>

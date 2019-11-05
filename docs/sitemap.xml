@@ -4,7 +4,13 @@
     <loc>https://arnauddroitlab.github.io/metagene2//index.html</loc>
   </url>
   <url>
+    <loc>https://arnauddroitlab.github.io/metagene2//reference/as_is_region_order.html</loc>
+  </url>
+  <url>
     <loc>https://arnauddroitlab.github.io/metagene2//reference/Bam_Handler.html</loc>
+  </url>
+  <url>
+    <loc>https://arnauddroitlab.github.io/metagene2//reference/coverage_order.html</loc>
   </url>
   <url>
     <loc>https://arnauddroitlab.github.io/metagene2//reference/get_demo_bam_files.html</loc>
@@ -29,6 +35,9 @@
   </url>
   <url>
     <loc>https://arnauddroitlab.github.io/metagene2//reference/metagene2.html</loc>
+  </url>
+  <url>
+    <loc>https://arnauddroitlab.github.io/metagene2//reference/metagene2_heatmap.html</loc>
   </url>
   <url>
     <loc>https://arnauddroitlab.github.io/metagene2//reference/plot_metagene.html</loc>

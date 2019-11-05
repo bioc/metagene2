@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get BAM filenames for demo — get_demo_rna_bam_files • metagene2</title>
+<title>Returns an "as-is" ordering of regions. — as_is_region_order • metagene2</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,10 @@
 
 
 
-<meta property="og:title" content="Get BAM filenames for demo — get_demo_rna_bam_files" />
-<meta property="og:description" content="Get BAM filenames for demo" />
+<meta property="og:title" content="Returns an "as-is" ordering of regions. — as_is_region_order" />
+<meta property="og:description" content="This function creates an ordering of regions to be used with the 
+metagene2_heatmap function. The regions are not actually
+reordered, but returned as-is." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -108,28 +110,50 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get BAM filenames for demo</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ArnaudDroitLab/metagene2/blob/master/R/demo.R'><code>R/demo.R</code></a></small>
-    <div class="hidden name"><code>get_demo_rna_bam_files.Rd</code></div>
+    <h1>Returns an "as-is" ordering of regions.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ArnaudDroitLab/metagene2/blob/master/R/heatmap_from_metagene.R'><code>R/heatmap_from_metagene.R</code></a></small>
+    <div class="hidden name"><code>as_is_region_order.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get BAM filenames for demo</p>
+    <p>This function creates an ordering of regions to be used with the 
+<code><a href='metagene2_heatmap.html'>metagene2_heatmap</a></code> function. The regions are not actually
+reordered, but returned as-is.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_demo_rna_bam_files</span>()</pre>
+    <pre class="usage"><span class='fu'>as_is_region_order</span>(<span class='no'>metagene</span>)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>metagene</th>
+      <td><p>The metagene object whose grouped regions should be ordered.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A vector of BAM filenames</p>
+    <p>A list, with as many elements as there are region groups in the
+        metagene object. Each element of that list is an ordering of the
+        regions of that group based on their original ordering in the 
+        metagene2 object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>bam_files</span> <span class='kw'>&lt;-</span> <span class='fu'>get_demo_rna_bam_files</span>()</div></pre>
+    <pre class="examples"><div class='input'>  <span class='no'>demo_metagene</span> <span class='kw'>=</span> <span class='fu'><a href='get_demo_metagene.html'>get_demo_metagene</a></span>()
+  <span class='fu'>as_is_region_order</span>(<span class='no'>demo_metagene</span>)</div><div class='output co'>#&gt; $list1
+#&gt;  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+#&gt; [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50
+#&gt; 
+#&gt; $list2
+#&gt;  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+#&gt; [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50
+#&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
