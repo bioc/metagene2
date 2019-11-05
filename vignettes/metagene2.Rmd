@@ -634,6 +634,25 @@ plot_metagene(rbind(mg1$add_metadata(), mg2$add_metadata()),
               facet_by=.~region_name)
 ```
 
+# Plotting heatmaps
+
+In addition to plotting "metagenes", which are aggregate plots of multiple 
+regions, `metagene2` offers the possibility of plotting individual regions as
+a heatmap.
+
+```{r metagene_heatmap_default_order}
+mg <- get_demo_metagene()
+metagene2_heatmap(mg)
+```
+
+Rows in the heatmap can be reordered to be in decreasing order of the mean
+signal of specific design groups:
+
+```{r metagene_heatmap_decreasing_order}
+mg <- get_demo_metagene()
+metagene2_heatmap(mg, coverage_order(mg, "align1_rep1"))
+```
+
 # Differences with metagene {#diff_v1}
 
 `metagene2` is a thorough overhaul of `metagene`, adding many new features and
