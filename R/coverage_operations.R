@@ -171,9 +171,10 @@ bin_coverages_s = function(coverages, regions, bin_count) {
     }
 
     if(smallest_region < bin_count) {
-        stop("The specified bin_count (", bin_count, "nt) ",
+        stop("The specified bin_count (", bin_count, ") ",
              "is larger than the smallest effective region (", smallest_region, "nt).\n",
-             "Please make sure bin_count is >= ", smallest_region, "\n")
+             "Please make sure bin_count is <= ", smallest_region, ", so that",
+             "every bin has at least 1nt.\n")
     }
     
     # In single_strand mode, we'll only have coverage info for the undefined strand.
