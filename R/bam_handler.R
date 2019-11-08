@@ -256,7 +256,7 @@ Bam_Handler <- R6Class("Bam_Handler",
             grl <- split(regions, as.character(seqnames(regions)))
             gr_max <- vapply(grl, function(x) max(end(x)), numeric(1))
             i <- match(names(gr_max), seqnames(bam_infos))
-            if (!all(seqlengths(bam_infos)[i] >= gr_max)) {
+            if (!all(GenomeInfoDb::seqlengths(bam_infos)[i] >= gr_max)) {
                 stop("Some regions are outside max chromosome length")
             }
             regions
@@ -323,9 +323,9 @@ Bam_Handler <- R6Class("Bam_Handler",
             # The seqlevels of regions must all be present in bam_file
             regions <- private$check_bam_levels(bam_file, regions,
                             force_seqlevels = force_seqlevels)
-            to_remove <- seqlevels(regions)[!(seqlevels(regions) %in%
+            to_remove <- GenomeInfoDb::seqlevels(regions)[!(GenomeInfoDb::seqlevels(regions) %in%
                                             unique(seqnames(regions)))]
-            regions <- dropSeqlevels(regions, to_remove)
+            regions <- GenomeInfoDb::dropSeqlevels(regions, to_remove)
 
             # The regions must not be empty
             if (length(regions) == 0) {
