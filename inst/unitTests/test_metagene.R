@@ -340,6 +340,19 @@ test.metagene_bin_coverages_valid_usage_custom_design = function(){
     }
 }
 
+# Test for https://github.com/ArnaudDroitLab/metagene2/issues/24
+test.metagene_bin_coverages_overlapping_regions = function(){
+  # Define two overlapping regions with known coverages in fake_align1
+  # Region 1 has 1 coverage everywhere.
+  # Region 2 has 1 coverage for its first 2500nt, 0 coverage for the last 2500nt.
+  overlapping_regions = GRanges(c("chr1:1000000-1004999", "chr1:1002500-1007499"))
+  mg_default <- metagene2$new(bam_files=fake_bam_design$BAM, regions=overlapping_regions)
+  
+  checkTrue(all(mg_default$bin_coverages(bin_count=5000)[["fake_align1"]][1,]==1))
+  checkTrue(all(mg_default$bin_coverages(bin_count=5000)[["fake_align1"]][2,1:2500]==1))
+  checkTrue(all(mg_default$bin_coverages(bin_count=5000)[["fake_align1"]][2,2501:5000]==0))
+}
+
 # Invalid split_by
 test.metagene_invalid_split_by <- function() {
   util_test_invalid_param_value("split_by", -4, "split_coverages_by_regions", metagene2:::ERROR_SPLIT_BY)
