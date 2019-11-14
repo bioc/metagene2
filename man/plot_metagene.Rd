@@ -29,9 +29,7 @@ A `ggplot` object.
 Produce a metagene plot
 }
 \examples{
-\dontrun{
    mg <- get_demo_metagene()
    df <- mg$add_metadata()
    p <- metagene2::plot_metagene(df)
-}
 }
