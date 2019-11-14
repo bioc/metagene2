@@ -4,7 +4,8 @@
 \alias{metagene2_heatmap}
 \title{Plots a heatmap of coverages from a metagene2 object.}
 \usage{
-metagene2_heatmap(metagene, region_order = as_is_region_order(metagene))
+metagene2_heatmap(metagene, region_order = as_is_region_order(metagene),
+  scale_trans = "identity")
 }
 \arguments{
 \item{metagene}{The metagene object to be plotted as a heatmap.}
@@ -16,6 +17,11 @@ The \code{\link{as_is_region_order}} and
 \code{\link{coverage_order}} functions can be used to
 generate a valid ordering. By default, 
 \code{\link{as_is_region_order}} is used.}
+
+\item{scale_trans}{A character string giving the transformation that should
+be applied to the coverage values. Common values are
+"identity" and "log1p". See the ggplot2 documentation for
+scale_continuous for more details.}
 }
 \value{
 A ggplot object containing a heatmap representation of the metagene2 

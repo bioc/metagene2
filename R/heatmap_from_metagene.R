@@ -100,6 +100,10 @@ coverage_order <- function(metagene, design_groups=NULL, decreasing=TRUE) {
 #'                     \code{\link{coverage_order}} functions can be used to
 #'                     generate a valid ordering. By default, 
 #'                     \code{\link{as_is_region_order}} is used.
+#' @param scale_trans A character string giving the transformation that should
+#'                    be applied to the coverage values. Common values are
+#'                    "identity" and "log1p". See the ggplot2 documentation for
+#'                    scale_continuous for more details.
 #' @return A ggplot object containing a heatmap representation of the metagene2 
 #'         object.
 #' @examples
