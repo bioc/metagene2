@@ -33,7 +33,7 @@ bin_contiguous_regions <- function(coverage, regions, bin_count) {
   m <-  matrix(vector_means, ncol=bin_count, byrow=TRUE)
 
   # Reorder matrix to preserve region order.
-  m <- m[GenomicRanges::findOverlaps(regions, unlist(grl), select="first"),, drop=FALSE]
+  m <- m[match(as.character(regions), as.character(unlist(grl))),, drop=FALSE]
   
   # Reverse rows on "-" strand
   mr <- m[,bin_count:1, drop=FALSE]
