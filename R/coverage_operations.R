@@ -1,3 +1,8 @@
+BIN_COUNT_TOO_LARGE_ERROR = paste0("The specified bin_count (%d) ",
+             "is larger than the smallest effective region (%d nt).\n",
+             "Please make sure bin_count is <= %d, so that ",
+             "every bin has at least 1 nt.\n")
+
 ###############################################################################
 # Binning of contiguous regions (GRanges objects)                             #
 ###############################################################################
@@ -171,10 +176,8 @@ bin_coverages_s = function(coverages, regions, bin_count) {
     }
 
     if(smallest_region < bin_count) {
-        stop("The specified bin_count (", bin_count, ") ",
-             "is larger than the smallest effective region (", smallest_region, "nt).\n",
-             "Please make sure bin_count is <= ", smallest_region, ", so that",
-             "every bin has at least 1nt.\n")
+        stop(sprintf(BIN_COUNT_TOO_LARGE_ERROR, bin_count, 
+                     smallest_region, smallest_region))
     }
     
     # In single_strand mode, we'll only have coverage info for the undefined strand.

@@ -294,7 +294,6 @@ test.metagene_get_regions_valid_usage_default <- function() {
 # Tests to write:
 #  Test single region
 #  Test bin_size = 1
-#  Test bin_count < width(regions)
 
 test.metagene_group_coverages_valid_usage_default = function(){
     mg <- demo_mg$clone(deep=TRUE)
@@ -840,9 +839,8 @@ test.metagene_bin_count_larger_than_regions <- function() {
     # Test for contiguous regions.                    
     obs = tryCatch(mg$bin_coverages(), error = conditionMessage)
     smallest_region = min(width(unlist(get_demo_regions())))
-    exp = paste0("The specified bin_count (", 1000000, "nt) ",
-              "is larger than the smallest effective region (", smallest_region, "nt).\n",
-              "Please make sure bin_count is >= ", smallest_region, "\n")
+    exp = sprintf(sprintf(metagene2:::BIN_COUNT_TOO_LARGE_ERROR, 1000000, 
+                          smallest_region, smallest_region))
     checkTrue(obs==exp)
    
     # Test for discontiguous regions.
@@ -862,9 +860,8 @@ test.metagene_bin_count_larger_than_regions <- function() {
     # However, 1000000 should fail.
     obs = tryCatch(mg$bin_coverages(bin_count=1000000), error = conditionMessage)
     smallest_region = min(unlist(lapply(region_test, function(x) { sum(width(x)) })))
-    exp = paste0("The specified bin_count (", 1000000, "nt) ",
-             "is larger than the smallest effective region (", smallest_region, "nt).\n",
-             "Please make sure bin_count is >= ", smallest_region, "\n")
+    exp = sprintf(sprintf(metagene2:::BIN_COUNT_TOO_LARGE_ERROR, 1000000, 
+                          smallest_region, smallest_region))
     checkTrue(obs==exp)            
 }
 
