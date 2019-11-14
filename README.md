@@ -4,14 +4,14 @@ metagene2: A package to produce metagene plots
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.org/ArnaudDroitLab/metagene2.svg?branch=master)](https://travis-ci.org/ArnaudDroitLab/metagene2)
+[![codecov](https://codecov.io/gh/ArnaudDroitLab/metagene2/branch/master/graph/badge.svg)](https://codecov.io/gh/ArnaudDroitLab/metagene2)
+[![Bioconductor Time](http://bioconductor.org/shields/years-in-bioc/metagene2.svg)](http://bioconductor.org/packages/release/bioc/html/metagene.html "Bioconductor status")
 <!-- badges: end -->
 
 
 This package produces metagene plots to compare the behavior of DNA-interacting proteins at selected groups of genes/features. Bam files are used to increase the resolution. Multiple combination of group of bam files and/or group of genomic regions can be compared in a single analysis. Bootstraping analysis is used to compare the groups and locate regions with statistically different enrichment profiles.
 
 ## Bioconductor Package ##
-
-[![Bioconductor Time](http://bioconductor.org/shields/years-in-bioc/metagene2.svg)](http://bioconductor.org/packages/release/bioc/html/metagene.html "Bioconductor status")
 
 metagene2 is an official package of [Bioconductor](http://bioconductor.org/). The current release and devel builds can be downloaded from their website:
  - [Current release](http://www.bioconductor.org/packages/release/bioc/html/metagene2.html)
