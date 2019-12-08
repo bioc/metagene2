@@ -28,8 +28,12 @@ calculate_matrix_ci = function(x, sample_count, alpha, reuse) {
         
         # Resample and calculate CIs for all columns of the matrix.
         res = t(apply(x$Matrix, 2, calculate_bin_ci, sample_count=sample_count, alpha=alpha, sample_indices=sample_indices))
-    } else {
+    } else if(nrow(x$Matrix) == 1) {
         res = data.frame(value=as.vector(x$Matrix), qinf=as.numeric(NA), qsup=as.numeric(NA))
+    } else if(nrow(x$Matrix) > 1 && sample_count == 0) {
+        res = data.frame(value=apply(x$Matrix, 2, mean), qinf=as.numeric(NA), qsup=as.numeric(NA))
+    } else {
+        stop("Empty matrix or invalid sample_count!")
     }
     
     # Format the resulting data-frame correctly.
