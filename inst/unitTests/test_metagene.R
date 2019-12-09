@@ -512,6 +512,42 @@ test.metagene_calculate_ci_values_unique_region = function(){
     checkTrue("ggproto" %in% class(test_plot$scales))
 }
 
+test.metagene_calculate_ci_sample_count_zero = function(){
+    # Create the metagene object.
+    mg <- get_demo_metagene()
+ 
+    full_df = mg$calculate_ci(sample_count=0)
+
+    # Sample count is zero, all confidence intervals should be NA.
+    checkTrue(all(is.na(full_df$qinf) & is.na(full_df$qsup)))
+    
+    # There should be n_design * n_regions * bin_count rows to the data.frame
+    n_regions = length(mg$split_coverages_by_regions()[[1]])
+    n_design = nrow(mg$get_params()$design)
+    exp_nrow =  n_regions * n_design * mg$get_params()$bin_count
+    checkTrue(nrow(mg$calculate_ci()) == exp_nrow)
+}
+
+test.metagene_calculate_ci_resample_profile = function(){
+    # Create the metagene object.
+    mg <- get_demo_metagene()
+    mg$produce_metagene(resampling_strategy="profile")
+    
+    full_df = mg$add_metadata()
+
+    # We should have ci values, not NAs.
+    checkTrue(all(!is.na(full_df$qinf) & !is.na(full_df$qsup)))
+    
+    # There should be bin_count bins.
+    checkTrue(max(full_df$bin)==mg$get_params()$bin_count && 
+              length(unique(full_df$bin))==mg$get_params()$bin_count)
+    
+    # There should be n_design * n_regions * bin_count rows to the data.frame
+    n_regions = length(mg$split_coverages_by_regions()[[1]])
+    n_design = nrow(mg$get_params()$design)
+    exp_nrow =  n_regions * n_design * mg$get_params()$bin_count
+    checkTrue(nrow(mg$calculate_ci()) == exp_nrow)
+}
 
 ##################################################
 # Test the metagene2$get_data_frame() function
