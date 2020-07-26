@@ -961,3 +961,8 @@ test.metagene_strand_specific_no_region_on_strand <- function() {
                   strand_specific=TRUE)    
     mg$produce_metagene()
 }
+
+test.region_filter <- function() {
+	mg = get_demo_metagene()
+	mg$produce_metagene(region_filter=rlang::quo(region_name=="list1"))
+}

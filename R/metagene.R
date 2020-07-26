@@ -1354,7 +1354,7 @@ metagene2 <- R6Class("metagene2",
                 # Using dplyr for this because I'm not comfortable enough with
                 # quosures.
                 selected_indices = as.data.frame(private$region_metadata) %>%
-                                       dplyr::mutate(METAGENE_IDX=seq_len(n())) %>%
+                                       dplyr::mutate(METAGENE_IDX=seq_len(dplyr::n())) %>%
                                        dplyr::filter(!! selector) %>%
                                        dplyr::pull(METAGENE_IDX)
             } else if(is(selector, "character")) {
