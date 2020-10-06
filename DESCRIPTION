@@ -3,7 +3,7 @@ Version: 1.5.0
 Date: 2019-04-05
 Title: A package to produce metagene plots
 Authors@R: c(person("Eric", "Fournier",
-    email="fournier.eric.2@crchudequebec.ulaval.ca",
+    email="ericfournier2@yahoo.ca",
     role=c("cre", "aut")), 
     person("Charles", "Joly Beauparlant",
     email="charles.joly-beauparlant@crchul.ulaval.ca", 
