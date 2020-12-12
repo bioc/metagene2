@@ -6,7 +6,6 @@ if(FALSE) {
     library( "RUnit" )
     library( "metagene2" )
     library( "rtracklayer" )
-    library( "DBChIP" )
     library( "stringr" )
     library( "dplyr" )
 }
@@ -613,46 +612,6 @@ test.bam_handler_get_normalized_coverage_no_matching_seqnames_force <-
                                                         force_seqlevels = TRUE),
                     error = conditionMessage)
     checkTrue(obs == "No seqlevels matching between regions and bam file")
-}
-
-###################################################
-## Test the bam_handler$get_noise_ratio()
-###################################################
-
-chip.bed <- system.file("extdata/align1_rep1.bed", package="metagene2")
-input.bed <- system.file("extdata/ctrl.bed", package="metagene2")
-chip.bam <- system.file("extdata/align1_rep1.bam", package="metagene2")
-input.bam <- system.file("extdata/ctrl.bam", package="metagene2")
-
-
-## Valid use
-#test.bam_handler_get_noise_ratio_valid_use <- function() {
-#    exp <- DBChIP:::NCIS(chip.bed, input.bed, "BED")$est
-#    bam_handler <- demo_bh$clone()
-#    obs <- bam_handler$get_noise_ratio(chip.bam, input.bam)
-#    checkIdentical(obs, exp)
-#}
-
-## Invalid chip_bam_file
-test.bam_handler_get_noise_ratio_invalid_chip_bam_file <- function() {
-    bam_handler <- demo_bh$clone()
-    chip_bam_name <- "not_a_valid_bam_file"
-    obs <- tryCatch(bam_handler$get_noise_ratio(chip_bam_names = chip_bam_name,
-                                                input_bam_names = input.bam),
-                    error=conditionMessage)
-    exp <- "Bam file not_a_valid_bam_file not found."
-    checkEquals(obs, exp)
-}
-
-## Invalid input_bam_file
-test.bam_handler_get_noise_ratio_invalid_input_bam_file <- function() {
-    bam_handler <- demo_bh$clone()
-    input_b_name <- "not_a_valid_bam_file"
-    obs <- tryCatch(bam_handler$get_noise_ratio(chip_bam_names = chip.bam,
-                                                input_bam_names = input_b_name),
-                    error=conditionMessage)
-    exp <- "Bam file not_a_valid_bam_file not found."
-    checkEquals(obs, exp)
 }
 
 ###################################################

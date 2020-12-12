@@ -190,7 +190,7 @@
 #'            into design groups. By default, each bam file is its own design group.
 #'            See \code{group_coverages}.}
 #'    \item{normalization}{The algorithm to use to normalize coverages,
-#'                        \code{NULL} (no normalization), "RPM" or "NCIS". By default,
+#'                        \code{NULL} (no normalization) or "RPM". By default,
 #'                        no normalization occurs. See \code{group_coverages}.}
 #'    \item{design_filter}{Indices indicating which subset of design groups should 
 #'                         be included in the analysis. By default, all design  
@@ -260,16 +260,14 @@
 #'            These columns should contain integer values indicating whether the 
 #'            bam files on that row should be excluded (0), included as an`
 #'            "input" (1) or included as a "control" (2) within the specified 
-#'            design group. Control samples are used for "NCIS" and "log2_ratio"
+#'            design group. Control samples are used for "log2_ratio"
 #'            normalization, but are ignored for no or "RPM" normalization.
 #'            \code{NA} can be used keep previous design value. Default: \code{NA}.}
 #'    \item{normalization}{The algorithm to use to normalize coverages. Possible
-#'                        values are \code{NULL} (no normalization), "RPM", "log2_ratio"
-#'                        and "NCIS". "RPM" transforms raw counts into Reads-Per-Million.
+#'                        values are \code{NULL} (no normalization), "RPM" and "log2_ratio".
+#'                        "RPM" transforms raw counts into Reads-Per-Million.
 #'                        "log2_ratio" uses the formula log2((input RPM + 1) / (control RPM + 1))
-#'                        to calculate a log-ratio between input and control. NCIS
-#'                        attempts to subtract control from input. See
-#'                        Liand and Keles 2012 for the NCIS algorithm. \code{NA} can 
+#'                        to calculate a log-ratio between input and control. \code{NA} can 
 #'                        be used keep the previous value. Default: \code{NA}}
 #'    \item{design_filter}{A logical vector specifying which of the design groups specified
 #'                         within the \code{design} parameter should be included in the metagene.
@@ -671,8 +669,6 @@ metagene2 <- R6Class("metagene2",
                     merge_operation = "+"
                 } else if(private$ph$get("normalization")=="RPM") {
                     merge_operation = "mean"
-                } else if(private$ph$get("normalization")=="NCIS") {
-                    merge_operation = "NCIS"
                 } else if(private$ph$get("normalization")=="log2_ratio") {
                     merge_operation = "log2_ratio"
                 } else {

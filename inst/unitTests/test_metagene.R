@@ -656,8 +656,8 @@ test.metagene_invalid_bin_count <- function() {
 
 # Invalid normalization class
 test.metagene_invalid_normalization <- function() {
-  util_test_invalid_param_value("normalization", 1234, "group_coverages", 'normalization must be NULL, "RPM", "NCIS" or "log2_ratio".')
-  util_test_invalid_param_value("normalization", "CSI", "group_coverages", 'normalization must be NULL, "RPM", "NCIS" or "log2_ratio".')
+  util_test_invalid_param_value("normalization", 1234, "group_coverages", 'normalization must be NULL, "RPM" or "log2_ratio".')
+  util_test_invalid_param_value("normalization", "CSI", "group_coverages", 'normalization must be NULL, "RPM" or "log2_ratio".')
   
   # Invalid log2_ratio normalization without a valid design
   util_test_invalid_param_value("normalization", "log2_ratio", "group_coverages",

@@ -1,5 +1,5 @@
 Package: metagene2
-Version: 1.7.0
+Version: 1.7.1
 Date: 2019-04-05
 Title: A package to produce metagene plots
 Authors@R: c(person("Eric", "Fournier",
@@ -30,7 +30,7 @@ BugReports: https://github.com/ArnaudDroitLab/metagene2/issues
 URL: https://github.com/ArnaudDroitLab/metagene2
 VignetteBuilder: knitr
 Depends:
-    R (>= 3.6),
+    R (>= 4.0),
     R6 (>= 2.0),
     GenomicRanges,
     BiocParallel
@@ -42,7 +42,6 @@ Imports:
     IRanges,
     ggplot2,
     Rsamtools,
-    DBChIP,
     purrr,
     data.table,
     methods,

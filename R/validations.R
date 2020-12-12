@@ -27,7 +27,7 @@ validate_alpha = function(alpha) {
 validate_bin_count = function(bin_count) {
     if (!is.null(bin_count)) {
         if (!is.numeric(bin_count) || bin_count <= 0 || as.integer(bin_count) != bin_count) {
-            stop("bin_count must be a positive integer")
+            stop("bin_count must be a positive integer") 
         }
     }
 }
@@ -50,9 +50,8 @@ validate_gaps_threshold = function(gaps_threshold) {
 validate_normalization = function(normalization) {
     if (!is.null(normalization) &&
         normalization != "RPM" && 
-        normalization != "NCIS" &&
         normalization != "log2_ratio") {
-        stop('normalization must be NULL, "RPM", "NCIS" or "log2_ratio".')
+        stop('normalization must be NULL, "RPM" or "log2_ratio".')
     }
 }
 

@@ -223,9 +223,7 @@ group_coverages_s = function(coverage_s, design, merge_operation='+', bam_handle
     if(is.null(coverage_s)) {
         results = NULL
     } else {
-        if (merge_operation=="NCIS") {
-            results <- remove_controls(coverage_s, design, bam_handler)
-        } else if (merge_operation=="log2_ratio") {
+        if (merge_operation=="log2_ratio") {
             results <- merge_chip_ratio(coverage_s, design)
         } else {
             results <- merge_chip(coverage_s, design, merge_operation)
@@ -233,34 +231,6 @@ group_coverages_s = function(coverage_s, design, merge_operation='+', bam_handle
     }
     
     return(results)
-}
-
-# Perform noise-reduction using the NCIS method.
-remove_controls = function(coverages, design, bam_handler) {
-    results <- list()
-    for (design_name in colnames(design)[-1]) {
-        # Add up coverage for all ChIP and all input bams.
-        chip_results <- merge_reduce(coverages, design, design_name, 1, '+')
-        input_results <- merge_reduce(coverages, design, design_name, 2, '+')
-        
-        
-        if (length(input_results$BamNames) > 0) {
-            # If we had input bams, perform noise reduction.
-            noise_ratio <-
-                bam_handler$get_noise_ratio(as.character(chip_results$BamNames),
-                                            as.character(input_results$BamNames))
-            results[[design_name]] <- chip_results$Coverage - (input_results$Coverage * noise_ratio)
-            
-            # When input signal is stronger than the chip's, we'll get
-            # negative values. Set the value floor to 0.
-            i <- results[[design_name]] < 0
-            results[[design_name]][i] <- 0
-        } else {
-            # If we had no input bams, return coverage as-is.
-            results[[design_name]] <- chip_results$Coverage
-        }
-    }
-    results
 }
 
 # Merge multiple coverages within a coverage list according to the columns

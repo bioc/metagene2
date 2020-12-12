@@ -66,7 +66,6 @@
 #'                    and "error" in ?seqinfo.}
 #' }
 #' \describe{
-#'    \item{}{\code{bh$get_noise_ratio(chip_bam_file, input_bam_file)}}
 #'    \item{chip_bam_file}{The path to the chip bam file.}
 #'    \item{input_bam_file}{The path to the input (control) bam file.}
 #' }
@@ -79,7 +78,6 @@
 #' @import GenomicAlignments
 #' @import BiocParallel
 #' @import Rsamtools 
-#' @import DBChIP
 #' @export
 #' @format A BAM manager
 
@@ -208,13 +206,6 @@ Bam_Handler <- R6Class("Bam_Handler",
                             force_seqlevels = FALSE, simplify=TRUE) {
             count <- self$get_aligned_count(bam_file)
             private$generic_get_coverage(bam_file, regions, force_seqlevels, count, simplify=simplify)
-        },
-        get_noise_ratio = function(chip_bam_names, input_bam_names) {
-            lapply(c(chip_bam_names, input_bam_names), private$check_bam_file)
-
-            chip.pos <- private$read_bam_files(chip_bam_names)
-            input.pos <- private$read_bam_files(input_bam_names)
-            DBChIP:::NCIS.internal(chip.pos, input.pos)$est
         }
     ),
     private = list(
