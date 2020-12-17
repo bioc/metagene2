@@ -4,8 +4,11 @@
 \alias{metagene2_heatmap}
 \title{Plots a heatmap of coverages from a metagene2 object.}
 \usage{
-metagene2_heatmap(metagene, region_order = as_is_region_order(metagene),
-  scale_trans = "identity")
+metagene2_heatmap(
+  metagene,
+  region_order = as_is_region_order(metagene),
+  scale_trans = "identity"
+)
 }
 \arguments{
 \item{metagene}{The metagene object to be plotted as a heatmap.}
