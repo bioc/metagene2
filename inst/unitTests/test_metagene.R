@@ -148,7 +148,13 @@ util_test_invalid_region <- function(invalid_region, error, ...) {
                                              list(bam_files=get_demo_bam_files(),
                                                   regions = invalid_region))),
                     error = conditionMessage)
-    checkIdentical(obs, error)
+    # The return value should be an error string.
+	checkTrue(is.character(obs))
+	# BiocParallel will preface the error message with something like:
+	#   "BiocParallel errors\n  element index: 1, 2, 3, 4, 5\n  first error: [OUR ERROR STRING]"
+	# We don't want to unit test BiocParallel's error management,
+	# so we'll just make sure our own string is present rather than test for equality.
+	checkTrue(grepl(error, obs,fixed=TRUE))
 }
 
 util_test_valid_region <- function(valid_region, ...) {
