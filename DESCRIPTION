@@ -1,6 +1,6 @@
 Package: metagene2
-Version: 1.11.0
-Date: 2019-04-05
+Version: 1.11.1
+Date: 2021-11-21
 Title: A package to produce metagene plots
 Authors@R: c(person("Eric", "Fournier",
     email="ericfournier2@yahoo.ca",
