@@ -34,7 +34,8 @@ numerically_identical_coverage <- function(coverage_1, coverage_2) {
 ## Single valid bam file
 test.bam_handler_single_valid_file <- function() {
     bam_handler <- demo_bh_one$clone()
-    checkTrue(is(bam_handler, c("Bam_Handler", "R6")))
+    checkTrue(is(bam_handler, c("Bam_Handler")))
+	checkTrue(is(bam_handler, c("R6")))
 }
 
 ## Different seqnames bam file warning
@@ -92,7 +93,8 @@ test.bam_handler_named_bam_files <- function() {
 test.bam_handler_valid_files_numeric_cores <- function() {
     bam_handler <- metagene2:::Bam_Handler$new(bam_files = bam_files[1],
                                               cores = 2)
-    checkTrue(is(bam_handler, c("Bam_Handler", "R6")))
+    checkTrue(is(bam_handler, c("Bam_Handler")))
+	checkTrue(is(bam_handler, c("R6")))
 }
 
 ## Valid bam files, bpparam cores
@@ -100,7 +102,8 @@ test.bam_handler_valid_files_bpparam_cores <- function() {
     cores <- BiocParallel::SnowParam(workers = 2)
     bam_handler <- metagene2:::Bam_Handler$new(bam_files = bam_files[1],
                                               cores = cores)
-    checkTrue(is(bam_handler, c("Bam_Handler", "R6")))
+    checkTrue(is(bam_handler, c("Bam_Handler")))
+	checkTrue(is(bam_handler, c("R6")))
 }
 
 ## Zero core should not be accepted as an argument
